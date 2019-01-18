@@ -58,10 +58,11 @@ Classes
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
-from sage.all import Subsets, SageObject
+from sage.all import Subsets, SageObject, rainbow, latex
 from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
+from sage.misc.latex import latex_variable_name
 
 import exceptions
 
@@ -118,6 +119,7 @@ class RigidFlexibleGraph(Graph):
         The dictionary ``pos`` is used when plotting:
 
         .. PLOT::
+            :width: 70%
 
             from rigid_and_flexible_graphs.graph_generator import GraphGenerator
             G = GraphGenerator.ThreePrismGraph()
@@ -589,7 +591,7 @@ class RigidFlexibleGraph(Graph):
         return triangleComponents
 
     @doc_index("Flexibility")
-    def _find_NAC_colorings(self,onlyOne=False):
+    def _find_NAC_colorings(self, onlyOne=False, names=False):
         r"""
         Find NAC-colorings of the graph and store them.
 
@@ -601,6 +603,7 @@ class RigidFlexibleGraph(Graph):
         form_len = '0'+str(n-1)+'b'
         self._NAC_colorings = []
 
+        counter = 1
         for i in range(1,Integer(2)**(n-1)):
             str_col = '0' + format(i,form_len)
             red = []
@@ -610,9 +613,13 @@ class RigidFlexibleGraph(Graph):
                     red += comp
                 else:
                     blue += comp
-            col = NACcoloring(self, [red, blue], check=False)
+            if names:
+                col = NACcoloring(self, [red, blue], check=False, name='delta_' + str(counter))
+            else:
+                col = NACcoloring(self, [red, blue], check=False)
             if col.is_NACcoloring():
                 self._NAC_colorings.append(col)
+                counter += 1
                 if onlyOne:
                     self._NACs_computed = 'onlyOne'
                     return 
@@ -625,6 +632,10 @@ class RigidFlexibleGraph(Graph):
 
         If the NAC-colorings are already stored,
         then they are just returned, otherwise computed.
+
+        OUTPUT:
+
+        Only one NAC-coloring per conjugacy class is return.
 
         EXAMPLES::
 
@@ -717,6 +728,78 @@ class RigidFlexibleGraph(Graph):
         return self.has_NAC_coloring(certificate=certificate)
 
 
+    @doc_index("Plotting")
+    def plot(self, NAC_coloring=None, show_triangle_components=False, **kwargs):
+        r"""
+        Return the plot of the graph.
+
+        INPUT:
+
+        - ``NAC_coloring`` -- if an instance of :class:`NACcoloring` is provided,
+          then the edges are colored accordingly.
+        - ``show_triangle_components`` (default ``False``) -- if ``True``,
+          then the edges in the same $\\triangle$-component have the same color.
+        - for other options, see `sage.graphs.generic_graph.GenericGraph.plot() <http://doc.sagemath.org/html/en/reference/graphs/sage/graphs/generic_graph.html#sage.graphs.generic_graph.GenericGraph.plot>`_.
+          For instance, ``pos`` specifies the positions of the vertices.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: print(G.plot(NAC_coloring=G.NAC_colorings()[0]))
+            Graphics object consisting of 16 graphics primitives
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            G = GraphGenerator.ThreePrismGraph()
+            sphinx_plot(G.plot(NAC_coloring=G.NAC_colorings()[0]))
+
+        ::
+
+            sage: G.triangle_connected_components()
+            [[[0, 3], [0, 4], [3, 4]], [[1, 2], [1, 5], [2, 5]], [[0, 5]], [[1, 4]], [[2, 3]]]
+            sage: print(G.plot(show_triangle_components=True))
+            Graphics object consisting of 16 graphics primitives
+
+        .. PLOT::
+            :width: 70%
+
+            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            G = GraphGenerator.ThreePrismGraph()
+            sphinx_plot(G.plot(show_triangle_components=True))
+
+        ::
+
+            sage: print(G.plot(pos={0: [0.3, 0.5], 1: [0, 2], 2: [1, 1.4], 3: [1, 0], 4: [0, 0], 5: [0.7, 1]}))
+            Graphics object consisting of 16 graphics primitives
+
+        .. PLOT::
+            :width: 70%
+
+            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            G = GraphGenerator.ThreePrismGraph()
+            sphinx_plot(G.plot(pos={0: [0.3, 0.5], 1: [0, 2], 2: [1, 1.4], 3: [1, 0], 4: [0, 0], 5: [0.7, 1]}))
+        """
+        if show_triangle_components and NAC_coloring:
+            raise exceptions.ValueError('NAC-coloring and triangle components cannot be displayed at the same time.')
+        if show_triangle_components:
+            triangle_comps = self.triangle_connected_components()
+            colors = rainbow(len(triangle_comps))
+            kwargs['edge_colors'] = { colors[i] : c for i,c in enumerate(triangle_comps)}
+        if isinstance(NAC_coloring, NACcoloring):
+            kwargs['edge_colors'] = {
+                'blue' : NAC_coloring.blue_edges(),
+                'red' : NAC_coloring.red_edges()
+                }
+        return Graph(self).plot(**kwargs)
+
+
+
+
+
+
 class NACcoloring(SageObject):
     r"""
     The class for a NAC-coloring of a graph.
@@ -786,7 +869,7 @@ class NACcoloring(SageObject):
         self._name = name
         if check and not self.is_NACcoloring():
             raise exceptions.ValueError('The coloring is not a NAC-coloring.')
-    
+
     def _repr_(self):
         res = (self._name + ': ') if self._name != None else ''
         res += 'NAC-coloring with '
@@ -798,6 +881,39 @@ class NACcoloring(SageObject):
             res += str(len(self._blue_edges)) + ' blue edges '
         return res
 
+
+    def _rich_repr_(self, display_manager, **kwds):
+        # copied from GenericGraph
+        prefs = display_manager.preferences
+        is_small = (0 < self._graph.num_verts() < 20)
+        can_plot = (prefs.supplemental_plot != 'never')
+        plot_graph = can_plot and (prefs.supplemental_plot == 'always' or is_small)
+        # Under certain circumstances we display the plot as graphics
+        if plot_graph:
+            plot_kwds = dict(kwds)
+            plot_kwds.setdefault('title', '$'+latex(self)+'$')
+            output = self._graph.plot(NAC_coloring=self,**plot_kwds)._rich_repr_(display_manager)
+            if output is not None:
+                return output
+        # create text for non-graphical output
+        if can_plot:
+            text = '{0} (use the .plot() method to plot)'.format(repr(self))
+        else:
+            text = repr(self)
+        # latex() produces huge tikz environment, override
+        tp = display_manager.types
+        if (prefs.text == 'latex' and tp.OutputLatex in display_manager.supported_output()):
+            return tp.OutputLatex(r'\text{{{0}}}'.format(text))
+        return tp.OutputPlainText(text)
+
+
+    def _latex_(self):
+        if self._name:
+            l_name = latex_variable_name(self._name) + ': \\left('
+        else:
+            l_name = '\\left('
+        return l_name +latex(self._red_edges)+'\\mapsto red; '+latex(self._blue_edges)+'\\mapsto blue\\right)'
+
     def _check_edges(self):
         r"""
         Raise a ``RuntimeError`` if the edges of the NAC-coloring do not match the edges of the graph.
@@ -805,7 +921,6 @@ class NACcoloring(SageObject):
         if (Set([Set(e) for e in self._graph.edges(labels=False)]) 
             != self._blue_edges.union(self._red_edges)):
             raise exceptions.RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
-
 
     def is_NACcoloring(self):
         r"""
@@ -848,10 +963,67 @@ class NACcoloring(SageObject):
                     return False
         return True
 
+    def blue_edges(self):
+        r"""
+        Return the list of blue edges of the NAC-coloring.
+        """
+        return list(self._blue_edges)
+
+
+    def red_edges(self):
+        r"""
+        Return the list of red edges of the NAC-coloring.
+        """
+        return list(self._red_edges)
+
+    def plot(self):
+        return self._graph.plot(NAC_coloring=self)
+
+    def is_isomorphic(self, NAC_coloring, check=True):
+        if check and self._graph != NAC_coloring._graph:
+            raise exceptions.RuntimeError('The NAC-colorings must belong to the same graph.')
+        for sigma in self._graph.automorphism_group():
+            if self.is_equal(NAC_coloring.isomorphic_NAC_coloring(sigma)):
+                return True
+        return False
+
+    def isomorphic_NAC_coloring(self, sigma):
+        r"""
+        Return isomorphic NAC-coloring under automorphism ``sigma``.
+        """
+        return NACcoloring(self._graph, [[[sigma(e[0]),sigma(e[1])] for e in edges] for edges in [self._red_edges, self._blue_edges]])
+
+    def is_equal(self, NAC_coloring, moduloConjugation=True):
+        r"""
+        Return if the NAC-coloring is equal to ``NAC_coloring``.
+
+        INPUT:
+
+        - ``moduloConjugation`` -- If ``True`` (default),
+          then the NAC-colorings are compared modulo swapping colors.
+
+        """
+        if moduloConjugation:
+            return Set([self._red_edges, self._blue_edges]) == Set([NAC_coloring._red_edges, NAC_coloring._blue_edges])
+        else:
+            return self._red_edges == NAC_coloring._red_edges and self._blue_edges == NAC_coloring._blue_edges
+
+
+    
+_additional_categories = {
+    RigidFlexibleGraph.plot         : "Plotting",
+    }
+
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS}",gen_thematic_rest_table_index(RigidFlexibleGraph))
+    "{INDEX_OF_METHODS}", (gen_thematic_rest_table_index(RigidFlexibleGraph, _additional_categories) + """
+**Plotting**
 
+.. csv-table::
+   :class: contentstable
+   :widths: 30, 70
+   :delim: @
 
+   :meth:`~rigid_and_flexible_graphs.rigid_flexible_graph.RigidFlexibleGraph.plot` @ Return the plot of the graph."""))
 
 
 
