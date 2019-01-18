@@ -5,7 +5,7 @@ References
 
 
 .. [GLS2018] \G. Grasegger, J. Legerský, J. Schicho,
-             "Graphs with Flexible Labelings Discrete".
+             "Graphs with Flexible Labelings".
              Journal of Discrete and Computational Geometry (2018),
              :doi:`10.1007/s00454-018-0026-9`.
 
