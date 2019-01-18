@@ -19,3 +19,7 @@ References
              ZAMM-Journal of Applied Mathematics and Mechanics/
              Zeitschrift für Angewandte Mathematik und Mechanik (1927), 7 (1): 58–72.
 
+.. [GKT2018] \G. Grasegger, C. Koutschan, E. Tsigaridas,
+             "Lower Bounds on the Number of Realizations of Rigid Graphs".
+             Experimental Mathematics (2018),
+             :doi:`10.1080/10586458.2018.1437851`.
