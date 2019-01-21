@@ -387,10 +387,22 @@ class NACcoloring(SageObject):
         """
         self._name = new_name
 
+    def path_is_unicolor(self, path):
+        r"""
+        Return if the edges of the path have the same color.
+        """
+        edges = Set([Set(e) for e in zip(path[:-1],path[1:])])
+        return edges.issubset(self._red_edges) or edges.issubset(self._blue_edges)
 
 
-_additional_categories = {
-    #RigidFlexibleGraph.plot         : "Plotting",
-    }
+
+
+
+
+
+
+
+
+
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", (gen_rest_table_index(NACcoloring)))

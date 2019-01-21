@@ -998,7 +998,27 @@ class RigidFlexibleGraph(Graph):
 
 
 
+    def unicolor_path(self, u, v, active_colorings=[]):
+        r"""
+        Return a unicolor path from ``u`` to ``v``.
 
+        """
+        if self.has_edge(u,v):
+            return [u,v]
+        if active_colorings == []:
+            active_colorings = self.NAC_colorings()
+
+        paths = self.all_paths(u,v)
+        for path in paths:
+            is_unicolor_for_all = True
+            for col in active_colorings:
+                if not col.path_is_unicolor(path):
+                     is_unicolor_for_all = False
+                     break
+            if is_unicolor_for_all:
+                return path
+        if certificate:
+            return []
 
 
 
