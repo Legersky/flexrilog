@@ -16,6 +16,11 @@ Welcome to Graph Rigidity and Flexibility's documentation!
    :undoc-members:
    :show-inheritance:
 
+.. automodule:: rigid_and_flexible_graphs.NAC_coloring
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 .. automodule:: rigid_and_flexible_graphs.graph_generator
    :members:
    :undoc-members:

@@ -592,7 +592,7 @@ class RigidFlexibleGraph(Graph):
                 triangleComponents[l].append([u,v])
         return triangleComponents
 
-    @doc_index("Flexibility")
+    @doc_index("NAC-colorings")
     def _find_NAC_colorings(self, onlyOne=False, names=False):
         r"""
         Find NAC-colorings of the graph and store them.
@@ -619,7 +619,7 @@ class RigidFlexibleGraph(Graph):
                 col = NACcoloring(self, [red, blue], check=False, name='delta_' + str(counter))
             else:
                 col = NACcoloring(self, [red, blue], check=False)
-            if col.is_NACcoloring():
+            if col.is_NAC_coloring():
                 self._NAC_colorings.append(col)
                 counter += 1
                 if onlyOne:
@@ -627,7 +627,7 @@ class RigidFlexibleGraph(Graph):
                     return 
         self._NACs_computed = 'yes'
 
-    @doc_index("Flexibility")
+    @doc_index("NAC-colorings")
     def NAC_colorings(self):
         r"""
         Return NAC-colorings of the graph.
@@ -677,7 +677,7 @@ class RigidFlexibleGraph(Graph):
         return self._NAC_colorings
 
 
-    @doc_index("Flexibility")
+    @doc_index("NAC-colorings")
     def has_NAC_coloring(self, certificate=False):
         r"""
         Return if the graph has a NAC-coloring.
@@ -720,7 +720,7 @@ class RigidFlexibleGraph(Graph):
             return self._NAC_colorings!=[]
 
 
-    @doc_index("Flexibility")
+    @doc_index("NAC-colorings")
     def has_flexible_labeling(self, certificate=False):
         r"""
         Alias for :meth:`has_NAC_coloring`.
@@ -798,9 +798,80 @@ class RigidFlexibleGraph(Graph):
         return Graph(self).plot(**kwargs)
 
 
+    @doc_index("NAC-colorings")
+    def NAC_colorings_isomorphism_classes(self):
+        r"""
+        Return partition of NAC-colorings into isomorphism classes.
+
+        See :meth:`NACcoloring.is_isomorphic`
+        for the definition of two NAC-colorings being isomorphic.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
+            sage: isomorphism_classes = G.NAC_colorings_isomorphism_classes()
+            sage: len(isomorphism_classes)
+            3
+            sage: [len(cls) for cls in isomorphism_classes]
+            [1, 3, 3]
+            sage: for cls in isomorphism_classes: print(cls[0])
+            NAC-coloring with red edges {{0, 4}, {0, 2}, {0, 3}} and blue edges {{1, 3}, {1, 2}, {1, 4}}
+            NAC-coloring with red edges {{1, 3}, {1, 2}, {0, 2}, {0, 3}} and blue edges {{0, 4}, {1, 4}}
+            NAC-coloring with red edges {{1, 4}, {0, 2}, {0, 3}} and blue edges {{1, 3}, {1, 2}, {0, 4}}
+        """
+        NACs = self.NAC_colorings()
+        isomorphism_classes=[[NACs[0]]]
+        for NAC_col in NACs[1:]:
+            isomorphic_to_prev = False
+            for cls in isomorphism_classes:
+                if NAC_col.is_isomorphic(cls[0]):
+                    cls.append(NAC_col)
+                    isomorphic_to_prev = True
+                    break
+            if not isomorphic_to_prev:
+                isomorphism_classes.append([NAC_col])
+        return isomorphism_classes
 
 
+    @doc_index("NAC-colorings")
+    def set_NAC_colorings_names(self, cls_names=[]):
+        r"""
+        Set names of NAC-colorings according to isomorphism classes.
 
+        The NAC-colorings in the same class have the same name with a different index.
+
+        INPUT:
+
+        - ``cls_names`` (default ``[]``)-- if specified, then these names are taken for
+          the isomorphism classes. Otherwise, greek letters are taken.
+
+        EXAMPLE::
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
+            sage: G.set_NAC_colorings_names()
+            sage: G.NAC_colorings()
+            [alpha: NAC-coloring with red edges {{0, 4}, {0, 2}, {0, 3}} and blue edges {{1, 3}, {1, 2}, {1, 4}},
+            beta1: NAC-coloring with red edges {{1, 3}, {1, 2}, {0, 2}, {0, 3}} and blue edges {{0, 4}, {1, 4}},
+            gamma1: NAC-coloring with red edges {{1, 4}, {0, 2}, {0, 3}} and blue edges {{1, 3}, {1, 2}, {0, 4}},
+            beta2: NAC-coloring with red edges {{1, 2}, {0, 4}, {1, 4}, {0, 2}} and blue edges {{1, 3}, {0, 3}},
+            gamma2: NAC-coloring with red edges {{1, 3}, {0, 4}, {0, 2}} and blue edges {{1, 2}, {1, 4}, {0, 3}},
+            beta3: NAC-coloring with red edges {{1, 2}, {0, 2}} and blue edges {{1, 3}, {0, 4}, {1, 4}, {0, 3}},
+            gamma3: NAC-coloring with red edges {{1, 3}, {1, 4}, {0, 2}} and blue edges {{1, 2}, {0, 4}, {0, 3}}]
+        """
+        letters = cls_names + ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta',
+                               'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu',
+                               'xi', 'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'varphi',
+                               'chi', 'psi', 'omega']
+        isomorphism_classes = self.NAC_colorings_isomorphism_classes()
+        if len(isomorphism_classes)> len(letters):
+            raise exceptions.RuntimeError('There are not enough letter for all isomorphism classes of NAC-colorings')
+        for k, cls in enumerate(isomorphism_classes):
+            for i, col in enumerate(cls):
+                new_name = letters[k]
+                if len(cls)>1:
+                    new_name += str(i+1)
+                col.set_name(new_name)
 
 
 _additional_categories = {

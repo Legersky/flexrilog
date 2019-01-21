@@ -41,7 +41,7 @@ Class
 
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
 from sage.all import Subsets, SageObject, rainbow, latex
-from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
+from sage.misc.rest_index_of_methods import doc_index, gen_rest_table_index
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
 from sage.misc.latex import latex_variable_name
@@ -65,7 +65,7 @@ class NACcoloring(SageObject):
       or a list consisting of two lists giving a partition of the edges of ``G``
     - ``name`` -- an optional name of the NAC-coloring
     - ``check`` -- if ``True`` (default), then surjectivity and the cycle conditions are checked.
-      (see :meth:`is_NACcoloring`). A ``ValueError`` is raised if the check fails
+      (see :meth:`is_NAC_coloring`). A ``ValueError`` is raised if the check fails
 
     EXAMPLES::
 
@@ -84,7 +84,7 @@ class NACcoloring(SageObject):
         ValueError: The coloring is not a NAC-coloring.
         sage: delta = NACcoloring(G,[[(0, 1), (0, 2)], [(0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]], check=False); delta
         NAC-coloring with red edges {{0, 2}, {0, 1}} and blue edges {{1, 3}, {1, 2}, {2, 4}, {0, 3}, {3, 4}}
-        sage: delta.is_NACcoloring()
+        sage: delta.is_NAC_coloring()
         False
 
     A dictionary can be also used as an input::
@@ -116,7 +116,7 @@ class NACcoloring(SageObject):
             raise exceptions.TypeError('The coloring must be a dict or list consisting of two lists.')
         self._check_edges()
         self._name = name
-        if check and not self.is_NACcoloring():
+        if check and not self.is_NAC_coloring():
             raise exceptions.ValueError('The coloring is not a NAC-coloring.')
 
     def _repr_(self):
@@ -171,7 +171,7 @@ class NACcoloring(SageObject):
             != self._blue_edges.union(self._red_edges)):
             raise exceptions.RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
 
-    def is_NACcoloring(self):
+    def is_NAC_coloring(self):
         r"""
         Return if the coloring is a NAC-coloring.
 
@@ -184,19 +184,19 @@ class NACcoloring(SageObject):
             sage: G = GraphGenerator.SmallestFlexibleLamanGraph(); G
             SmallestFlexibleLamanGraph: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
             sage: delta = NACcoloring(G,[[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)], [(2, 4), (3, 4)]], check=False)
-            sage: delta.is_NACcoloring()
+            sage: delta.is_NAC_coloring()
             True
 
         NAC-coloring must be surjective::
 
             sage: delta = NACcoloring(G,[[], [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]], check=False)
-            sage: delta.is_NACcoloring()
+            sage: delta.is_NAC_coloring()
             False
 
         And it has to satisfy the cycle conditions::
 
             sage: delta = NACcoloring(G,[[(0, 1), (0, 2)], [(0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]], check=False)
-            sage: delta.is_NACcoloring()
+            sage: delta.is_NAC_coloring()
             False
 
         """
@@ -226,38 +226,163 @@ class NACcoloring(SageObject):
         return list(self._red_edges)
 
     def plot(self):
+        r"""
+        Return a plot of the NAC-coloring.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: delta = G.NAC_colorings()[0]
+            sage: delta.plot()
+            Graphics object consisting of 16 graphics primitives
+
+        .. PLOT::
+
+            from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            from rigid_and_flexible_graphs.NAC_coloring import NACcoloring
+            G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sphinx_plot(G.NAC_colorings()[0])
+        """
         return self._graph.plot(NAC_coloring=self)
 
-    def is_isomorphic(self, NAC_coloring, check=True):
-        if check and self._graph != NAC_coloring._graph:
+    def is_isomorphic(self, other_coloring, check=True, certificate=False, aut_group=None):
+        r"""
+        Return if the NAC-coloring is isomorphic to ``other_coloring``.
+
+        NAC-colorings $\\delta_1$ and $\\delta_2$ of a graph $G$ are isomorphic if and only if
+        there exists and automorphism $\\sigma$ of $G$ such that
+        
+        - $\\delta_1(uv) = \\text{red} \\iff \\delta_2(\\sigma(u),\\sigma(v)) = \\text{red}$ for all $uv\\in E_G$, or
+        - $\\delta_1(uv) = \\text{blue} \\iff \\delta_2(\\sigma(u),\\sigma(v)) = \\text{red}$ for all $uv\\in E_G$.
+
+        INPUT:
+
+        - ``other_coloring`` -- a NAC-colorings that is checked to be isomorphic with this NAC-coloring.
+        - ``check`` -- if ``True`` (default), then it is checked whether the NAC-colorings belong
+          to the same graph.
+        - ``certificate`` -- if ``False`` (default), then onlt boolean is returned.
+          Otherwise, ``(True, sigma)`` resp. ``(false, None)`` is returned,
+          where ``sigma`` is the graph automorphism mapping the NAC-coloring to the ``other_coloring``.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: from rigid_and_flexible_graphs.NAC_coloring import NACcoloring
+            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: colorings = G.NAC_colorings()
+            sage: col1, col2, col3 = colorings[4], colorings[5], colorings[7]
+            sage: col1
+            NAC-coloring with red edges {{1, 3}, {0, 4}, {1, 4}, {0, 3}, {2, 5}} and blue edges {{2, 4}, {0, 5}, {1, 5}, {2, 3}}
+            sage: col2
+            NAC-coloring with red edges {{2, 4}, {0, 4}, {2, 3}, {0, 3}, {1, 5}} and blue edges {{1, 3}, {0, 5}, {2, 5}, {1, 4}}
+            sage: col3
+            NAC-coloring with red edges {{2, 3}, {2, 5}, {1, 3}, {1, 5}, {0, 5}, {0, 3}} and blue edges {{2, 4}, {0, 4}, {1, 4}}
+            sage: col1.is_isomorphic(col2)
+            True
+            sage: col1.is_isomorphic(col2, certificate=True)
+            (True, (1,2))
+            sage: col1.is_isomorphic(col3)
+            False
+
+        ``col1``:
+
+        .. PLOT::
+
+            from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            from rigid_and_flexible_graphs.NAC_coloring import NACcoloring
+            G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sphinx_plot(G.NAC_colorings()[4])
+
+        ``col2``:
+
+        .. PLOT::
+
+            from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            from rigid_and_flexible_graphs.NAC_coloring import NACcoloring
+            G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sphinx_plot(G.NAC_colorings()[5])
+        """
+        if check and self._graph != other_coloring._graph:
             raise exceptions.RuntimeError('The NAC-colorings must belong to the same graph.')
-        for sigma in self._graph.automorphism_group():
-            if self.is_equal(NAC_coloring.isomorphic_NAC_coloring(sigma)):
-                return True
-        return False
+
+        if aut_group==None:
+            aut_group = self._graph.automorphism_group()
+        if (Set([len(self.blue_edges()), len(self.red_edges())]) 
+            != Set([len(other_coloring.blue_edges()), len(other_coloring.red_edges())])):
+            if certificate:
+                return (False, None)
+            else:
+                return False
+
+        for sigma in aut_group:
+            if self.is_equal(other_coloring.isomorphic_NAC_coloring(sigma)):
+                if certificate:
+                    return (True, sigma)
+                else:
+                    return True
+        if certificate:
+            return (False, None)
+        else:
+            return False
 
     def isomorphic_NAC_coloring(self, sigma):
         r"""
-        Return isomorphic NAC-coloring under automorphism ``sigma``.
+        Return the NAC-coloring under a morphism ``sigma``.
+
+        WARNING:
+
+        Is is not checked whether ``sigma`` is an automorphism of the graph.
         """
         return NACcoloring(self._graph, [[[sigma(e[0]),sigma(e[1])] for e in edges] for edges in [self._red_edges, self._blue_edges]])
 
-    def is_equal(self, NAC_coloring, moduloConjugation=True):
+    def is_equal(self, other_coloring, moduloConjugation=True):
         r"""
-        Return if the NAC-coloring is equal to ``NAC_coloring``.
+        Return if the NAC-coloring is equal to ``other_coloring``.
 
         INPUT:
 
         - ``moduloConjugation`` -- If ``True`` (default),
           then the NAC-colorings are compared modulo swapping colors.
 
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.NAC_coloring import NACcoloring
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.SmallestFlexibleLamanGraph(); G
+            SmallestFlexibleLamanGraph: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
+            sage: delta1 = NACcoloring(G,[[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)], [(2, 4), (3, 4)]])
+            sage: delta2 = NACcoloring(G,[[(2, 4), (3, 4)],[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)]])
+            sage: delta1.is_equal(delta2)
+            True
+            sage: delta1.is_equal(delta2, moduloConjugation=False)
+            False
         """
         if moduloConjugation:
-            return Set([self._red_edges, self._blue_edges]) == Set([NAC_coloring._red_edges, NAC_coloring._blue_edges])
+            return Set([self._red_edges, self._blue_edges]) == Set([other_coloring._red_edges, other_coloring._blue_edges])
         else:
-            return self._red_edges == NAC_coloring._red_edges and self._blue_edges == NAC_coloring._blue_edges
+            return self._red_edges == other_coloring._red_edges and self._blue_edges == other_coloring._blue_edges
 
 
+    def set_name(self, new_name):
+        r"""
+        Set a new name.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.NAC_coloring import NACcoloring
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
+            sage: delta = G.NAC_colorings()[0]; delta
+            NAC-coloring with red edges {{1, 3}, {1, 2}, {0, 2}, {0, 3}, {0, 1}} and blue edges {{2, 4}, {3, 4}}
+            sage: delta.set_name('delta'); delta
+            delta: NAC-coloring with red edges {{1, 3}, {1, 2}, {0, 2}, {0, 3}, {0, 1}} and blue edges {{2, 4}, {3, 4}}
+            sage: latex(delta)
+            \delta: \left( \left\{\left\{1, 3\right\},
+            ...
+            \left\{3, 4\right\}\right\} \mapsto blue\right)
+        """
+        self._name = new_name
 
 
 
@@ -265,4 +390,4 @@ _additional_categories = {
     #RigidFlexibleGraph.plot         : "Plotting",
     }
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS}", (gen_thematic_rest_table_index(NACcoloring, _additional_categories)))
+    "{INDEX_OF_METHODS}", (gen_rest_table_index(NACcoloring)))
