@@ -176,3 +176,26 @@ class GraphGenerator():
             return RigidFlexibleGraph(Integer(graph_repr[n]), pos=positions[n], name='MaxEmbeddingsLamanGraph_' + str(n) + 'vert')
         else:
             raise exceptions.ValueError('Only graphs with 6-12 vertices are supported.')
+
+    @staticmethod
+    def Q1Graph():
+        r"""
+        Return the graph $Q_1$.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: GraphGenerator.Q1Graph()
+            Q_1: RigidFlexibleGraph with 7 vertices and 11 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            G = GraphGenerator.Q1Graph()
+            sphinx_plot(G)
+        """
+        return RigidFlexibleGraph([(0, 1), (0, 2), (0, 6), (1, 2), (1, 4), (1, 5), (2, 3), (3, 4), (3, 5), (4, 6), (5, 6)],
+                                  pos={5 : (0.500, 0.866), 4 : (-0.500, 0.866), 6 : (-1.00, 0.000), 3 : (1.00, 0.000), 
+                                       2 : (0.500, -0.866), 0 : (-0.500, -0.866), 1 : (0.000, 0.000)},
+                                  name='Q_1')

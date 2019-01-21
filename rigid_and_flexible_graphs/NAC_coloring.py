@@ -280,8 +280,10 @@ class NACcoloring(SageObject):
             NAC-coloring with red edges {{2, 3}, {2, 5}, {1, 3}, {1, 5}, {0, 5}, {0, 3}} and blue edges {{2, 4}, {0, 4}, {1, 4}}
             sage: col1.is_isomorphic(col2)
             True
-            sage: col1.is_isomorphic(col2, certificate=True)
-            (True, (1,2))
+            sage: _, sigma = col1.is_isomorphic(col2, certificate=True); sigma
+            (1,2)
+            sage: col1.isomorphic_NAC_coloring(sigma).is_equal(col2)
+            True
             sage: col1.is_isomorphic(col3)
             False
 
@@ -316,25 +318,26 @@ class NACcoloring(SageObject):
                 return (False, None)
 
         for sigma in aut_group:
-            if self.is_equal(other_coloring.isomorphic_NAC_coloring(sigma)):
-                if certificate:
-                    return (True, sigma)
-                else:
+            if Set([self._red_edges, self._blue_edges]) == Set(other_coloring.isomorphic_NAC_coloring(sigma,onlySets=True)): # faster
+            #if self.is_equal(other_coloring.isomorphic_NAC_coloring(sigma)):
+                if not certificate:
                     return True
-        if certificate:
-            return (False, None)
-        else:
+                else:
+                    return (True, sigma)
+        if not certificate:
             return False
+        else:
+            return (False, None)
 
-    def isomorphic_NAC_coloring(self, sigma):
+    def isomorphic_NAC_coloring(self, sigma, onlySets=False):
         r"""
         Return the NAC-coloring under a morphism ``sigma``.
-
-        WARNING:
-
-        Is is not checked whether ``sigma`` is an automorphism of the graph.
         """
-        return NACcoloring(self._graph, [[[sigma(e[0]),sigma(e[1])] for e in edges] for edges in [self._red_edges, self._blue_edges]])
+        if onlySets:
+            return [Set([Set([sigma(e[0]),sigma(e[1])]) for e in self._red_edges]),
+                    Set([Set([sigma(e[0]),sigma(e[1])]) for e in self._blue_edges])]
+        else:
+            return NACcoloring(self._graph, [[[sigma(e[0]),sigma(e[1])] for e in edges] for edges in [self._red_edges, self._blue_edges]])
 
     def is_equal(self, other_coloring, moduloConjugation=True):
         r"""

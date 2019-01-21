@@ -821,18 +821,21 @@ class RigidFlexibleGraph(Graph):
             NAC-coloring with red edges {{1, 4}, {0, 2}, {0, 3}} and blue edges {{1, 3}, {1, 2}, {0, 4}}
         """
         NACs = self.NAC_colorings()
-        isomorphism_classes=[[NACs[0]]]
-        autG = self.automorphism_group()
-        for NAC_col in NACs[1:]:
-            isomorphic_to_prev = False
-            for cls in isomorphism_classes:
-                if NAC_col.is_isomorphic(cls[0], check=False, aut_group=autG):
-                    cls.append(NAC_col)
-                    isomorphic_to_prev = True
-                    break
-            if not isomorphic_to_prev:
-                isomorphism_classes.append([NAC_col])
-        return isomorphism_classes
+        if NACs:
+            isomorphism_classes=[[NACs[0]]]
+            autG = self.automorphism_group()
+            for NAC_col in NACs[1:]:
+                isomorphic_to_prev = False
+                for cls in isomorphism_classes:
+                    if NAC_col.is_isomorphic(cls[0], check=False, aut_group=autG):
+                        cls.append(NAC_col)
+                        isomorphic_to_prev = True
+                        break
+                if not isomorphic_to_prev:
+                    isomorphism_classes.append([NAC_col])
+            return isomorphism_classes
+        else:
+            return []
 
 
     @doc_index("NAC-colorings")
@@ -879,7 +882,7 @@ class RigidFlexibleGraph(Graph):
     @doc_index('Other')
     def has_min_degree_at_least_three(self):
         r"""
-        Return if all vertices have degree at lest three.
+        Return if all vertices have degree at least three.
         """
         return min(self.degree()) >= 3
 
@@ -888,6 +891,10 @@ class RigidFlexibleGraph(Graph):
     def triangles(self):
         r"""
         Return all triangle in the graph.
+
+        OUTPUT:
+
+        List of all triangles given by their vertices.
 
         EXAMPLES:
 
@@ -906,8 +913,8 @@ class RigidFlexibleGraph(Graph):
 
         The complete graph on 5 vertices::
 
-            sage: sorted(RigidFlexibleGraph(graphs.CompleteGraph(5)).triangles())
-            [[0, 1, 2], [0, 1, 3], [0, 1, 4], [0, 2, 3], [0, 2, 4], [0, 3, 4], [1, 2, 3], [1, 2, 4], [1, 3, 4], [2, 3, 4]]
+            sage: len(RigidFlexibleGraph(graphs.CompleteGraph(5)).triangles()) == binomial(5,3)
+            True
         """
         res=[]
         for u,v in self.edges(labels=False):
@@ -915,12 +922,79 @@ class RigidFlexibleGraph(Graph):
                 res.append(Set([u,v,w]))
         return [list(triangle) for triangle in Set(res)]
 
+    @doc_index('Subgraphs')
+    def four_cycles(self):
+        r"""
+        Return all 4-cycles in the graph.
+
+        OUTPUT:
+
+        List of all (in terms of the vertex set) 4-cycles given by ordered tuples of their vertices.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: G.four_cycles()
+            [(0, 3, 2, 5), (0, 4, 1, 5), (1, 2, 3, 4)]
+
+        ::
+
+            sage: len(RigidFlexibleGraph(graphs.CompleteGraph(7)).four_cycles()) == binomial(7,4)*3
+            True
+
+        ::
+
+            sage len(RigidFlexibleGraph(graphs.CycleGraph(7)).four_cycles())
+            []
+        """
+        res = []
+        G = deepcopy(Graph(self))
+        for v in G.vertices():
+            neigh_v = G.neighbors(v)
+            for u1,u2 in Subsets(neigh_v,2):
+                for u in Set(G.neighbors(u1)).intersection(Set(G.neighbors(u2))):
+                    if u!=v:
+                        res.append(tuple([v,u1,u,u2]))
+            G.delete_vertex(v)
+        return res
 
 
+    @doc_index('Subgraphs')
+    def induced_K23s(self):
+        r"""
+        Return all induced $K_{2,3}$ subgraphs.
 
+        OUTPUT:
 
+        List of all induced $K_{2,3}$ subgraphs given by of their vertices.
 
+        EXAMPLES::
 
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.Q1Graph()
+            sage: G.induced_K23s()
+            [[0, 4, 5, 1, 6], [1, 3, 6, 4, 5], [2, 4, 5, 1, 3]]
+
+        ::
+
+            sage: RigidFlexibleGraph(graphs.CompleteGraph(7)).induced_K23s()
+            []
+
+        ::
+
+            sage: len(RigidFlexibleGraph(graphs.CompleteBipartiteGraph(4,6)).induced_K23s()) == binomial(4,3)*binomial(6,2) + binomial(4,2)*binomial(6,3)
+            True
+        """
+        res = []
+        for u,v,w in Subsets(self.vertices(),3):
+            if len(Graph(self).subgraph([u,v,w]).edges()) == 0:
+                for x,y in Subsets(Set(self.neighbors(u)
+                                       ).intersection(Set(self.neighbors(v))
+                                                      ).intersection(Set(self.neighbors(w))),2):
+                    if not self.has_edge(x,y):
+                        res.append([u,v,w,x,y])
+        return res
 
 
 
