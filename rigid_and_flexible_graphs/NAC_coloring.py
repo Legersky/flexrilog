@@ -310,10 +310,10 @@ class NACcoloring(SageObject):
             aut_group = self._graph.automorphism_group()
         if (Set([len(self.blue_edges()), len(self.red_edges())]) 
             != Set([len(other_coloring.blue_edges()), len(other_coloring.red_edges())])):
-            if certificate:
-                return (False, None)
-            else:
+            if not certificate:
                 return False
+            else:
+                return (False, None)
 
         for sigma in aut_group:
             if self.is_equal(other_coloring.isomorphic_NAC_coloring(sigma)):

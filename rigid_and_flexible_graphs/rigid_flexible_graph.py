@@ -822,10 +822,11 @@ class RigidFlexibleGraph(Graph):
         """
         NACs = self.NAC_colorings()
         isomorphism_classes=[[NACs[0]]]
+        autG = self.automorphism_group()
         for NAC_col in NACs[1:]:
             isomorphic_to_prev = False
             for cls in isomorphism_classes:
-                if NAC_col.is_isomorphic(cls[0]):
+                if NAC_col.is_isomorphic(cls[0], check=False, aut_group=autG):
                     cls.append(NAC_col)
                     isomorphic_to_prev = True
                     break
@@ -847,6 +848,7 @@ class RigidFlexibleGraph(Graph):
           the isomorphism classes. Otherwise, greek letters are taken.
 
         EXAMPLE::
+
             sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
             sage: G.set_NAC_colorings_names()
@@ -865,13 +867,67 @@ class RigidFlexibleGraph(Graph):
                                'chi', 'psi', 'omega']
         isomorphism_classes = self.NAC_colorings_isomorphism_classes()
         if len(isomorphism_classes)> len(letters):
-            raise exceptions.RuntimeError('There are not enough letter for all isomorphism classes of NAC-colorings')
+            raise exceptions.RuntimeError('There are not enough letters for all isomorphism classes of NAC-colorings')
         for k, cls in enumerate(isomorphism_classes):
             for i, col in enumerate(cls):
                 new_name = letters[k]
                 if len(cls)>1:
                     new_name += str(i+1)
                 col.set_name(new_name)
+
+
+    @doc_index('Other')
+    def has_min_degree_at_least_three(self):
+        r"""
+        Return if all vertices have degree at lest three.
+        """
+        return min(self.degree()) >= 3
+
+
+    @doc_index('Subgraphs')
+    def triangles(self):
+        r"""
+        Return all triangle in the graph.
+
+        EXAMPLES:
+
+        Bipartite graphs have no triangles::
+
+            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
+            sage: G.triangles()
+            []
+
+        The 3-prism graph has two triangles::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: G.triangles()
+            [[0, 3, 4], [1, 2, 5]]
+
+        The complete graph on 5 vertices::
+
+            sage: sorted(RigidFlexibleGraph(graphs.CompleteGraph(5)).triangles())
+            [[0, 1, 2], [0, 1, 3], [0, 1, 4], [0, 2, 3], [0, 2, 4], [0, 3, 4], [1, 2, 3], [1, 2, 4], [1, 3, 4], [2, 3, 4]]
+        """
+        res=[]
+        for u,v in self.edges(labels=False):
+            for w in Set(self.neighbors(u)).intersection(Set(self.neighbors(v))):
+                res.append(Set([u,v,w]))
+        return [list(triangle) for triangle in Set(res)]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 _additional_categories = {
