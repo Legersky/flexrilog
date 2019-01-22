@@ -102,7 +102,7 @@ class NACcoloring(SageObject):
     """
     def __init__(self, G, coloring, name=None, check=True):
         from rigid_flexible_graph import RigidFlexibleGraph
-        if type(G) == RigidFlexibleGraph:
+        if type(G) == RigidFlexibleGraph or 'RigidFlexibleGraph' in str(type(G)):
             self._graph = G
         else:
             raise exceptions.TypeError('The graph G must be RigidFlexibleGraph.')
@@ -224,6 +224,74 @@ class NACcoloring(SageObject):
         Return the list of red edges of the NAC-coloring.
         """
         return list(self._red_edges)
+
+    def is_red(self, u, v=None):
+        r"""
+        Return if the edge is red.
+
+        INPUT:
+
+        If ``v`` is ``None``, then ``u`` is consider to be an edge.
+        Otherwise, ``uv`` is taken as the edge.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: delta = G.NAC_colorings()[0]
+            sage: delta.is_red(0,3)
+            True
+            sage: delta.is_red([2,4])
+            False
+            sage: delta.is_red(1,2)
+            Traceback (most recent call last):
+            ...
+            ValueError: There is no edge [1, 2]
+
+        """
+        if v:
+            if not self._graph.has_edge(u,v):
+                raise exceptions.ValueError('There is no edge ' + str([u,v]))
+            return Set([u,v]) in self._red_edges
+        else:
+            if not self._graph.has_edge(u[0],u[1]):
+                raise exceptions.ValueError('There is no edge ' + str([u[0],u[1]]))
+            return Set([u[0],u[1]]) in self._red_edges
+
+
+    def is_blue(self, u, v=None):
+        r"""
+        Return if the edge is blue.
+
+        INPUT:
+
+        If ``v`` is ``None``, then ``u`` is consider to be an edge.
+        Otherwise, ``uv`` is taken as the edge.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: delta = G.NAC_colorings()[0]
+            sage: delta.is_blue(2,4)
+            True
+            sage: delta.is_blue([0,4])
+            False
+            sage: delta.is_blue(1,2)
+            Traceback (most recent call last):
+            ...
+            ValueError: There is no edge [1, 2]
+
+        """
+        if v:
+            if not self._graph.has_edge(u,v):
+                raise exceptions.ValueError('There is no edge ' + str([u,v]))
+            return Set([u,v]) in self._blue_edges
+        else:
+            if not self._graph.has_edge(u[0],u[1]):
+                raise exceptions.ValueError('There is no edge ' + str([u[0],u[1]]))
+            return Set([u[0],u[1]]) in self._blue_edges
+
 
     def plot(self):
         r"""

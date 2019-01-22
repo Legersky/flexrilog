@@ -58,7 +58,7 @@ Classes
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
-from sage.all import Subsets, SageObject, rainbow, latex
+from sage.all import Subsets, SageObject, rainbow, latex, show
 from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
@@ -997,15 +997,52 @@ class RigidFlexibleGraph(Graph):
         return res
 
 
-
-    def unicolor_path(self, u, v, active_colorings=[]):
+    @doc_index("NAC-colorings")
+    def unicolor_path(self, u, v, active_colorings=None):
         r"""
         Return a unicolor path from ``u`` to ``v``.
 
+        A path is unicolor if for all NAC-colorings $\\delta$ of the graph,
+        $|\\{\\delta(e):e\\in E_G\\}|=1$.
+
+        INPUT:
+
+        - ``u`` and ``v`` -- start and endpoint.
+        - ``active_colorings`` (default ``None``) -- if specified,
+          then only the given colorings are considered instead of all.
+
+        OUTPUT:
+
+        A path given by vertices or ``[]`` if there is none.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
+            sage: G.unicolor_path(2,3)
+            [2, 0, 1, 3]
+
+        ::
+
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: G.unicolor_path(2,3)
+            [2, 3]
+            sage: G.has_edge(2,3)
+            True
+            sage: G.unicolor_path(1,3)
+            []
+
+        ::
+
+            sage: G = GraphGenerator.MaxEmbeddingsLamanGraph(8)
+            sage: G.unicolor_path(1,3)
+            []
+            sage: G.unicolor_path(1,3, active_colorings=G.NAC_colorings()[-2:])
+            [1, 0, 3]
         """
         if self.has_edge(u,v):
             return [u,v]
-        if active_colorings == []:
+        if active_colorings == None:
             active_colorings = self.NAC_colorings()
 
         paths = self.all_paths(u,v)
@@ -1017,10 +1054,89 @@ class RigidFlexibleGraph(Graph):
                      break
             if is_unicolor_for_all:
                 return path
-        if certificate:
-            return []
+        return []
 
 
+    @doc_index("NAC-colorings")
+    def unicolor_pairs(self, active_colorings):
+        r"""
+        Return pairs of non-adjacent vertices linked by a unicolor path.
+
+        INPUT:
+
+        - ``active_colorings`` -- colorings considered for unicolor paths.
+
+        OUTPUT:
+
+        List of pairs of non-adjacent vertices ``u`` and ``v`` 
+        connected by a unicolor path ``path`` in the form ``[[u,v],path]``.
+        """
+        res = []
+        for u,v in Subsets(self.vertices(),2):
+            if not self.has_edge(u,v):
+                path = self.unicolor_path(u,v, active_colorings)
+                if path:
+                    res.append([[u,v],path])
+        return res
+
+
+    @doc_index("NAC-colorings")
+    def constant_distance_closure(self, active_colorings=None):
+        r"""
+        Return the constant distance closure of the graph.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: CDC = G.constant_distance_closure()
+            sage: CDC.is_isomorphic(G)
+            True
+
+        ::
+
+            sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
+            sage: CDC = G.constant_distance_closure()
+            sage: CDC.is_isomorphic(graphs.CompleteGraph(5))
+            True
+
+        ::
+
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: G = RigidFlexibleGraph(1256267)
+            sage: CDC = G.constant_distance_closure()
+            sage: len(CDC.edges())-len(G.edges())
+            1
+
+        TODO:
+
+        An interesting example with less NAC-colorings.
+        """
+        res = deepcopy(self)
+        res.name('CDC of '+res.name())
+        if active_colorings == None:
+            active_colorings = self.NAC_colorings()
+        upairs = res.unicolor_pairs(active_colorings)
+        while upairs:
+            res.add_edges([e for e,_ in upairs])
+            active_res = []
+            for col in active_colorings:
+                red = col.red_edges()
+                blue = col.blue_edges()
+                for e, path in upairs:
+                    if col.is_red(path[0:2]):
+                        red.append(e)
+                    else:
+                        blue.append(e)
+                if col._name:
+                    col_new = NACcoloring(res, [red, blue], check=False, name=col._name)
+                else:
+                    col_new = NACcoloring(res, [red, blue], check=False)
+                if col_new.is_NAC_coloring():
+                    active_res.append(col_new)
+            active_colorings = active_res
+            upairs = res.unicolor_pairs(active_colorings)
+        return res
 
 
 
