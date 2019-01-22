@@ -28,3 +28,8 @@ References
                 "The number of realizations of all Laman graphs with at most 12 vertices [Data set]". 
                 Zenodo (2018),
                 :doi:`10.5281/zenodo.1245517`.
+
+.. [GLS2018a] \G. Grasegger, J. Legerský, J. Schicho,
+              "Graphs with Flexible Labelings allowing Injective Realizations".
+              arXiv (2018).
+              :arxiv:`1811.06709`.

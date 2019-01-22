@@ -40,7 +40,8 @@ Class
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
-from sage.all import Subsets, SageObject, rainbow, latex
+from sage.all import Subsets, SageObject, rainbow, latex, flatten
+from sage.all import vector, matrix, sin, cos, pi
 from sage.misc.rest_index_of_methods import doc_index, gen_rest_table_index
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
@@ -293,7 +294,7 @@ class NACcoloring(SageObject):
             return Set([u[0],u[1]]) in self._blue_edges
 
 
-    def plot(self):
+    def plot(self, grid_pos=False, zigzag=False):
         r"""
         Return a plot of the NAC-coloring.
 
@@ -308,11 +309,83 @@ class NACcoloring(SageObject):
         .. PLOT::
 
             from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
-            from rigid_and_flexible_graphs.NAC_coloring import NACcoloring
             G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
             sphinx_plot(G.NAC_colorings()[0])
+
+        ::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: delta = G.NAC_colorings()[0].conjugated()
+            sage: delta.plot(grid_pos=True)
+            Graphics object consisting of 16 graphics primitives
+
+        .. PLOT::
+
+            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            G = GraphGenerator.ThreePrismGraph()
+            delta = G.NAC_colorings()[0].conjugated()
+            sphinx_plot(delta.plot(grid_pos=True))
+
+        ::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: delta = G.NAC_colorings()[0].conjugated()
+            sage: delta.plot(grid_pos=True, zigzag=True)
+            Graphics object consisting of 16 graphics primitives
+
+        .. PLOT::
+
+            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            G = GraphGenerator.ThreePrismGraph()
+            delta = G.NAC_colorings()[0].conjugated()
+            sphinx_plot(delta.plot(grid_pos=True, zigzag=True))
+
+        ::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: delta = G.NAC_colorings()[0].conjugated()
+            sage: delta.plot(grid_pos=True, zigzag=[[[0,0], [0,1]], [[0,0], [1,1/2], [2,0]]])
+            Graphics object consisting of 16 graphics primitives
+
+        .. PLOT::
+
+            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            G = GraphGenerator.ThreePrismGraph()
+            delta = G.NAC_colorings()[0].conjugated()
+            sphinx_plot(delta.plot(grid_pos=True, zigzag=[[[0,0], [0,1]], [[0,0], [1,1/2], [2,0]]]))
+
+        TODO:
+        
+        doc
         """
-        return self._graph.plot(NAC_coloring=self)
+        if grid_pos:
+            grid_coor = self.grid_coordinates()
+            if zigzag:
+                if type(zigzag) == list and len(zigzag) == 2:
+                    a = [vector(c) for c in zigzag[0]]
+                    b = [vector(c) for c in zigzag[1]]
+                else:
+                    m = max([k for _, k in grid_coor.values()])
+                    n = max([k for k, _ in grid_coor.values()])
+                    a = [vector([0.3*((-1)^i-1)+0.3*sin(i), i]) for i in range(0,m+1)]
+                    b = [vector([j, 0.3*((-1)^j-1)+0.3*sin(j)]) for j in range(0,n+1)]
+            else:
+                positions = {}
+                m = max([k for _, k in grid_coor.values()])
+                n = max([k for k, _ in grid_coor.values()])
+                a = [vector([0, i]) for i in range(0,m+1)]
+                b = [vector([j, 0]) for j in range(0,n+1)]
+            alpha = 0
+            rotation = matrix([[cos(alpha), sin(alpha)], [-sin(alpha), cos(alpha)]])
+            positions = {}
+            for v in self._graph.vertices():
+                positions[v] = rotation * a[grid_coor[v][1]] + b[grid_coor[v][0]]
+            return self._graph.plot(NAC_coloring=self, pos=positions)
+        else:
+            return self._graph.plot(NAC_coloring=self)
 
     def is_isomorphic(self, other_coloring, check=True, certificate=False, aut_group=None):
         r"""
@@ -441,7 +514,6 @@ class NACcoloring(SageObject):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs.NAC_coloring import NACcoloring
             sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
             sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
             sage: delta = G.NAC_colorings()[0]; delta
@@ -463,8 +535,53 @@ class NACcoloring(SageObject):
         return edges.issubset(self._red_edges) or edges.issubset(self._blue_edges)
 
 
+    def grid_coordinates(self):
+        r"""
+        Return coordinates for grid construction.
 
+        See [GLS2018]_ for the description of the grid construction.
+        """
+        red_subgraph = Graph(self.red_edges(), format='list_of_edges')
+        red_components = red_subgraph.connected_components()
+        red_components += [[v] for v in Set(self._graph.vertices()).difference(Set(flatten(red_components)))]
+        blue_subgraph = Graph(self.blue_edges(), format='list_of_edges')
+        blue_components = blue_subgraph.connected_components()
+        blue_components += [[v] for v in Set(self._graph.vertices()).difference(Set(flatten(blue_components)))]
+        pos = {}
+        for (i,red) in enumerate(red_components):
+            for (j,blue) in enumerate(blue_components):
+                for v in blue:
+                    if v in red:
+                        pos[v] = (i,j)
+        return pos
 
+    def grid_coordinates_are_injective(self):
+        r"""
+        Return if the grid coordinates are injective.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: delta = G.NAC_colorings()[0]
+            sage: delta.grid_coordinates_are_injective()
+            True
+
+        ::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
+            sage: delta = G.NAC_colorings()[0]
+            sage: delta.grid_coordinates_are_injective()
+            False
+            """
+        return len(Set(self.grid_coordinates().values())) == self._graph.num_verts()
+
+    def conjugated(self):
+        r"""
+        Return the conjugated NAC-coloring.
+        """
+        return NACcoloring(self._graph, [self.blue_edges(), self.red_edges()], check=False)
 
 
 

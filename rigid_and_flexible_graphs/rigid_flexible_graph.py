@@ -58,7 +58,9 @@ Classes
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
-from sage.all import Subsets, SageObject, rainbow, latex, show
+from sage.all import Subsets, SageObject, rainbow, latex, show, binomial
+from sage.all import var, solve
+
 from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
@@ -790,7 +792,7 @@ class RigidFlexibleGraph(Graph):
             triangle_comps = self.triangle_connected_components()
             colors = rainbow(len(triangle_comps))
             kwargs['edge_colors'] = { colors[i] : c for i,c in enumerate(triangle_comps)}
-        if isinstance(NAC_coloring, NACcoloring):
+        if isinstance(NAC_coloring, NACcoloring) or 'NACcoloring' in str(type(NAC_coloring)):
             kwargs['edge_colors'] = {
                 'blue' : NAC_coloring.blue_edges(),
                 'red' : NAC_coloring.red_edges()
@@ -1085,6 +1087,13 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return the constant distance closure of the graph.
 
+        Let $\\operatorname{U}(G)$ denote the set of all pairs $\\{u,v\\}\\subset V_G$ such that $uv\\notin E_G$ and 
+        there exists a path from $u$ to $v$ which is unicolor for all NAC-colorings $\\delta$ of $G$.
+        If there exists a sequence of graphs $G=G_0, \\dots, G_n$ such that
+        $G_i=(V_{G_{i-1}},E_{G_{i-1}} \\cup \\operatorname{U}(G_{i-1}))$ for $i\\in\\{1,\\dots,n\\}$
+        and $\\operatorname{U}(G_n)=\\emptyset$,
+        then the graph $G_n$ is called *the constant distance closure* of $G$.
+
         EXAMPLES::
 
             sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
@@ -1137,6 +1146,147 @@ class RigidFlexibleGraph(Graph):
             active_colorings = active_res
             upairs = res.unicolor_pairs(active_colorings)
         return res
+
+    @doc_index("NAC-colorings")
+    def cdc_is_complete(self, active_colorings=None):
+        r"""
+        Return if the constant distance closure is the complete graph.
+
+        **Theorem** [GLS2018a]_
+
+        A graph $G$ is movable if and only the constant distance closure of $G$ is movable.
+
+        **Corollary**
+
+        If $G$ is movable, then the constant distance closure of $G$ is not complete.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: G.cdc_is_complete()
+            False
+
+        ::
+
+            sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
+            sage: G.cdc_is_complete()
+            True
+
+        ::
+
+            sage: G = GraphGenerator.MaxEmbeddingsLamanGraph(7)
+            sage: G.cdc_is_complete()
+            True
+        """
+        CDC = self.constant_distance_closure(active_colorings)
+        return CDC.num_edges() == binomial(CDC.num_verts(),2)
+
+
+    @doc_index("Movability")
+    def has_injective_grid_construction(self, certificate=False):
+        r"""
+        Return if there is a NAC-coloring with injective grid coordinates.
+        
+        See :meth:`NACcoloring.grid_coordinates`.
+
+        INPUT:
+
+        - ``certificate`` (boolean) -- if ``False`` (default),
+          then only boolean value is returned.
+          Otherwise, the output is ``(True, delta)`` or ``(False, None)``,
+          where the ``delta`` is a NAC-coloring giving injective grid construction.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: G.has_injective_grid_construction(certificate=True)
+            (True, NAC-coloring with red edges {{3, 4}, {2, 5}, {1, 2}, {1, 5}, {0, 4}, {0, 3}} and blue edges {{0, 5}, {2, 3}, {1, 4}})
+
+        ::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
+            sage: G.has_injective_grid_construction()
+            False
+        """
+        for col in self.NAC_colorings():
+            if col.grid_coordinates_are_injective():
+                if certificate:
+                    return (True, col)
+                else:
+                    return True
+        if certificate:
+            return (False, None)
+        else:
+            return False
+
+
+    @doc_index("Movability")
+    def spatial_embeddings_four_directions(self, col1, col2, vertexAtOrigin=0):
+        x = {}
+        y = {}
+        z = {}
+        for u in self.vertices():
+            x[u] = var('x'+str(u))
+            y[u] = var('y'+str(u))
+            z[u] = var('z'+str(u))
+
+        equations = []
+
+        for u,v in self.edges(labels=False):
+            if col1.is_red(u, v) and col2.is_blue(u, v): #rb (0,0,1)
+                equations.append(x[u]-x[v])
+                equations.append(y[u]-y[v])
+            if col1.is_red(u, v) and col2.is_red(u, v): #rr (-1,-1,-1)
+                equations.append(x[u]-x[v]-(y[u]-y[v]))
+                equations.append(x[u]-x[v]-(z[u]-z[v]))
+            if col1.is_blue(u, v) and col2.is_blue(u, v): #bb (1,0,0)
+                equations.append(y[u]-y[v])
+                equations.append(z[u]-z[v])
+            if col1.is_blue(u, v) and col2.is_red(u, v): #br (0,1,0)
+                equations.append(x[u]-x[v])
+                equations.append(z[u]-z[v])
+
+        equations+=[x[vertexAtOrigin],y[vertexAtOrigin],z[vertexAtOrigin]]
+
+        res = []
+        for solution in solve(equations, x.values()+y.values()+z.values(), solution_dict=True):
+            is_injective = True
+            for u,v in Subsets(self.vertices(),2):
+                if ((solution[x[u]]-solution[x[v]]).is_zero() and 
+                    (solution[y[u]]-solution[y[v]]).is_zero() and 
+                    (solution[z[u]]-solution[z[v]]).is_zero()):
+                    is_injective = False
+                    break
+            if is_injective:
+                #pars = []
+                #for v in solution.values():
+                    #pars += (v.variables())
+                #sub_dict = {}
+                #i = 0
+                #for par in Set(pars):
+                    #if (i==0):
+                        #sub_dict[par] = var('a')
+                    #elif (i==1):
+                        #sub_dict[par] = var('b')
+                    #else:
+                        #sub_dict[par] = var('c'+str(i-2))
+                    #i += 1
+                #embedding = {}
+                #for v in self.vertices():
+                    #embedding[v] = (solution[x[v]].subs(sub_dict),
+                                #solution[y[v]].subs(sub_dict),
+                                #solution[z[v]].subs(sub_dict))
+                #res.append(embedding)
+                res.append(solution)
+        return res
+
+
+
+
+
 
 
 
