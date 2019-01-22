@@ -23,3 +23,8 @@ References
              "Lower Bounds on the Number of Realizations of Rigid Graphs".
              Experimental Mathematics (2018),
              :doi:`10.1080/10586458.2018.1437851`.
+
+.. [CGGKLS2018] \J. Capco, M. Gallet, G. Grasegger, C. Koutschan, N. Lubbes, J. Schicho,
+                "The number of realizations of all Laman graphs with at most 12 vertices [Data set]". 
+                Zenodo (2018),
+                :doi:`10.5281/zenodo.1245517`.
