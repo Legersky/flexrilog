@@ -59,7 +59,7 @@ Classes
 
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
 from sage.all import Subsets, SageObject, rainbow, latex, show, binomial
-from sage.all import var, solve
+from sage.all import var, solve, RR
 
 from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
 from sage.rings.integer import Integer
@@ -525,6 +525,14 @@ class RigidFlexibleGraph(Graph):
 
 
     @doc_index("Graph properties")
+    def is_complete(self):
+        r"""
+        Return if the graph is complete.
+        """
+        return self.num_edges() == binomial(self.num_verts(),2)
+
+
+    @doc_index("Graph properties")
     def triangle_connected_components(self):
         r"""
         Return triangle connected components.
@@ -799,6 +807,13 @@ class RigidFlexibleGraph(Graph):
                 }
         return Graph(self).plot(**kwargs)
 
+    @doc_index("Plotting")
+    def show_all_NAC_colorings(self):
+        r"""
+        Show all NAC-colorings of the graph.
+        """
+        for col in self.NAC_colorings():
+            show(col)
 
     @doc_index("NAC-colorings")
     def NAC_colorings_isomorphism_classes(self):
@@ -1083,7 +1098,7 @@ class RigidFlexibleGraph(Graph):
 
 
     @doc_index("NAC-colorings")
-    def constant_distance_closure(self, active_colorings=None):
+    def constant_distance_closure(self, active_colorings=None, save_colorings=False):
         r"""
         Return the constant distance closure of the graph.
 
@@ -1093,6 +1108,14 @@ class RigidFlexibleGraph(Graph):
         $G_i=(V_{G_{i-1}},E_{G_{i-1}} \\cup \\operatorname{U}(G_{i-1}))$ for $i\\in\\{1,\\dots,n\\}$
         and $\\operatorname{U}(G_n)=\\emptyset$,
         then the graph $G_n$ is called *the constant distance closure* of $G$.
+
+        INPUT:
+
+        - ``active_colorings`` (default ``None``) -- if specified,
+          then they are used instead of all NAC-colorings of the graph.
+        - ``save_colorings`` (default ``False``) -- if ``True``,
+          then the constant distance closure is returned with the NAC-colorings
+          obtained during the computation.
 
         EXAMPLES::
 
@@ -1145,6 +1168,9 @@ class RigidFlexibleGraph(Graph):
                     active_res.append(col_new)
             active_colorings = active_res
             upairs = res.unicolor_pairs(active_colorings)
+        if save_colorings:
+            res._NAC_colorings = active_colorings
+            res._NACs_computed = True
         return res
 
     @doc_index("NAC-colorings")
@@ -1179,15 +1205,14 @@ class RigidFlexibleGraph(Graph):
             sage: G.cdc_is_complete()
             True
         """
-        CDC = self.constant_distance_closure(active_colorings)
-        return CDC.num_edges() == binomial(CDC.num_verts(),2)
+        return self.constant_distance_closure(active_colorings).is_complete()
 
 
     @doc_index("Movability")
     def has_injective_grid_construction(self, certificate=False):
         r"""
         Return if there is a NAC-coloring with injective grid coordinates.
-        
+
         See :meth:`NACcoloring.grid_coordinates`.
 
         INPUT:
@@ -1224,7 +1249,48 @@ class RigidFlexibleGraph(Graph):
 
 
     @doc_index("Movability")
-    def spatial_embeddings_four_directions(self, col1, col2, vertexAtOrigin=0):
+    def spatial_embeddings_four_directions(self, col1, col2, vertex_at_origin=None):
+        r"""
+        Return injective embeddings in $\\mathbb{R}^3$ with edges in 4 directions.
+
+        The method attempts to embedd injectively the vertices of the graph into $\\mathbb{R}^3$
+        so that two edges are parallel if and only if 
+        they obtain the same colors by ``col1`` and ``col2``.
+        The four possible directions are (1,0,0), (0,1,0), (0,0,1) and (-1,-1,-1).
+        If such an embedding exists, then the graph is movable:
+
+        **Lemma** [GLS2018a]_
+
+        Let $G=(V,E)$ be a graph with an injective embedding $\omega:V\rightarrow\mathbb{R}^3$
+        such that for every edge $uv\in E$, the vector $\omega(u)-\omega(v)$ is parallel 
+        to one of the four vectors $(1,0,0)$, $(0,1,0)$, $(0,0,1)$, $(-1,-1,-1)$,
+        and all four directions are present. Then $G$ is movable.
+
+        Moreover, there exist two NAC-colorings such that two edges are parallel in the embedding $\omega$ if and only if they
+        receive the same pair of colors.
+
+        INPUT:
+
+        - ``col1`` and ``col2`` -- NAC-colorings
+        - ``vertex_at_origin`` -- if ``None`` (default),
+         then the first vertex is placed to the origin.
+
+        OUTPUT:
+
+        A dictionary with parametrized positions of vertices,
+        if the embedding exists, otherwise ``None``.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.Q1Graph()
+            sage: NACs = G.NAC_colorings()
+            sage: G.spatial_embeddings_four_directions(NACs[2], NACs[9])
+            {0: (0, 0, 0), 1: (a, a, a), 2: (2*a, 2*a, 2*a), 3: (2*a, a, 2*a), 4: (a, a, 2*a), 5: (a, 0, a), 6: (0, 0, a)}
+        """
+        if vertex_at_origin == None:
+            vertex_at_origin = self.vertices()[0]
+        
         x = {}
         y = {}
         z = {}
@@ -1234,7 +1300,6 @@ class RigidFlexibleGraph(Graph):
             z[u] = var('z'+str(u))
 
         equations = []
-
         for u,v in self.edges(labels=False):
             if col1.is_red(u, v) and col2.is_blue(u, v): #rb (0,0,1)
                 equations.append(x[u]-x[v])
@@ -1249,7 +1314,10 @@ class RigidFlexibleGraph(Graph):
                 equations.append(x[u]-x[v])
                 equations.append(z[u]-z[v])
 
-        equations+=[x[vertexAtOrigin],y[vertexAtOrigin],z[vertexAtOrigin]]
+        if not self.has_vertex(vertex_at_origin):
+            raise exceptions.ValueError('The vertex ' + str(vertex_at_origin) + ' is not a vertex of the graph.')
+
+        equations += [x[vertex_at_origin],y[vertex_at_origin],z[vertex_at_origin]]
 
         res = []
         for solution in solve(equations, x.values()+y.values()+z.values(), solution_dict=True):
@@ -1261,28 +1329,199 @@ class RigidFlexibleGraph(Graph):
                     is_injective = False
                     break
             if is_injective:
-                #pars = []
-                #for v in solution.values():
-                    #pars += (v.variables())
-                #sub_dict = {}
-                #i = 0
-                #for par in Set(pars):
-                    #if (i==0):
-                        #sub_dict[par] = var('a')
-                    #elif (i==1):
-                        #sub_dict[par] = var('b')
-                    #else:
-                        #sub_dict[par] = var('c'+str(i-2))
-                    #i += 1
-                #embedding = {}
-                #for v in self.vertices():
-                    #embedding[v] = (solution[x[v]].subs(sub_dict),
-                                #solution[y[v]].subs(sub_dict),
-                                #solution[z[v]].subs(sub_dict))
-                #res.append(embedding)
-                res.append(solution)
-        return res
+                pars = []
+                for v in solution.values():
+                    pars += (v.variables())
+                sub_dict = {}
+                i = 0
+                for par in Set(pars):
+                    if (i==0):
+                        sub_dict[par] = var('a')
+                    elif (i==1):
+                        sub_dict[par] = var('b')
+                    else:
+                        sub_dict[par] = var('c'+str(i-2))
+                    i += 1
+                embedding = {}
+                for v in self.vertices():
+                    embedding[v] = (solution[x[v]].subs(sub_dict),
+                                solution[y[v]].subs(sub_dict),
+                                solution[z[v]].subs(sub_dict))
+                return embedding
+        return None
 
+
+    @doc_index("Movability")
+    def has_injective_spatial_embedding(self, certificate=False, onlyOne=True):
+        r"""
+        Return if there is a spatial embeddings for some pair of NAC-colorings.
+
+        The method runs :meth:`spatial_embeddings_four_directions` 
+        for all pairs of NAC-colorings of the graph.
+
+        INPUT:
+
+        - ``certificate`` -- if ``False`` (default), then only boolean is returned.
+          Otherwise, the output contains also the pair of NAC-colorings giving
+          an injective spatial embedding (if it exists, otherwise ``None``).
+        - ``onlyOne`` -- if ``True``, then only one pair on NAC-colorings
+          is returned as a certificate, otherwise a list of all posibble ones.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: G.has_injective_spatial_embedding(certificate=True)
+            (False, None)
+
+        ::
+
+            sage: G = GraphGenerator.Q1Graph()
+            sage: G.has_injective_spatial_embedding(certificate=True)
+            (True, [NAC-coloring with 7 red edges and 4 blue edges , NAC-coloring with 7 red edges and 4 blue edges ])
+
+        ::
+
+            sage: G.has_injective_spatial_embedding(certificate=True, onlyOne=False) # long time
+            (True,
+            [[NAC-coloring with 7 red edges and 4 blue edges ,
+            ...
+            NAC-coloring with 7 red edges and 4 blue edges ]])
+        """
+        certs = []
+        n = len(self.NAC_colorings())
+        for i in range(0,n):
+            for j in range(i+1,n):
+                embd = self.spatial_embeddings_four_directions(self.NAC_colorings()[i],self.NAC_colorings()[j])
+                if embd:
+                    if certificate:
+                        if onlyOne:
+                            return (True, [self.NAC_colorings()[i],self.NAC_colorings()[j]])
+                        else:
+                            certs.append([self.NAC_colorings()[i],self.NAC_colorings()[j]])
+                    else:
+                        return True
+        if certificate:
+            if onlyOne:
+                return (False, None)
+            else:
+                return (True, certs)
+        else:
+            return False
+
+
+    @doc_index("Movability")
+    def is_movable(self):
+        r"""
+        Return if the graph is movable.
+
+        The method tests the necessary condition :meth:`cdc_is_complete`
+        and sufficient ones: :meth:`has_injective_grid_construction`,
+        :meth:`has_injective_spatial_embedding` and
+        **`is_bipartite() <http://doc.sagemath.org/html/en/reference/graphs/sage/graphs/generic_graph.html#sage.graphs.generic_graph.GenericGraph.is_bipartite>`_**
+
+        OUTPUT:
+
+        - If the constant distance closure is the complete graph,
+          then ``('no', 'CDC is complete')`` is returned.
+        - If the graph is bipartite, then ``('yes', 'bipartite')``
+        - If the graph has a NAC-coloring giving an injective grid construction,
+          then ``('yes', 'grid construction')``.
+        - If the graph has a pair of NAC-coloring giving an injective spatial embedding,
+          then ``('yes', 'spatial embedding')``.
+        - Otherwise, ``('cannot decide','')``.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: GraphGenerator.MaxEmbeddingsLamanGraph(7).is_movable()
+            ('no', 'CDC is complete')
+
+        ::
+
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3)).is_movable()
+            ('yes', 'bipartite')
+
+        ::
+
+            sage: GraphGenerator.ThreePrismGraph().is_movable()
+            ('yes', 'grid construction')
+
+        ::
+
+            sage: GraphGenerator.Q1Graph().is_movable() # long time
+            ('yes', 'spatial embedding')
+
+        ::
+
+            sage: GraphGenerator.S1Graph().is_movable() # long time
+            ('cannot decide', '')
+
+        ::
+
+            sage: len([G for G in GraphGenerator.LamanGraphs(6) if G.is_movable()[0]=='yes'])
+            2
+
+        TODO:
+
+        Graphs with a generic flexible labeling (not spanned by a Laman graph).
+        """
+        if self.cdc_is_complete():
+            return ('no', 'CDC is complete')
+        if self.is_bipartite():
+            return ('yes', 'bipartite')
+        if self.has_injective_grid_construction():
+            return ('yes', 'grid construction')
+        if self.has_injective_spatial_embedding():
+            return ('yes', 'spatial embedding')
+        return ('cannot decide','')
+
+
+
+    @doc_index("Rigidity")
+    def system_of_equations(self, edge_lengths, fixed_edge):
+        r"""
+        Return the system of equation for ``edge_lengths``.
+        """
+        def edge_length(u,v):
+            if edge_lengths.has_key((u,v)):
+                return edge_lengths[u,v]
+            else:
+                return edge_lengths[v,u]
+        u,v = fixed_edge
+        vars_s = ''
+        vars_x = ''
+        vars_y = ''
+        for w in self.vertices():
+            vars_s+='s'+str(w)+' '
+            vars_x+='x'+str(w)+' '
+            vars_y+='y'+str(w)+' '
+
+        x = list(var(vars_x))
+        y = list(var(vars_y))
+        s = list(var(vars_s))
+        x[u] = Integer(0) 
+        y[u] = Integer(0) 
+        x[v] = edge_length(u,v)
+        y[v] = Integer(0) 
+        s[u] = Integer(0)   
+        s[v] = edge_length(u,v)**Integer(2) 
+        for w in self.neighbors(u):
+            s[w] = edge_length(u,w)**Integer(2) 
+        triangle = Set(self.neighbors(u)).intersection(Set(self.neighbors(v)))
+        for w in triangle:
+            x[w] = (x[v]**Integer(2) +edge_length(u,w)**Integer(2) -edge_length(w,v)**Integer(2) 
+                )/(Integer(2) *x[v])
+            y[w] = sqrt(edge_length(u,w)**Integer(2) -x[w]**Integer(2) )
+        #print x[w],y[w]
+        eqs_edges = [s[u_]  + s[v_] -Integer(2) *x[u_] * x[v_] -Integer(2) *y[u_] * y[v_] - edge_length(u_,v_)**Integer(2) 
+                    for u_,v_ in self.edges(labels=False)
+                    ]
+        eqs_spheres = [ s[v_] - (x[v_]**Integer(2)  + y[v_]**Integer(2) ) for v_ in Set(self.vertices())]
+
+        eqs = eqs_edges+eqs_spheres
+        return [eq for eq in eqs if not eq in RR]
 
 
 

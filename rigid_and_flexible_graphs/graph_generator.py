@@ -201,6 +201,29 @@ class GraphGenerator():
                                   name='Q_1')
 
 
+    @staticmethod
+    def S1Graph():
+        r"""
+        Return the graph $S_1$.
+
+        EXAMPLE::
+
+            sage: GraphGenerator.S1Graph()
+            S_1: RigidFlexibleGraph with 8 vertices and 14 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            G = GraphGenerator.S1Graph()
+            sphinx_plot(G)
+        """
+        return RigidFlexibleGraph([[6, 1], [2, 3], [5, 4], [4, 3], [6, 3], [6, 5], [1, 2], [8, 3],
+                                   [8, 5], [7, 4], [6, 7], [8, 7], [1, 5], [4, 2]],
+                                  pos={1: (-1, 0.8), 2: (-2, -0.2), 3: (0, -1), 4: (-1, 0),
+                                       5: (0, 1), 6: (1, 0), 7: (0, -1.75), 8: (1.8, 0)},
+                                  name='S_1')
+
 
     @staticmethod
     def LamanGraphs(n):
