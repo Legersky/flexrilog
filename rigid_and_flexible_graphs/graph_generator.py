@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 r"""
-Graph Generator
-=========================
-
 This  module generates some graphs relevant for rigidity and flexibility.
 
 
@@ -34,7 +31,7 @@ AUTHORS:
 from sage.rings.integer import Integer
 from rigid_flexible_graph import RigidFlexibleGraph
 import exceptions
-from sage.misc.rest_index_of_methods import doc_index, gen_rest_table_index
+from sage.misc.rest_index_of_methods import gen_rest_table_index
 
 class GraphGenerator():
     @staticmethod
@@ -65,7 +62,7 @@ class GraphGenerator():
         r"""
         Alias for :meth:`ThreePrismGraph`.
         """
-        return ThreePrismGraph()
+        return GraphGenerator.ThreePrismGraph()
 
     @staticmethod
     def SmallestFlexibleLamanGraph():

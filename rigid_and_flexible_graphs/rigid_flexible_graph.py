@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 r"""
-Rigid and Flexible Graphs
-=========================
-
 This module implements functionality for investigating rigidity and flexibility of graphs.
 
 The following notions from Rigidity Theory are used:
@@ -59,14 +56,12 @@ Classes
 
 #from sage.all_cmdline import *   # import sage library
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
-from sage.all import Subsets, SageObject, rainbow, latex, show, binomial
-from sage.all import var, solve, RR, vector, norm, RealNumber, CC
+from sage.all import Subsets, rainbow, show, binomial
+from sage.all import var, solve, RR, vector, norm, CC
 import random
 
 from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
 from sage.rings.integer import Integer
-from sage.rings.rational import Rational
-from sage.misc.latex import latex_variable_name
 
 import exceptions
 
@@ -1323,7 +1318,6 @@ class RigidFlexibleGraph(Graph):
 
         equations += [x[vertex_at_origin],y[vertex_at_origin],z[vertex_at_origin]]
 
-        res = []
         for solution in solve(equations, x.values()+y.values()+z.values(), solution_dict=True):
             is_injective = True
             for u,v in Subsets(self.vertices(),2):

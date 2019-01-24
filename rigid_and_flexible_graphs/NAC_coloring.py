@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 r"""
-NAC-colorings
-=========================
-
 This class implements a NAC-coloring of a graph.
 
 A coloring of edges $\\delta\\colon  E_G\\rightarrow \\{\\text{blue, red}\\}$ 
@@ -39,12 +36,10 @@ Class
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
-from sage.all import Subsets, SageObject, rainbow, latex, flatten
-from sage.all import vector, matrix, sin, cos, pi
-from sage.misc.rest_index_of_methods import doc_index, gen_rest_table_index
-from sage.rings.integer import Integer
-from sage.rings.rational import Rational
+from sage.all import Graph, Set
+from sage.all import SageObject, latex, flatten
+from sage.all import vector, matrix, sin, cos
+from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.misc.latex import latex_variable_name
 
 import exceptions
