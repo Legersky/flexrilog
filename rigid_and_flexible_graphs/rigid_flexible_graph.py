@@ -817,7 +817,7 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return partition of NAC-colorings into isomorphism classes.
 
-        See :meth:`NACcoloring.is_isomorphic`
+        See :meth:`rigid_and_flexible_graphs.NAC_coloring.NACcoloring.is_isomorphic`
         for the definition of two NAC-colorings being isomorphic.
 
         EXAMPLE::
@@ -1025,7 +1025,6 @@ class RigidFlexibleGraph(Graph):
         - ``active_colorings`` (default ``None``) -- if specified,
           then only the given colorings are considered instead of all.
 
-
         OUTPUT:
 
         A path given by vertices or ``[]`` if there is none.
@@ -1212,7 +1211,7 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return if there is a NAC-coloring with injective grid coordinates.
 
-        See :meth:`NACcoloring.grid_coordinates`.
+        See :meth:`rigid_and_flexible_graphs.NAC_coloring.NACcoloring.grid_coordinates`.
 
         INPUT:
 

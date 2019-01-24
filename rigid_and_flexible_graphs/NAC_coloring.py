@@ -97,7 +97,7 @@ class NACcoloring(SageObject):
 
     """
     def __init__(self, G, coloring, name=None, check=True):
-        from rigid_flexible_graph import RigidFlexibleGraph
+        from .rigid_flexible_graph import RigidFlexibleGraph
         if type(G) == RigidFlexibleGraph or 'RigidFlexibleGraph' in str(type(G)):
             self._graph = G
         else:
@@ -357,28 +357,31 @@ class NACcoloring(SageObject):
         doc
         """
         if grid_pos:
-            grid_coor = self.grid_coordinates()
-            if zigzag:
-                if type(zigzag) == list and len(zigzag) == 2:
-                    a = [vector(c) for c in zigzag[0]]
-                    b = [vector(c) for c in zigzag[1]]
-                else:
-                    m = max([k for _, k in grid_coor.values()])
-                    n = max([k for k, _ in grid_coor.values()])
-                    a = [vector([0.3*((-1)^i-1)+0.3*sin(i), i]) for i in range(0,m+1)]
-                    b = [vector([j, 0.3*((-1)^j-1)+0.3*sin(j)]) for j in range(0,n+1)]
-            else:
-                positions = {}
-                m = max([k for _, k in grid_coor.values()])
-                n = max([k for k, _ in grid_coor.values()])
-                a = [vector([0, i]) for i in range(0,m+1)]
-                b = [vector([j, 0]) for j in range(0,n+1)]
-            alpha = 0
-            rotation = matrix([[cos(alpha), sin(alpha)], [-sin(alpha), cos(alpha)]])
-            positions = {}
-            for v in self._graph.vertices():
-                positions[v] = rotation * a[grid_coor[v][1]] + b[grid_coor[v][0]]
-            return self._graph.plot(NAC_coloring=self, pos=positions)
+            from .graph_motion import GraphMotion
+            return self._graph.plot(NAC_coloring=self,
+                                    pos=GraphMotion.GridConstruction(self._graph, self, zigzag).realization(0, numeric=True))
+#            grid_coor = self.grid_coordinates()
+#            if zigzag:
+#                if type(zigzag) == list and len(zigzag) == 2:
+#                    a = [vector(c) for c in zigzag[0]]
+#                    b = [vector(c) for c in zigzag[1]]
+#                else:
+#                    m = max([k for _, k in grid_coor.values()])
+#                    n = max([k for k, _ in grid_coor.values()])
+#                    a = [vector([0.3*((-1)^i-1)+0.3*sin(i), i]) for i in range(0,m+1)]
+#                    b = [vector([j, 0.3*((-1)^j-1)+0.3*sin(j)]) for j in range(0,n+1)]
+#            else:
+#                positions = {}
+#                m = max([k for _, k in grid_coor.values()])
+#                n = max([k for k, _ in grid_coor.values()])
+#                a = [vector([0, i]) for i in range(0,m+1)]
+#                b = [vector([j, 0]) for j in range(0,n+1)]
+#            alpha = 0
+#            rotation = matrix([[cos(alpha), sin(alpha)], [-sin(alpha), cos(alpha)]])
+#            positions = {}
+#            for v in self._graph.vertices():
+#                positions[v] = rotation * a[grid_coor[v][1]] + b[grid_coor[v][0]]
+#            return self._graph.plot(NAC_coloring=self, pos=positions)
         else:
             return self._graph.plot(NAC_coloring=self)
 

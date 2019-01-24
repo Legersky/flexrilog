@@ -6,6 +6,7 @@ This  module generates some graphs relevant for rigidity and flexibility.
 Graphs
 -------
 
+
 {INDEX_OF_METHODS}
 
 
@@ -34,6 +35,7 @@ import exceptions
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 
 class GraphGenerator():
+    
     @staticmethod
     def ThreePrismGraph():
         r"""
@@ -359,4 +361,5 @@ class GraphGenerator():
         10783967, 6393199, 6393071, 6393055]]
 
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS}", (gen_rest_table_index(GraphGenerator)))
+    "{INDEX_OF_METHODS}", (gen_rest_table_index(GraphGenerator))).replace(
+    ":func:`~rigid_and_flexible_graphs.graph_generator.",  ":func:`~rigid_and_flexible_graphs.graph_generator.GraphGenerator.")
