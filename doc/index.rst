@@ -10,20 +10,11 @@ Welcome to Graph Rigidity and Flexibility's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   module/rigid_flexible_graph
+   module/NAC_coloring
+   module/graph_motion
+   module/graph_generator
 
-.. automodule:: rigid_and_flexible_graphs.rigid_flexible_graph
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: rigid_and_flexible_graphs.NAC_coloring
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: rigid_and_flexible_graphs.graph_generator
-   :members:
-   :undoc-members:
 
 General
 ==================

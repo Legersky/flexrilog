@@ -5,6 +5,13 @@ Graph Generator
 
 This  module generates some graphs relevant for rigidity and flexibility.
 
+
+Graphs
+-------
+
+{INDEX_OF_METHODS}
+
+
 AUTHORS:
 
 -  Jan Legerský (2019-01-15): initial version
@@ -27,6 +34,7 @@ AUTHORS:
 from sage.rings.integer import Integer
 from rigid_flexible_graph import RigidFlexibleGraph
 import exceptions
+from sage.misc.rest_index_of_methods import doc_index, gen_rest_table_index
 
 class GraphGenerator():
     @staticmethod
@@ -54,6 +62,9 @@ class GraphGenerator():
 
     @staticmethod
     def L1Graph():
+        r"""
+        Alias for :meth:`ThreePrismGraph`.
+        """
         return ThreePrismGraph()
 
     @staticmethod
@@ -349,3 +360,6 @@ class GraphGenerator():
         10653343, 12684655, 25726175, 10587935, 10816735, 6393207, 25267423, 
         6395259, 35753583, 18975983, 6481131, 19434847, 10798303, 10653279, 
         10783967, 6393199, 6393071, 6393055]]
+
+__doc__ = __doc__.replace(
+    "{INDEX_OF_METHODS}", (gen_rest_table_index(GraphGenerator)))
