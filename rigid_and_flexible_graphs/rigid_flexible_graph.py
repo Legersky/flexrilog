@@ -57,9 +57,11 @@ Classes
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#from sage.all_cmdline import *   # import sage library
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
 from sage.all import Subsets, SageObject, rainbow, latex, show, binomial
-from sage.all import var, solve, RR
+from sage.all import var, solve, RR, vector, norm, RealNumber, CC
+import random
 
 from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
 from sage.rings.integer import Integer
@@ -1028,6 +1030,7 @@ class RigidFlexibleGraph(Graph):
         - ``active_colorings`` (default ``None``) -- if specified,
           then only the given colorings are considered instead of all.
 
+
         OUTPUT:
 
         A path given by vertices or ``[]`` if there is none.
@@ -1056,6 +1059,7 @@ class RigidFlexibleGraph(Graph):
             []
             sage: G.unicolor_path(1,3, active_colorings=G.NAC_colorings()[-2:])
             [1, 0, 3]
+
         """
         if self.has_edge(u,v):
             return [u,v]
@@ -1483,12 +1487,39 @@ class RigidFlexibleGraph(Graph):
     def system_of_equations(self, edge_lengths, fixed_edge):
         r"""
         Return the system of equation for ``edge_lengths``.
+
+        The method returns the system of equations for edge lengths
+        with new variables for the squares of distances of vertices
+        from the origin in order to decrease the mixed volume of the system.
+
+        INPUT:
+
+        - ``edge_lengths`` -- a dictionary assigning every edge a length.
+        - ``fixed_edge`` -- the first vertex is placed to the origin whereas
+          the second one on the x-axis.
+
+        OUTPUT:
+
+        A pair ``[eqs, v]`` is returned, where ``eqs` are the equations
+        and ``v`` is a vertex adjacent to both vertices of ``fixed_edge``
+        if it exists, or ``None`` otherwise. If it exists, then the triangle
+        is fixed instead of just the edge, in order to simplify the system.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: L = {(0, 3): 2, (0, 4): 3, (0, 5): 5, (1, 2): 3, (1, 4): 5, (1, 5): 4, (2, 3): 5, (2, 5): 2, (3, 4): 4 }
+            sage: G.system_of_equations(L, [4,3])  # random
+            [[s5 - 5.25000000000000*x5 - 2.90473750965556*y5 - 16.0000000000000,
+            ...
+            -x2^2 - y2^2 + s2, -x5^2 - y5^2 + s5], 0]
         """
         def edge_length(u,v):
             if edge_lengths.has_key((u,v)):
-                return edge_lengths[u,v]
+                return RR(edge_lengths[(u,v)])
             else:
-                return edge_lengths[v,u]
+                return RR(edge_lengths[(v,u)])
         u,v = fixed_edge
         vars_s = ''
         vars_x = ''
@@ -1501,30 +1532,265 @@ class RigidFlexibleGraph(Graph):
         x = list(var(vars_x))
         y = list(var(vars_y))
         s = list(var(vars_s))
-        x[u] = Integer(0) 
-        y[u] = Integer(0) 
+        x[u] = Integer(0)
+        y[u] = Integer(0)
         x[v] = edge_length(u,v)
-        y[v] = Integer(0) 
-        s[u] = Integer(0)   
-        s[v] = edge_length(u,v)**Integer(2) 
+        y[v] = Integer(0)
+        s[u] = Integer(0)
+        s[v] = edge_length(u,v)**Integer(2)
         for w in self.neighbors(u):
-            s[w] = edge_length(u,w)**Integer(2) 
+            s[w] = edge_length(u,w)**Integer(2)
         triangle = Set(self.neighbors(u)).intersection(Set(self.neighbors(v)))
+        vertex_in_triangle = None
         for w in triangle:
-            x[w] = (x[v]**Integer(2) +edge_length(u,w)**Integer(2) -edge_length(w,v)**Integer(2) 
+            x[w] = (x[v]**Integer(2) +edge_length(u,w)**Integer(2) -edge_length(w,v)**Integer(2)
                 )/(Integer(2) *x[v])
             y[w] = sqrt(edge_length(u,w)**Integer(2) -x[w]**Integer(2) )
-        #print x[w],y[w]
-        eqs_edges = [s[u_]  + s[v_] -Integer(2) *x[u_] * x[v_] -Integer(2) *y[u_] * y[v_] - edge_length(u_,v_)**Integer(2) 
+            vertex_in_triangle = w
+            break
+
+        eqs_edges = [s[u_]  + s[v_] -Integer(2) *x[u_] * x[v_] -Integer(2) *y[u_] * y[v_] - edge_length(u_,v_)**Integer(2)
                     for u_,v_ in self.edges(labels=False)
                     ]
-        eqs_spheres = [ s[v_] - (x[v_]**Integer(2)  + y[v_]**Integer(2) ) for v_ in Set(self.vertices())]
+        eqs_spheres = [s[v_] - (x[v_]**Integer(2)  + y[v_]**Integer(2) ) for v_ in Set(self.vertices())]
 
         eqs = eqs_edges+eqs_spheres
-        return [eq for eq in eqs if not eq in RR]
+        return [[eq for eq in eqs if not eq in RR], vertex_in_triangle]
 
 
+    @doc_index("Rigidity")
+    def mixed_volume(self, fixed_edge=None, check=True, full_list=False):
+        r"""
+        Return the mixed volume of the system of equations if the graph is Laman.
 
+        The method uses `phcpy <http://homepages.math.uic.edu/~jan/phcpy_doc_html/welcome.html>`_ 
+        to compute the mixed volume of the system of equations (``phcpy`` must be installed)
+        This gives an upper bound on the number of realizations.
+
+        INPUT:
+
+        - ``fixed_edge`` - the system of equations is constructed
+          with this fixed edge. If ``None`` (default),
+          then the minimum mixed volume over all edges is returned.
+        - ``check`` - if ``True`` (default), then it is checked
+          that the graph is Laman.
+        - ``full_list`` (default ``False``) - if ``True`` and ``fixed_edge==None``,
+          then the list of pairs ``[edge, MV]`` is returned.
+
+        EXAMPLES::
+
+            sage: import phcpy # random
+            sage: # the previous import is just because of the message that phcpy prints when imported
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: GraphGenerator.ThreePrismGraph().mixed_volume() # optional - phcpy
+            32
+
+        ::
+
+            sage: GraphGenerator.MaxEmbeddingsLamanGraph(7).mixed_volume() # optional - phcpy
+            64
+            sage: GraphGenerator.MaxEmbeddingsLamanGraph(7).mixed_volume([0,4]) # optional - phcpy
+            96
+            sage: GraphGenerator.MaxEmbeddingsLamanGraph(7).mixed_volume(full_list=True) # optional - phcpy
+            [[(0, 1), 128],
+            ...
+            [(5, 6), 64]]
+
+        """
+        from phcpy import solver
+        if check and not self.is_Laman():
+            raise exceptions.ValueError('The graph is not Laman')
+
+        L = self.realization2edge_lengths(self.random_realization())
+
+        if fixed_edge:
+            eqs, tr_fix = self.system_of_equations(L, fixed_edge)
+            eqs_str = [str(eq)+';' for eq in eqs]
+            if not solver.is_square(eqs_str):
+                raise exceptions.RuntimeError('The system of equations is not square.')
+            multiple = 2 if tr_fix!=None else 1
+            return solver.mixed_volume(eqs_str)*multiple
+        else:
+            MVs = []
+            for fixed_edge in self.edges(labels=False):
+                eqs, tr_fix = self.system_of_equations(L, fixed_edge)
+                eqs_str = [str(eq)+';' for eq in eqs]
+                if not solver.is_square(eqs_str):
+                    raise exceptions.RuntimeError('The system of equations is not square.')
+                multiple = 2 if tr_fix!=None else 1
+                MVs.append([fixed_edge, solver.mixed_volume(eqs_str)*multiple])
+            if full_list:
+                return MVs
+            else:
+                return min([mv for _,mv in MVs])
+
+
+    @doc_index("Rigidity")
+    def realizations(self, edge_lengths, fixed_edge=None, check=True,
+                     tolerance_real=1e-8,
+                     prec='d', num_tasks=2):
+        r"""
+        Return the realizations for given edge lengths if the graph is Laman.
+
+        The method uses `phcpy <http://homepages.math.uic.edu/~jan/phcpy_doc_html/welcome.html>`_ 
+        to compute the solutions of the system of equations (``phcpy`` must be installed)
+
+        INPUT:
+
+        - ``edge_lengths`` -- a dictionary assinging a length to each edge.
+        - ``fixed_edge`` (default ``None``) -- if specified, then it is used
+          as the fixed edge. Otherwise, one of the edges giving the minimal mixed
+          volume is used
+        - ``tolerance_real`` (default 1e-8) -- a solution is considered real if the absolute value
+          of the imaginary part of each coordinate is smaller than this number.
+        - ``prec`` (default ``'d'``) --  precision used in ``phcpy``:
+          ``'d'`` for double precision, ``'dd'`` for double double preicsion (about 32 decimal places)
+          and ``'qd'`` for quad double precision (about 64 decimal places).
+        - ``num_tasks`` -- number of threads used.
+
+        OUTPUT:
+
+        A pair ``[result_real, result_complex]`` of two lists is returned.
+        The first list contains dictionaries with real realizations,
+        whereas the second one with the complex solutions.
+
+        EXAMPLE::
+
+            sage: import phcpy # random
+            sage: # the previous import is just because of the message that phcpy prints when imported
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: L = {(1, 2): 3, (1, 5): 4, (0, 5): 5, (0, 4): 3, (2, 3): 5, (0, 3): 2, (3, 4): 4, (2, 5): 2, (1, 4): 5}
+            sage: res_RR, res_CC = GraphGenerator.ThreePrismGraph().realizations(L,[4,3]); (len(res_RR), len(res_CC)) # optional - phcpy
+            (10, 2)
+            sage: res_RR # random, optional - phcpy
+            [{0: (2.62500000000000, 1.45236875482778),
+            1: (-0.988599837464227, 4.90129272349303),
+            2: (1.99414754086938, 4.58001702095087),
+            3: (4, 0),
+            4: (0, 0),
+            5: (2.6986546781728, 6.45182622423216)},
+            ...
+            5: (7.47928649393724, 2.65066030314919)}]
+
+        Some of the realizations from the example above:
+
+        .. PLOT::
+
+            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            G = GraphGenerator.ThreePrismGraph()
+            L = {(1, 2): 3, (1, 5): 4, (0, 5): 5, (0, 4): 3, (2, 3): 5, (0, 3): 2, (3, 4): 4, (2, 5): 2, (1, 4): 5}
+            res_RR, res_CC = G.realizations(L,[4,3])
+            sphinx_plot_list([G.plot(pos=rho) for rho in res_RR[2:4]],1,2)
+
+        """
+        from phcpy import solver
+        from phcpy.solutions import strsol2dict, is_real
+
+        def edge_length(u,v):
+            if edge_lengths.has_key((u,v)):
+                return edge_lengths[(u,v)]
+            else:
+                return edge_lengths[(v,u)]
+
+        if check and not self.is_Laman():
+            raise exceptions.ValueError('The graph is not Laman')
+
+        if fixed_edge == None:
+            MVs = self.mixed_volume(check=False, full_list=True)
+            fixed_edge = min(MVs, key = lambda t: t[1])[0]
+        u,v = fixed_edge
+
+        eqs, vertex_in_triangle = self.system_of_equations(edge_lengths, fixed_edge)
+        eqs_str = [str(eq)+';' for eq in eqs]
+
+        if not solver.is_square(eqs_str):
+            raise exceptions.RuntimeError('The system of equations is not square.')
+
+        sols = solver.solve(eqs_str, verbose=False, tasks=num_tasks, precision=prec)
+
+        result_real = []
+        result_complex = []
+        for sol in sols:
+            sol_dict = strsol2dict(sol)
+            sol_is_real = is_real(sol, tolerance_real)
+            for k in copy(sol_dict.keys()):
+                if k[0]=='x' or k[0]=='y':
+                    if sol_is_real:
+                        sol_dict[k] = sol_dict[k].real
+                else:
+                    sol_dict.pop(k)
+            sol_dict['x'+str(u)] = 0
+            sol_dict['y'+str(u)] = 0
+            sol_dict['x'+str(v)] = edge_length(u,v)
+            sol_dict['y'+str(v)] = 0
+            if vertex_in_triangle != None:
+                w = vertex_in_triangle
+                x_v = edge_length(u,v)
+                if sol_is_real:
+                    x_w = RR((x_v**Integer(2) +edge_length(u,w)**Integer(2) -edge_length(w,v)**Integer(2)
+                        )/(Integer(2) *x_v))
+                    y_w = RR(sqrt(edge_length(u,w)**Integer(2) -x_w**Integer(2) ))
+                    sol_dict['x'+str(w)] = x_w
+                    sol_dict['y'+str(w)] = y_w
+                else:
+                    x_w = CC((x_v**Integer(2) +edge_length(u,w)**Integer(2) -edge_length(w,v)**Integer(2)
+                        )/(Integer(2) *x_v))
+                    y_w = CC(sqrt(edge_length(u,w)**Integer(2) -x_w**Integer(2) ))
+                    sol_dict['x'+str(w)] = x_w
+                    sol_dict['y'+str(w)] = y_w
+
+            if sol_is_real:
+                result_real.append(sol_dict)
+            else:
+                result_complex.append(sol_dict)
+        for sol_dict in result_real + result_complex:
+            for w in self.vertices():
+                sol_dict[w] = vector([sol_dict['x'+str(w)], sol_dict['y'+str(w)]])
+                sol_dict.pop('x'+str(w))
+                sol_dict.pop('y'+str(w))
+
+        return [result_real, result_complex]
+
+
+    @doc_index("Rigidity")
+    def random_realization(self):
+        r"""
+        Return a random realization of the graph.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: GraphGenerator.ThreePrismGraph().random_realization() # random
+            {0: (1.2663140331566647, 6.798542831673373),
+            ...
+            5: (1.938458777654558, 4.519218477998938)}
+
+        """
+        realization = {}
+        for v in self.vertices():
+            realization[v] = vector([10*random.random(),10*random.random()])
+        return realization
+
+
+    @doc_index("Rigidity")
+    def realization2edge_lengths(self, realization):
+        r"""
+        Return the edge lengths for ``realization``.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: G.realization2edge_lengths(G.random_realization()) # random
+            {(0, 3): 0.5656854249492381,
+            ...
+            (3, 4): 1}
+
+        """
+        res = {}
+        for u,v in self.edges(labels=False):
+            res[(u,v)] = norm(vector(realization[u]) - vector(realization[v]))
+        return res
 
 
 
