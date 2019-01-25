@@ -25,6 +25,10 @@ A graph $G=(V_G,E_G)$ is called *Laman* if $|E_G| = 2|V_G|-3$,
 and $|E_H|\\leq 2|V_H|-3$ for all subgraphs $H$ of $G$,
 see :wikipedia:`Wikipedia <Laman_graph>`. 
 
+TODO:
+
+Adding and removing vertices
+
 Methods
 -------
 

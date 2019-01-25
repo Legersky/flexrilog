@@ -38,7 +38,6 @@ Class
 
 from sage.all import Graph, Set
 from sage.all import SageObject, latex, flatten
-from sage.all import vector, matrix, sin, cos
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.misc.latex import latex_variable_name
 
@@ -535,7 +534,7 @@ class NACcoloring(SageObject):
 
     def grid_coordinates(self):
         r"""
-        Return coordinates for grid construction.
+        Return coordinates for the grid construction.
 
         See [GLS2018]_ for the description of the grid construction.
         """
