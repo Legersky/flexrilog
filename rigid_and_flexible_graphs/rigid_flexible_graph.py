@@ -23,7 +23,7 @@ if and only if the graph contains a *Laman* subgraph with the same set of vertic
 
 A graph $G=(V_G,E_G)$ is called *Laman* if $|E_G| = 2|V_G|-3$,
 and $|E_H|\\leq 2|V_H|-3$ for all subgraphs $H$ of $G$,
-see :wikipedia:`Wikipedia <Laman_graph>`. 
+see :wikipedia:`Wikipedia <Laman_graph>`.
 
 TODO:
 
@@ -74,11 +74,11 @@ from NAC_coloring import NACcoloring
 
 class RigidFlexibleGraph(Graph):
     r"""
-    The class RigidFlexibleGraph is inherited from 
+    The class RigidFlexibleGraph is inherited from
     `sage.graphs.graph.Graph <http://doc.sagemath.org/html/en/reference/graphs/sage/graphs/graph.html>`_.
     It is a simple undirected connected graph with at least one edge.
     It adds functionality for rigidity and flexibility of the graph.
-    For the definition of a graph, see 
+    For the definition of a graph, see
     :wikipedia:`Wikipedia <Graph_(mathematics)>`.
 
     INPUT:
@@ -86,12 +86,12 @@ class RigidFlexibleGraph(Graph):
     - ``data``: provides the information about edges. There are three possibilities:
 
       * ``RigidFlexibleGraph(list_of_edges)`` -- return the graph with the edges given by ``list_of_edges``.
-      * ``RigidFlexibleGraph(number)`` -- build a graph whose adjacence matrix is given as follows: 
-        the binary expansion of the integer ``number`` is written row by row into the upper triangle, 
+      * ``RigidFlexibleGraph(number)`` -- build a graph whose adjacence matrix is given as follows:
+        the binary expansion of the integer ``number`` is written row by row into the upper triangle,
         excluding the diagonal, and symmetrically also into the lower triangle.
       * ``RigidFlexibleGraph(graph)`` -- return the graph with the same edges, positions and name as ``graph``.
 
-    - ``name`` --  gives the graph a name 
+    - ``name`` --  gives the graph a name
     - ``pos`` -- a positioning dictionary. For example, to
       draw 4 vertices on a square ``pos={0: [-1,-1], 1: [ 1,-1], 2: [ 1, 1], 3: [-1, 1]}``.
     - ``check`` (boolen) -- If ``True`` (default), then it is checked whether the graph connected and has at least one edge.
@@ -113,7 +113,7 @@ class RigidFlexibleGraph(Graph):
 
         A named graph given by integer represenation with specified positions::
 
-            sage: G = RigidFlexibleGraph(7916, name='3-prism', 
+            sage: G = RigidFlexibleGraph(7916, name='3-prism',
             ....:       pos={0: [0.6, 0.4], 1: [0, 1.4], 2: [1, 1.4],
             ....:            3: [1, 0], 4: [0, 0], 5: [0.6, 1]}); G
             3-prism: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4, 5] and edges [(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]
@@ -179,11 +179,11 @@ class RigidFlexibleGraph(Graph):
         else:
             pref = ''
         if len(self.edges(labels=False)) < 10:
-            return (pref + 'RigidFlexibleGraph with the vertices '+str(self.vertices()) + 
+            return (pref + 'RigidFlexibleGraph with the vertices '+str(self.vertices()) +
                     ' and edges '+str(self.edges(labels=False)) + '')
         else:
-            return (pref + 'RigidFlexibleGraph with ' +str(len(self.vertices())) + 
-                    ' vertices and ' + str(len(self.edges(labels=False))) + ' edges') 
+            return (pref + 'RigidFlexibleGraph with ' +str(len(self.vertices())) +
+                    ' vertices and ' + str(len(self.edges(labels=False))) + ' edges')
 
 
     def __copy__(self):
@@ -206,7 +206,7 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return edges of the graph with integer represenation ``N``.
 
-        The integer represenation works as follows: 
+        The integer represenation works as follows:
         the binary expansion of ``N`` equals the sequence
         obtained by concatenation of the rows of the upper triangle of the adjacency matrix,
         excluding the diagonal.
@@ -243,7 +243,7 @@ class RigidFlexibleGraph(Graph):
 
         - ``canonical`` (boolean) -- if ``True`` (default),
           then the adjacency matrix of the isomorphic graph
-          obtained by `canonical_label() 
+          obtained by `canonical_label()
           <http://doc.sagemath.org/html/en/reference/graphs/sage/graphs/generic_graph.html#sage.graphs.generic_graph.GenericGraph.canonical_label>`_
           is used. In this case, the isomorphic graphs have the same integer representation.
 
@@ -281,7 +281,7 @@ class RigidFlexibleGraph(Graph):
 
         A graph $G=(V_G,E_G)$ is called *Laman* if $|E_G| = 2|V_G|-3$,
         and $|E_H|\\leq 2|V_H|-3$ for all subgraphs $H$ of $G$,
-        see :wikipedia:`Wikipedia <Laman_graph>`. 
+        see :wikipedia:`Wikipedia <Laman_graph>`.
 
         INPUT:
 
@@ -294,7 +294,7 @@ class RigidFlexibleGraph(Graph):
           then the returns only boolean. Otherwise:
 
           * If ``algorithm = "Henneberg"``, then
-            it either answers ``(True, s)`` when the graph is Laman and can be constructed by Henneberg sequence ``s``, or ``(False, None)`` 
+            it either answers ``(True, s)`` when the graph is Laman and can be constructed by Henneberg sequence ``s``, or ``(False, None)``
             when it is not Laman. See :meth:`Henneberg_sequence`.
           * If ``algorithm = "definition"``, then the certificate is ``None`` if
             the graph is Laman, otherwise ``(False, H)``, where ``H`` is the graph
@@ -332,7 +332,7 @@ class RigidFlexibleGraph(Graph):
         TODO:
 
         Implementation of pebble game algorithm.
-        
+
         """
         if algorithm==None:
             algorithm = "Henneberg"
@@ -362,14 +362,14 @@ class RigidFlexibleGraph(Graph):
             else:
                 return s!=None
         else:
-            raise exceptions.ValueError('The algorithm ' + str(algorithm) 
+            raise exceptions.ValueError('The algorithm ' + str(algorithm)
                                         + ' is not supported')
 
 
     @doc_index("Rigidity")
     def _inverse_Henneberg_step(self, g, seq, onlyOne):
         r"""
-        Undo Henneberg steps recursively. 
+        Undo Henneberg steps recursively.
 
         If ``onlyOne==True``, then only one sequence is searched.
         """
@@ -410,7 +410,7 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return Henneberg sequence(s) of the graph.
 
-        The graph is Laman if and only if it can be constructed 
+        The graph is Laman if and only if it can be constructed
         using Henneberg steps, see :wikipedia:`Wikipedia <Laman_graph#Henneberg_construction>`.
 
         INPUT:
@@ -492,7 +492,7 @@ class RigidFlexibleGraph(Graph):
 
         INPUT:
 
-        - ``seq`` - sequence of Henneberg steps as outputted 
+        - ``seq`` - sequence of Henneberg steps as outputted
           by :meth:`Henneberg_sequence`.
 
         OUTPUT:
@@ -548,7 +548,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: G = RigidFlexibleGraph([(1,6),(2,6),(0,6),(0, 3), (0, 4), 
+            sage: G = RigidFlexibleGraph([(1,6),(2,6),(0,6),(0, 3), (0, 4),
             ....: (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]); G
             RigidFlexibleGraph with 7 vertices and 12 edges
             sage: G.triangle_connected_components()
@@ -635,7 +635,7 @@ class RigidFlexibleGraph(Graph):
                 counter += 1
                 if onlyOne:
                     self._NACs_computed = 'onlyOne'
-                    return 
+                    return
         self._NACs_computed = 'yes'
 
     @doc_index("NAC-colorings")
@@ -1087,7 +1087,7 @@ class RigidFlexibleGraph(Graph):
 
         OUTPUT:
 
-        List of pairs of non-adjacent vertices ``u`` and ``v`` 
+        List of pairs of non-adjacent vertices ``u`` and ``v``
         connected by a unicolor path ``path`` in the form ``[[u,v],path]``.
         """
         res = []
@@ -1104,7 +1104,7 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return the constant distance closure of the graph.
 
-        Let $\\operatorname{U}(G)$ denote the set of all pairs $\\{u,v\\}\\subset V_G$ such that $uv\\notin E_G$ and 
+        Let $\\operatorname{U}(G)$ denote the set of all pairs $\\{u,v\\}\\subset V_G$ such that $uv\\notin E_G$ and
         there exists a path from $u$ to $v$ which is unicolor for all NAC-colorings $\\delta$ of $G$.
         If there exists a sequence of graphs $G=G_0, \\dots, G_n$ such that
         $G_i=(V_{G_{i-1}},E_{G_{i-1}} \\cup \\operatorname{U}(G_{i-1}))$ for $i\\in\\{1,\\dots,n\\}$
@@ -1256,7 +1256,7 @@ class RigidFlexibleGraph(Graph):
         Return injective embeddings in $\\mathbb{R}^3$ with edges in 4 directions.
 
         The method attempts to embedd injectively the vertices of the graph into $\\mathbb{R}^3$
-        so that two edges are parallel if and only if 
+        so that two edges are parallel if and only if
         they obtain the same colors by ``col1`` and ``col2``.
         The four possible directions are (1,0,0), (0,1,0), (0,0,1) and (-1,-1,-1).
         If such an embedding exists, then the graph is movable:
@@ -1264,7 +1264,7 @@ class RigidFlexibleGraph(Graph):
         **Lemma** [GLS2018a]_
 
         Let $G=(V,E)$ be a graph with an injective embedding $\omega:V\rightarrow\mathbb{R}^3$
-        such that for every edge $uv\in E$, the vector $\omega(u)-\omega(v)$ is parallel 
+        such that for every edge $uv\in E$, the vector $\omega(u)-\omega(v)$ is parallel
         to one of the four vectors $(1,0,0)$, $(0,1,0)$, $(0,0,1)$, $(-1,-1,-1)$,
         and all four directions are present. Then $G$ is movable.
 
@@ -1292,7 +1292,7 @@ class RigidFlexibleGraph(Graph):
         """
         if vertex_at_origin == None:
             vertex_at_origin = self.vertices()[0]
-        
+
         x = {}
         y = {}
         z = {}
@@ -1324,8 +1324,8 @@ class RigidFlexibleGraph(Graph):
         for solution in solve(equations, x.values()+y.values()+z.values(), solution_dict=True):
             is_injective = True
             for u,v in Subsets(self.vertices(),2):
-                if ((solution[x[u]]-solution[x[v]]).is_zero() and 
-                    (solution[y[u]]-solution[y[v]]).is_zero() and 
+                if ((solution[x[u]]-solution[x[v]]).is_zero() and
+                    (solution[y[u]]-solution[y[v]]).is_zero() and
                     (solution[z[u]]-solution[z[v]]).is_zero()):
                     is_injective = False
                     break
@@ -1357,7 +1357,7 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return if there is a spatial embeddings for some pair of NAC-colorings.
 
-        The method runs :meth:`spatial_embeddings_four_directions` 
+        The method runs :meth:`spatial_embeddings_four_directions`
         for all pairs of NAC-colorings of the graph.
 
         INPUT:
@@ -1423,6 +1423,8 @@ class RigidFlexibleGraph(Graph):
 
         OUTPUT:
 
+        - If the graph has no NAC-coloring,
+          then ``('no', 'no NAC-coloring')`` is returned.
         - If the constant distance closure is the complete graph,
           then ``('no', 'CDC is complete')`` is returned.
         - If the graph is bipartite, then ``('yes', 'bipartite')``
@@ -1433,6 +1435,12 @@ class RigidFlexibleGraph(Graph):
         - Otherwise, ``('cannot decide','')``.
 
         EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: GraphGenerator.LamanGraphs(4)[0].is_movable()
+            ('no', 'no NAC-coloring')
+
+        ::
 
             sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
             sage: GraphGenerator.MaxEmbeddingsLamanGraph(7).is_movable()
@@ -1468,6 +1476,8 @@ class RigidFlexibleGraph(Graph):
 
         Graphs with a generic flexible labeling (not spanned by a Laman graph).
         """
+        if not self.has_NAC_coloring():
+            return ('no', 'no NAC-coloring')
         if self.cdc_is_complete():
             return ('no', 'CDC is complete')
         if self.is_bipartite():
@@ -1560,7 +1570,7 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return the mixed volume of the system of equations if the graph is Laman.
 
-        The method uses `phcpy <http://homepages.math.uic.edu/~jan/phcpy_doc_html/welcome.html>`_ 
+        The method uses `phcpy <http://homepages.math.uic.edu/~jan/phcpy_doc_html/welcome.html>`_
         to compute the mixed volume of the system of equations (``phcpy`` must be installed)
         This gives an upper bound on the number of realizations.
 
@@ -1629,7 +1639,7 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return the realizations for given edge lengths if the graph is Laman.
 
-        The method uses `phcpy <http://homepages.math.uic.edu/~jan/phcpy_doc_html/welcome.html>`_ 
+        The method uses `phcpy <http://homepages.math.uic.edu/~jan/phcpy_doc_html/welcome.html>`_
         to compute the solutions of the system of equations (``phcpy`` must be installed)
 
         INPUT:
