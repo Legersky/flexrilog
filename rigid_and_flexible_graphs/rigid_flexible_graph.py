@@ -806,6 +806,8 @@ class RigidFlexibleGraph(Graph):
                 'blue' : NAC_coloring.blue_edges(),
                 'red' : NAC_coloring.red_edges()
                 }
+        if self.name():
+            kwargs['title'] = self.name()
         return Graph(self).plot(**kwargs)
 
     @doc_index("Plotting")
@@ -1800,7 +1802,11 @@ class RigidFlexibleGraph(Graph):
         return res
 
 
-
+    def _swap_xy(self):
+        for v in self._pos:
+            tmp = self._pos[v][0]
+            self._pos[v][0] = self._pos[v][1]
+            self._pos[v][1] = tmp
 
 _additional_categories = {
     RigidFlexibleGraph.plot         : "Plotting",
