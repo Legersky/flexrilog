@@ -2,11 +2,16 @@
 r"""
 This is implementation of motions of a graph.
 
-Methods
--------
+Methods - GraphMotion
+----------------------
 
 
-{INDEX_OF_METHODS}
+{INDEX_OF_METHODS_GRAPH_MOTION}
+
+Methods - ParametricGraphMotion
+-------------------------------
+
+{INDEX_OF_METHODS_PARAMETRIC_GRAPH_MOTION}
 
 AUTHORS:
 
@@ -31,68 +36,45 @@ Class
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from sage.all import deepcopy, Set, Graph#, ceil, sqrt, matrix, copy
+from sage.all import deepcopy, Set, Graph, find_root#, ceil, sqrt, matrix, copy
 from sage.all import SageObject,  parent, Subsets #, rainbow, latex, flatten
-from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan
+from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan,  log
 from sage.all import FunctionField, QQ,  sqrt,  function
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.rings.integer import Integer
 _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(1);
 _sage_const_0 = Integer(0); _sage_const_6 = Integer(6); _sage_const_5 = Integer(5);
 _sage_const_4 = Integer(4); _sage_const_13 = Integer(13); _sage_const_12 = Integer(12)
-from sage.rings.rational import Rational
+#from sage.rings.rational import Rational
 from rigid_flexible_graph import RigidFlexibleGraph
 import exceptions
 
-
 class GraphMotion(SageObject):
-    r"""
-
-    """
-    def __init__(self, graph, input_format, active_NACs, data, check):
-        r"""
-
-
-        TODO:
-
-        Doc, examples
-        """
+    def __init__(self, graph):
         if not (isinstance(graph, RigidFlexibleGraph) or 'RigidFlexibleGraph' in str(type(graph))):
             raise exceptions.TypeError('The graph must be of the type RigidFlexibleGraph.')
         self._graph = graph
-        self._parameter = None
-        self._is_parametric = None
-        self._par_type = 'symbolic'
-        self._field = None
+
         self._same_lengths = None
         self._active_NACs = None
-        if input_format == "grid":
-            self._grid2motion(active_NACs[0], data,  check)
-        elif input_format == "parametrization":
-            self._parametrization2motion(active_NACs, data,  check)
-        elif input_format == 'spatial_embedding':
-            self._spatial_embedding2motion(active_NACs, data, check)
-        else:
-            raise exceptions.ValueError('The input format ' + str(input_format) + ' is not supported.')
 
     def _repr_(self):
-        if self._is_parametric:
-            return 'Parametric motion with ' + self._par_type + ' parametrization: ' + str(self.parametrization())
-        else:
-            return 'non-parametric motion is not supported so far!!!'
+        return 'An abstract motion of the graph ' + str(self._graph)
 
-    @staticmethod
-    def GridConstruction(graph,  NAC_coloring,  zigzag=False,  check=True):
-        return GraphMotion(graph, 'grid',  [NAC_coloring],  zigzag, check)
+    @classmethod
+    def GridConstruction(cls, graph,  NAC_coloring,  zigzag=False,  check=True):
+        return ParametricGraphMotion(graph, 'grid',  [NAC_coloring],  zigzag, check)
 
+    @classmethod
+    def ParametrizedMotion(cls, graph, parametrization, par_type, active_NACs=None, sampling_type=None, interval=None, check=True):
+        return ParametricGraphMotion(graph, 'parametrization', active_NACs,
+                                     { 'parametrization' : parametrization,
+                                     'par_type' : par_type,
+                                     'sampling_type' : sampling_type,
+                                     'interval' : interval}, check)
 
-    @staticmethod
-    def ParametrizedMotion(graph, parametrization, par_type,  active_NACs=None, check=True):
-        return GraphMotion(graph, 'parametrization', active_NACs,  { 'parametrization' : parametrization,  'par_type' : par_type}, check)
-
-
-    @staticmethod
-    def Deltoid(par_type='rational'):
+    @classmethod
+    def Deltoid(cls, par_type='rational'):
         r"""
 
         TODO:
@@ -112,7 +94,7 @@ class GraphMotion(SageObject):
                                          _sage_const_6 *(t**_sage_const_3  - _sage_const_2 *t)/(t**_sage_const_4  + _sage_const_5 *t**_sage_const_2  + _sage_const_4 )))
                 }
             G = RigidFlexibleGraph([[0, 1], [1, 2], [2, 3], [0, 3]])
-            return GraphMotion.ParametrizedMotion(G, C, 'rational', check=False)
+            return GraphMotion.ParametrizedMotion(G, C, 'rational', sampling_type='tan', check=False)
         elif par_type == 'symbolic':
             t = var('t')
             C = {
@@ -125,21 +107,271 @@ class GraphMotion(SageObject):
                                          _sage_const_6 *(t**_sage_const_3  - _sage_const_2 *t)/(t**_sage_const_4  + _sage_const_5 *t**_sage_const_2  + _sage_const_4 )))
                 }
             G = RigidFlexibleGraph([[0, 1], [1, 2], [2, 3], [0, 3]])
-            return GraphMotion.ParametrizedMotion(G, C, 'symbolic', check=False)
+            return ParametricGraphMotion.ParametrizedMotion(G, C, 'symbolic', sampling_type='tan', check=False)
+        else:
+            raise exceptions.ValueError('Deltoid with par_type ' + str(par_type) + ' is not supported.')
 
-
-
-    @staticmethod
-    def SpatialEmbeddingConstruction(graph,  active_NACs, check=True, deltoid_motion=None, vertex_at_origin=None, subs_dict={}):
+    @classmethod
+    def SpatialEmbeddingConstruction(cls, graph,  active_NACs, check=True, deltoid_motion=None, vertex_at_origin=None, subs_dict={}):
         data = {
                 'deltoid_motion' : deltoid_motion,
                 'vertex_at_origin' : vertex_at_origin,
                 'subs_dict' : subs_dict
                 }
-        return GraphMotion(graph, 'spatial_embedding', active_NACs, data, check)
+        return ParametricGraphMotion(graph, 'spatial_embedding', active_NACs, data, check)
+
+
+    def _minmax_xy(self, embeddings, rel_margin):
+        max_x ,max_y, min_x, min_y = (0,0,0,0)
+        for embd in embeddings:
+            for v in embd:
+                max_x = max(max_x, embd[v][0])
+                max_y = max(max_y, embd[v][1])
+                min_x = min(min_x, embd[v][0])
+                min_y = min(min_y, embd[v][1])
+
+        max_x = max_x+rel_margin*(max_x-min_x)
+        max_y = max_y+rel_margin*(max_y-min_y)
+        min_x = min_x-rel_margin*(max_x-min_x)
+        min_y = min_y-rel_margin*(max_y-min_y)
+        return min_x,  max_x,  min_y,  max_y
+
+    def _shift_scale_fun(self,  embeddings,  rel_margin, width):
+        min_x,  max_x,  min_y,  max_y = self._minmax_xy(embeddings,  rel_margin)
+        size_x = max_x-min_x
+        size_y = max_y-min_y
+
+        if size_x>size_y:
+            def shift_scale(xy):
+                x, y = xy
+                return [float((x-min_x)*width/size_x), float((y-min_y+(size_x-size_y)/2)*width/size_x)]
+        else:
+            def shift_scale(xy):
+                x, y = xy
+                return [float((x-min_x+(-size_x+size_y)/2)*width/size_y), float((y-min_y)*width/size_y)]
+        return shift_scale
+
+
+    def animation_SVG(self, realizations, fileName='', edge_partition=True, first=None, totalTime=12, width=500,
+                           repetitions='indefinite', radius=15, return_IPythonSVG=True,
+                           flipY=True,
+                           rel_margin=0.1, colors=[],
+                           rnd_str=True):
+        r"""
+        Save an SVG animation.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: G = GraphGenerator.ThreePrismGraph()
+            sage: delta = G.NAC_colorings()[0]
+            sage: M = GraphMotion.GridConstruction(G, delta.conjugated(), zigzag=[[[0,0], [0,1]], [[0,0], [3/4,1/2], [2,0]]])
+            sage: M.animation_SVG('animation')
+            <IPython.core.display.SVG object>
+
+        TODO:
+
+        Doc, examples
+        """
+        if first==None:
+            first = 2*floor(len(realizations)/3)
+
+        if flipY:
+            for embd in realizations:
+                for v in embd:
+                    embd[v][1] = -embd[v][1]
+
+        if rnd_str == True:
+            import hashlib
+            import time
+            from random import random
+            hash_object = hashlib.md5(str(time.time()).encode()+str(random()))
+            rnd_str = '_' + str(hash_object.hexdigest())[:6] + '_'
+        elif type(rnd_str) != str:
+            rnd_str = ''
+
+        totalTime = str(totalTime)+'s'
+        shift_scale = self._shift_scale_fun(realizations,  rel_margin, width)
+
+        default_colors = ['LimeGreen','Orchid','Orange','Turquoise','SlateGray','LightGray']
+        colors = colors + default_colors
+        if edge_partition==True and self._same_lengths:
+            edge_partition = self._same_lengths
+        elif type(edge_partition)!=list or len(edge_partition)==0:
+                edge_partition = [self._graph.edges(labels=False)]
+                if len(colors) == len(default_colors):
+                    colors = ['LightGray']
+
+        lines = []
+        lines.append('<svg width="'+str(width)+'" height="'+str(width)
+                +'"  version="1.1" baseProfile="full"\n') #viewBox="0 0 500 350"
+        lines.append('xmlns="http://www.w3.org/2000/svg"\n')
+        lines.append('xmlns:xlink="http://www.w3.org/1999/xlink">\n')
+        for v in self._graph.vertices():
+            lines.append('  <defs>\n')
+            lines.append('<marker id="vertex'+rnd_str+str(v)+'" viewBox="0 0 {1} {1}" refX="{0}" refY="{0}"\n'.format(radius, 2*radius))
+            lines.append(' markerWidth="{0}" markerHeight="{0}">\n'.format(floor(radius/3)))
+            lines.append('  <circle cx="{0}" cy="{0}" r="{0}" fill="grey" />\n'.format(radius))
+            lines.append('<text x="{0:0.0f}" y="{1:0.0f}" font-size="{1}" '.format(float(radius), float(1.5*radius))
+                    +'text-anchor="middle" fill="white">'+str(v)+'</text>\n')
+            lines.append('</marker>\n')
+            lines.append('</defs>\n')
+
+        i = 0
+        for edges_part in edge_partition:
+            for u,v in edges_part:
+                embd = realizations[first]
+                if i < len(colors):
+                    color = colors[i]
+                else:
+                    color = 'black'
+                lines.append('<path fill="transparent" stroke="'+color+'" stroke-width="5px" id="edge'+rnd_str
+                        +str(u)+'-'+str(v)+'"'+
+                    ' d="M {:0.0f} {:0.0f} L {:0.0f} {:0.0f}" '.format(*(shift_scale(embd[u]) +
+                                                            shift_scale(embd[v])))
+                    +'marker-start="url(#vertex'+rnd_str+str(u)+')"   marker-end="url(#vertex'+rnd_str+str(v)+')" />\n')
+            i += 1
+
+        for edges_part in edge_partition:
+            for u,v in edges_part:
+                lines.append('<animate ')
+                lines.append('href="#edge'+rnd_str+str(u)+'-'+str(v)+'" ')
+                lines.append('attributeName="d" ')
+                lines.append('dur="'+totalTime+'" ')
+                lines.append('repeatCount="'+str(repetitions)+'" ')
+                lines.append('calcMode="linear" ')
+                path_str = ''
+                for embd in realizations[first:]+realizations[:first]: #+[realizations[first]]
+                    path_str = path_str+ 'M {:0.0f} {:0.0f} L {:0.0f} {:0.0f};'.format(*(shift_scale(embd[u]) +
+                                                            shift_scale(embd[v])))
+                lines.append('values="'+path_str+'"/>\n')
+
+        lines.append('</svg>\n')
+
+        if fileName!='':
+            with open(fileName+'.svg','w') as f:
+                f.writelines(lines)
+        if return_IPythonSVG:
+            from IPython.display import SVG
+            return SVG(''.join(lines))
+
+
+    def height_function(self, vertex_edge_collisions, extra_layers=0, edge_edge_collisions=[]):
+        def e2s(e):
+            return Set(e)
+        for v in vertex_edge_collisions:
+            vertex_edge_collisions[v] = Set([e2s(e) for e in vertex_edge_collisions[v]])
+        collision_graph = Graph([[e2s(e) for e in self._graph.edges(labels=False)],[]],format='vertices_and_edges')
+        for u in self._graph.vertices():
+            collision_graph.add_edges([[e2s([u,v]),e2s([u,w]),''] for v,w in Subsets(self._graph.neighbors(u),2)])
+        for e in collision_graph.vertices():
+            for v in vertex_edge_collisions:
+                if v in e:
+                    for f in vertex_edge_collisions[v]:
+                        collision_graph.add_edge([e2s(f), e2s(e), 'col'])
+        for e, f in edge_edge_collisions:
+            collision_graph.add_edge([e2s(f), e2s(e), 'e-e_col'])
+        from sage.graphs.graph_coloring import all_graph_colorings
+        optimal = False
+        chrom_number = collision_graph.chromatic_number()
+#        show(collision_graph.plot(edge_labels=True))
+#        print chrom_number
+        for j in range(0, extra_layers + 1):
+            i = 1
+            res = []
+            num_layers = chrom_number + j
+            min_s = len(self._graph.vertices())*num_layers
+            for col in all_graph_colorings(collision_graph,num_layers):
+                if len(Set(col.keys()))<num_layers:
+                    continue
+                layers = {}
+                for h in col:
+                    layers[h] = [u for e in col[h] for u in e]
+                col_free = True
+                A = []
+                for v in vertex_edge_collisions:
+                    A_min_v = min([h for h in layers if v in layers[h]])
+                    A_max_v = max([h for h in layers if v in layers[h]])
+                    A.append([A_min_v, A_max_v])
+                    for h in range(A_min_v+1,A_max_v):
+                        if v not in layers[h]:
+                            if len(Set(col[h]).intersection(vertex_edge_collisions[v]))>0:
+                                col_free = False
+                                break
+                    if not col_free:
+                        break
+                if col_free:
+                    s = 0
+                    for v in self._graph.vertices():
+                        A_min_v = min([h for h in layers if v in layers[h]])
+                        A_max_v = max([h for h in layers if v in layers[h]])
+                        s += A_max_v - A_min_v
+                    if s<min_s:
+                        min_s = s
+                        res.append((col, s, A))
+                        i += 1
+                        if s==2*len(self._graph.edges())-len(self._graph.vertices()):
+                            optimal = True
+                            break
+            if optimal:
+                break
+        if not res:
+            return None
+        vertex_coloring = min(res, key = lambda t: t[1])[0]
+        h = {}
+        for layer in  vertex_coloring:
+            for e in vertex_coloring[layer]:
+                h[e] = layer
+        return h
+
+
+class ParametricGraphMotion(GraphMotion):
+    r"""
+
+    """
+    def __init__(self, graph, input_format, active_NACs, data, check):
+        r"""
+
+
+        TODO:
+
+        Doc, examples
+        """
+        super(ParametricGraphMotion, self).__init__(graph)
+
+        self._parameter = None
+        self._par_type = 'symbolic'
+        self._field = None
+
+        if (type(data)!=dict or
+                not data.has_key('sampling_type')
+                or data['sampling_type']==None):
+            self._sampling_type = 'uniform'
+        else:
+            self._sampling_type = data['sampling_type']
+        if (type(data)!=dict or
+                not data.has_key('interval')
+                or type(data['interval'])!=list
+                or len(data['interval']) < 2):
+            if self._sampling_type == 'tan':
+                self._interval = [-pi/_sage_const_2, pi/_sage_const_2]
+            else:
+                self._interval = [-pi, pi]
+        else:
+            self._interval = [data['interval'][0], data['interval'][1]]
+        if input_format == "grid":
+            self._grid2motion(active_NACs[0], data,  check)
+        elif input_format == "parametrization":
+            self._parametrization2motion(active_NACs, data,  check)
+        elif input_format == 'spatial_embedding':
+            self._spatial_embedding2motion(active_NACs, data, check)
+        else:
+            raise exceptions.ValueError('The input format ' + str(input_format) + ' is not supported.')
+
+    def _repr_(self):
+        return 'Parametric motion with ' + self._par_type + ' parametrization: ' + str(self.parametrization())
 
     def _grid2motion(self, NAC_coloring, zigzag, check):
-        self._is_parametric = True
         self._par_type = 'symbolic'
         alpha = var('alpha')
         self._field = parent(alpha)
@@ -186,7 +418,6 @@ class GraphMotion(SageObject):
         self._parametrization = positions
 
     def _parametrization2motion(self, active_NACs, data,  check):
-        self._is_parametric = True
         self._parametrization = data['parametrization']
         element = (sum([self._parametrization[v][0]**Integer(2) for v in self._parametrization])
                     + sum([self._parametrization[v][1]**Integer(2) for v in self._parametrization]))
@@ -201,7 +432,6 @@ class GraphMotion(SageObject):
         if data['par_type'] == 'rational':
             self._par_type = 'rational'
             self._parameter = self._field.gen()
-
         if check:
             self._edges_with_same_length()
 
@@ -217,12 +447,12 @@ class GraphMotion(SageObject):
             deltoid_motion = GraphMotion.Deltoid()
         else:
             deltoid_motion = data['deltoid_motion']
-
         self._active_NACs = active_NACs
         self._field = deltoid_motion._field
-        self._is_parametric = True
         self._par_type = deltoid_motion._par_type
         self._parameter = deltoid_motion._parameter
+        self._interval = deltoid_motion._interval
+        self._sampling_type = deltoid_motion._sampling_type
         self._parametrization = {}
         C = deltoid_motion.parametrization()
         uvf = [C[i+1]-C[i] for i in range(0,3)]
@@ -250,43 +480,37 @@ class GraphMotion(SageObject):
 
 
     def _edges_with_same_length(self):
-        if self._is_parametric:
-            tmp = {}
-            for u, v in self._graph.edges(labels=False):
-                s = self._parametrization[u] - self._parametrization[v]
-                l = s.inner_product(s)
-                if self._par_type == 'rational' and not l in self._field.constant_field():
+        tmp = {}
+        for u, v in self._graph.edges(labels=False):
+            s = self._parametrization[u] - self._parametrization[v]
+            l = s.inner_product(s)
+            if self._par_type == 'rational' and not l in self._field.constant_field():
+                raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
+            if self._par_type == 'symbolic':
+                l = l.simplify_full()
+                if not l.simplify_full().is_constant():
                     raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
-                if self._par_type == 'symbolic':
-                    l = l.simplify_full()
-                    if not l.simplify_full().is_constant():
-                        raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
-                if tmp.has_key(l):
-                    tmp[l].append([u, v])
-                else:
-                    tmp[l] = [[u, v]]
-            self._same_lengths = tmp.values()
-        else:
-            raise exceptions.NotImplementedError('')
+            if tmp.has_key(l):
+                tmp[l].append([u, v])
+            else:
+                tmp[l] = [[u, v]]
+        self._same_lengths = tmp.values()
 
     def edge_lengths(self):
-        if self._is_parametric:
-            res = {}
-            for u, v in self._graph.edges(labels=False):
-                s = self._parametrization[u] - self._parametrization[v]
-                l = s.inner_product(s)
-                if self._par_type == 'rational':
-                    if not l in self._field.constant_field():
-                        raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
-                    l = self._field.constant_field()(l)
-                elif self._par_type == 'symbolic':
-                    l = l.simplify_full()
-                    if not l.simplify_full().is_constant():
-                        raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
-                res[(u, v)] = sqrt(l)
-            return res
-        else:
-            raise exceptions.NotImplementedError('')
+        res = {}
+        for u, v in self._graph.edges(labels=False):
+            s = self._parametrization[u] - self._parametrization[v]
+            l = s.inner_product(s)
+            if self._par_type == 'rational':
+                if not l in self._field.constant_field():
+                    raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
+                l = self._field.constant_field()(l)
+            elif self._par_type == 'symbolic':
+                l = l.simplify_full()
+                if not l.simplify_full().is_constant():
+                    raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
+            res[(u, v)] = sqrt(l)
+        return res
 
     def parametrization(self):
         r"""
@@ -296,10 +520,7 @@ class GraphMotion(SageObject):
 
         Doc, examples
         """
-        if self._is_parametric:
-            return deepcopy(self._parametrization)
-        else:
-            raise exceptions.RuntimeError('The motion is not parametric.')
+        return deepcopy(self._parametrization)
 
 
     def realization(self, value,  numeric=False):
@@ -310,31 +531,28 @@ class GraphMotion(SageObject):
 
         Doc, examples
         """
-        if self._is_parametric:
-            res = {}
-            if self._par_type == 'symbolic':
-                subs_dict = { self._parameter : value}
-                for v in self._graph.vertices():
-                    if numeric:
-                        res[v] = vector([RR(xi.subs(subs_dict)) for xi in self._parametrization[v]])
-                    else:
-                        res[v] = vector([xi.subs(subs_dict) for xi in self._parametrization[v]])
-                return res
-            elif self._par_type == 'rational':
-                h = self._field.hom(value)
-                for v in self._graph.vertices():
-                    if numeric:
-                        res[v] = vector([RR(h(xi)) for xi in self._parametrization[v]])
-                    else:
-                        res[v] = vector([h(xi) for xi in self._parametrization[v]])
-                return res
-            else:
-                raise exceptions.NotImplementedError('')
+        res = {}
+        if self._par_type == 'symbolic':
+            subs_dict = { self._parameter : value}
+            for v in self._graph.vertices():
+                if numeric:
+                    res[v] = vector([RR(xi.subs(subs_dict)) for xi in self._parametrization[v]])
+                else:
+                    res[v] = vector([xi.subs(subs_dict) for xi in self._parametrization[v]])
+            return res
+        elif self._par_type == 'rational':
+            h = self._field.hom(value)
+            for v in self._graph.vertices():
+                if numeric:
+                    res[v] = vector([RR(h(xi)) for xi in self._parametrization[v]])
+                else:
+                    res[v] = vector([h(xi) for xi in self._parametrization[v]])
+            return res
         else:
-            raise exceptions.RuntimeError('The motion is not parametric.')
+            raise exceptions.NotImplementedError('')
 
 
-    def sample_parametrization(self, N,  sampling='uniform'):
+    def sample_motion(self, N):
         r"""
         Return a sampling of the motion.
 
@@ -342,80 +560,36 @@ class GraphMotion(SageObject):
 
         Doc, examples
         """
-        if self._is_parametric:
-            interval = []
-            if type(sampling) == list and len(sampling) == 2:
-                sampling_type,  interval = sampling
-            else:
-                sampling_type = sampling
-            if len(interval) != 2:
-                a = -pi
-                b = pi
-            else:
-                a, b = interval
-            if sampling_type == 'uniform':
-                return [self.realization(RR(a + (i/Integer(N)) * (b-a)),  numeric=True) for i in range(0, N+1)]
-            elif sampling_type == 'tan':
-                return [self.realization(tan(RR(a + (i/Integer(N)) * (b-a))/2.0),  numeric=True) for i in range(0, N+1)]
-            else:
-                raise exceptions.NotImplementedError('Sampling ' + str(sampling) + ' is not supported.')
+        a, b = self._interval
+        if self._sampling_type == 'uniform':
+            return [self.realization(RR(a + (i/Integer(N)) * (b-a)),  numeric=True) for i in range(0, N+1)]
+        elif self._sampling_type == 'tan':
+            return [self.realization(tan(RR(a + (i/Integer(N)) * (b-a))),  numeric=True) for i in range(0, N+1)]
         else:
-            raise exceptions.RuntimeError('The motion is not parametric.')
+            raise exceptions.NotImplementedError('Sampling ' + str(self._sampling_type) + ' is not supported.')
+
 
     def fix_edge(self, fixed_edge, check=True):
-        if self._is_parametric:
-            u,v = fixed_edge
-            if check and not self._graph.has_edge(u, v):
-                raise exceptions.ValueError('The parameter ``fixed_edge`` must be an edge of the graph.')
-            res = {}
-            direction = self._parametrization[v] - self._parametrization[u]
-            l = sqrt(direction.inner_product(direction))
+        u,v = fixed_edge
+        if check and not self._graph.has_edge(u, v):
+            raise exceptions.ValueError('The parameter ``fixed_edge`` must be an edge of the graph.')
+        res = {}
+        direction = self._parametrization[v] - self._parametrization[u]
+        l = sqrt(direction.inner_product(direction))
+        if self._par_type == 'symbolic':
+            l = l.simplify_full()
+        for w in self._parametrization:
+            tmp = self._parametrization[w] - self._parametrization[u]
             if self._par_type == 'symbolic':
-                l = l.simplify_full()
-            for w in self._parametrization:
-                tmp = self._parametrization[w] - self._parametrization[u]
-                if self._par_type == 'symbolic':
-                    res[w] = vector([((tmp[0]*direction[0] + tmp[1]*direction[1])/l).simplify_full(),
-                                ((tmp[1]*direction[0] - tmp[0]*direction[1])/l).simplify_full()])
-                elif self._par_type == 'rational':
-                    res[w] = vector([((tmp[0]*direction[0] + tmp[1]*direction[1])/l),
-                                ((tmp[1]*direction[0] - tmp[0]*direction[1])/l)])
-            self._parametrization = res
-        else:
-            raise exceptions.RuntimeError('The motion is not parametric.')
+                res[w] = vector([((tmp[0]*direction[0] + tmp[1]*direction[1])/l).simplify_full(),
+                            ((tmp[1]*direction[0] - tmp[0]*direction[1])/l).simplify_full()])
+            elif self._par_type == 'rational':
+                res[w] = vector([((tmp[0]*direction[0] + tmp[1]*direction[1])/l),
+                            ((tmp[1]*direction[0] - tmp[0]*direction[1])/l)])
+        self._parametrization = res
 
 
-    def _minmax_xy(self, embeddings, rel_margin):
-        max_x ,max_y, min_x, min_y = (0,0,0,0)
-        for embd in embeddings:
-            for v in embd:
-                max_x = max(max_x, embd[v][0])
-                max_y = max(max_y, embd[v][1])
-                min_x = min(min_x, embd[v][0])
-                min_y = min(min_y, embd[v][1])
-
-        max_x = max_x+rel_margin*(max_x-min_x)
-        max_y = max_y+rel_margin*(max_y-min_y)
-        min_x = min_x-rel_margin*(max_x-min_x)
-        min_y = min_y-rel_margin*(max_y-min_y)
-        return min_x,  max_x,  min_y,  max_y
-
-    def _shift_scale_fun(self,  embeddings,  rel_margin, width):
-        min_x,  max_x,  min_y,  max_y = self._minmax_xy(embeddings,  rel_margin)
-        size_x = max_x-min_x
-        size_y = max_y-min_y
-
-        if size_x>size_y:
-            def shift_scale(xy):
-                x, y = xy
-                return [float((x-min_x)*width/size_x), float((y-min_y+(size_x-size_y)/2)*width/size_x)]
-        else:
-            def shift_scale(xy):
-                x, y = xy
-                return [float((x-min_x+(-size_x+size_y)/2)*width/size_y), float((y-min_y)*width/size_y)]
-        return shift_scale
-
-    def animation_SVG(self, fileName, sampling='uniform', edge_partition=True, first=None, totalTime=12, width=500,
+    def animation_SVG(self, fileName='', edge_partition=True, first=None, totalTime=12, width=500,
                            repetitions='indefinite', radius=15, return_IPythonSVG=True, fps=25,
                            flipY=True,
                            rel_margin=0.1, colors=[],
@@ -429,168 +603,32 @@ class GraphMotion(SageObject):
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: delta = G.NAC_colorings()[0]
             sage: M = GraphMotion.GridConstruction(G, delta.conjugated(), zigzag=[[[0,0], [0,1]], [[0,0], [3/4,1/2], [2,0]]])
-            sage: M.animation_SVG('animation')
+            sage: M.animation_SVG()
             <IPython.core.display.SVG object>
 
         TODO:
 
         Doc, examples
         """
-        if self._is_parametric:
-            realizations = self.sample_parametrization(totalTime*fps,  sampling)
-            if first==None:
-                first = 2*floor(len(realizations)/3)
-
-            if flipY:
-                for embd in realizations:
-                    for v in embd:
-                        embd[v][1] = -embd[v][1]
-
-            if rnd_str == True:
-                import hashlib
-                import time
-                from random import random
-                hash_object = hashlib.md5(str(time.time()).encode()+str(random()))
-                rnd_str = '_' + str(hash_object.hexdigest())[:6] + '_'
-            elif type(rnd_str) != str:
-                rnd_str = ''
-
-            totalTime = str(totalTime)+'s'
-            shift_scale = self._shift_scale_fun(realizations,  rel_margin, width)
-            with open(fileName+'.svg','w') as f:
-                f.write('<svg width="'+str(width)+'" height="'+str(width)
-                        +'"  version="1.1" baseProfile="full"\n') #viewBox="0 0 500 350"
-                f.write('xmlns="http://www.w3.org/2000/svg"\n')
-                f.write('xmlns:xlink="http://www.w3.org/1999/xlink">\n')
-                for v in self._graph.vertices():
-                    f.write('  <defs>\n')
-                    f.write('<marker id="vertex'+rnd_str+str(v)+'" viewBox="0 0 {1} {1}" refX="{0}" refY="{0}"\n'.format(radius, 2*radius))
-                    f.write(' markerWidth="{0}" markerHeight="{0}">\n'.format(floor(radius/3)))
-                    f.write('  <circle cx="{0}" cy="{0}" r="{0}" fill="grey" />\n'.format(radius))
-                    f.write('<text x="{0:0.0f}" y="{1:0.0f}" font-size="{1}" '.format(float(radius), float(1.5*radius))
-                            +'text-anchor="middle" fill="white">'+str(v)+'</text>\n')
-                    f.write('</marker>\n')
-                    f.write('</defs>\n')
-
-                default_colors = ['LimeGreen','Orchid','Orange','Turquoise','SlateGray','LightGray']
-                colors = colors + default_colors
-
-                if edge_partition:
-                    if type(edge_partition) == list:
-                        pass
-                    elif self._same_lengths:
-                        edge_partition = self._same_lengths
-                else:
-                    edge_partition = [self._graph.edges(labels=False)]
-                    if len(colors) == len(default_colors):
-                        colors = ['LightGray']
-
-                i = 0
-                for edges_part in edge_partition:
-                    for u,v in edges_part:
-                        embd = realizations[first]
-                        if i < len(colors):
-                            color = colors[i]
-                        else:
-                            color = 'black'
-                        f.write('<path fill="transparent" stroke="'+color+'" stroke-width="5px" id="edge'+rnd_str
-                                +str(u)+'-'+str(v)+'"'+
-                            ' d="M {:0.0f} {:0.0f} L {:0.0f} {:0.0f}" '.format(*(shift_scale(embd[u]) +
-                                                                    shift_scale(embd[v])))
-                            +'marker-start="url(#vertex'+rnd_str+str(u)+')"   marker-end="url(#vertex'+rnd_str+str(v)+')" />\n')
-                    i += 1
-
-                for edges_part in edge_partition:
-                    for u,v in edges_part:
-                        f.write('<animate ')
-                        f.write('href="#edge'+rnd_str+str(u)+'-'+str(v)+'" ')
-                        f.write('attributeName="d" ')
-                        f.write('dur="'+totalTime+'" ')
-                        f.write('repeatCount="'+str(repetitions)+'" ')
-                        f.write('calcMode="linear" ')
-                        path_str = ''
-                        for embd in realizations[first:]+realizations[:first]: #+[realizations[first]]
-                            path_str = path_str+ 'M {:0.0f} {:0.0f} L {:0.0f} {:0.0f};'.format(*(shift_scale(embd[u]) +
-                                                                    shift_scale(embd[v])))
-                        f.write('values="'+path_str+'"/>\n')
-
-                f.write('</svg>\n')
-            if return_IPythonSVG:
-                from IPython.display import SVG
-                return SVG(fileName+'.svg')
-        else:
-            raise exceptions.RuntimeError('The motion is not parametric.')
-
-    def height_function(self, vertex_edge_collisions, extra_layers=0, edge_edge_collisions=[]):
-        def e2s(e):
-            return Set(e)
-        for v in vertex_edge_collisions:
-            vertex_edge_collisions[v] = Set([e2s(e) for e in vertex_edge_collisions[v]])
-        collision_graph = Graph([[e2s(e) for e in self._graph.edges(labels=False)],[]],format='vertices_and_edges')
-        for u in self._graph.vertices():
-            collision_graph.add_edges([[e2s([u,v]),e2s([u,w]),''] for v,w in Subsets(self._graph.neighbors(u),2)])
-        for e in collision_graph.vertices():
-            for v in vertex_edge_collisions:
-                if v in e:
-                    for f in vertex_edge_collisions[v]:
-                        collision_graph.add_edge([e2s(f), e2s(e), 'col'])
-        for e, f in edge_edge_collisions:
-            collision_graph.add_edge([e2s(f), e2s(e), 'e-e_col'])
-        from sage.graphs.graph_coloring import all_graph_colorings
-        optimal = False
-        for j in range(0, extra_layers + 1):
-            i = 1
-            res = []
-            num_layers = collision_graph.chromatic_number() + j
-            min_s = len(self._graph.vertices())*num_layers
-            for col in all_graph_colorings(collision_graph,num_layers):
-                if len(Set(col.keys()))<num_layers:
-                    continue
-                layers = {}
-                for h in col:
-                    layers[h] = [u for e in col[h] for u in e]
-                col_free = True
-                A = []
-                for v in vertex_edge_collisions:
-                    A_min_v = min([h for h in layers if v in layers[h]])
-                    A_max_v = max([h for h in layers if v in layers[h]])
-                    A.append([A_min_v, A_max_v])
-                    for h in range(A_min_v+1,A_max_v):
-                        if v not in layers[h]:
-                            if len(Set(col[h]).intersection(vertex_edge_collisions[v]))>0:
-                                col_free = False
-                                break
-                    if not col_free:
-                        break
-                if col_free:
-                    s = 0
-                    for v in self._graph.vertices():
-                        A_min_v = min([h for h in layers if v in layers[h]])
-                        A_max_v = max([h for h in layers if v in layers[h]])
-                        s += A_max_v - A_min_v
-                    if s<min_s:
-                        min_s = s
-                        res.append((col, s, A))
-                        i += 1
-                        if s==2*len(self._graph.edges())-len(self._graph.vertices()):
-                            optimal = True
-                            break
-            if optimal:
-                break
-        vertex_coloring = min(res, key = lambda t: t[1])[0]
-        h = {}
-        for layer in  vertex_coloring:
-            for e in vertex_coloring[layer]:
-                h[e] = layer
-        return h
+        realizations = self.sample_motion(totalTime*fps)
+        return super(ParametricGraphMotion, self).animation_SVG(realizations, fileName=fileName, edge_partition=edge_partition,
+                            first=first, totalTime=totalTime, width=width,
+                           repetitions=repetitions, radius=radius, return_IPythonSVG=return_IPythonSVG,
+                           flipY=flipY,
+                           rel_margin=rel_margin, colors=colors,
+                           rnd_str=rnd_str)
 
 
-    def generate_POVray(self, filename, height_function, antialias=True, frames=200, width=1024, height=768, labels=False):
+    def generate_POVray(self, filename, height_function, antialias=True, frames=200, width=1024, height=768, labels=False,
+                        camera_location=[3.0 , 3.0 , 3.0], look_at=[0.0 , 0.3 , 0.0],
+                        compile_animation=False):
+        r"""
+        Generate files for POV-ray animation.
+        """
         A = {}
         for v in self._graph.vertices():
-            A_min_v = min([height_function[e] for e in height_function if v in e])
-            A_max_v = max([height_function[e] for e in height_function if v in e])
-            A[v] = [A_min_v, A_max_v]
+            values = [height_function[e] for e in height_function if v in e]
+            A[v] = [min(values), max(values)]
         def transform_rec(expr):
             op = expr.operator()
             operands = expr.operands()
@@ -607,6 +645,9 @@ class GraphMotion(SageObject):
         def transform(expr):
             if self._par_type == 'symbolic':
                 return str(transform_rec(expr).subs([self._parameter==var('T')]))
+            elif self._par_type == 'rational':
+                h = self._field.hom(var('T'))
+                return str(transform_rec(h(expr)))
         radius = Integer(1)/Integer(20)
         r_joint = radius
         layer_height = Integer(25)/Integer(100)
@@ -620,7 +661,7 @@ class GraphMotion(SageObject):
             'Antialias_Depth=6',
             '',
             'Input_File_Name="' + filename +'.pov"',
-            'Output_File_Name="img_' + filename +'/"',
+            'Output_File_Name="' + filename +'_img/"',
             '',
             'Initial_Frame=1',
             'Final_Frame='+str(frames),
@@ -634,6 +675,12 @@ class GraphMotion(SageObject):
             'Pause_when_Done=off']))
 
         with open(filename+'.pov','w') as f:
+            if self._sampling_type == 'uniform':
+                samp = '('
+            elif self._sampling_type == 'tan':
+                samp = 'tan('
+            else:
+                raise exceptions.NotImplementedError('Type '+str(self._sampling_type) + 'not implemented.')
             f.writelines('\n'.join(['#version 3.7;',
                 '#include "math.inc"',
                 ' ',
@@ -641,8 +688,8 @@ class GraphMotion(SageObject):
                 'camera{ //ultra_wide_angle',
                 '        angle 40',
                 '        right z*image_width/image_height',
-                '        location  <3.0 , 3.0 , 3.0>',
-                '        look_at   <0.0 , 0.3 , 0.0> }',
+                '        location  <{}, {}, {}>'.format(*camera_location),
+                '        look_at   <{}, {}, {}>'.format(*look_at) +'}',
                 'light_source{ <1500,2500,2500>',
                 '              color rgb<1,1,1> }',
                 'sky_sphere{ pigment{color rgb<1,1,1>}}',
@@ -651,8 +698,12 @@ class GraphMotion(SageObject):
                 '#declare Black = rgb <0,0,0>;',
                 '#declare LightGray = White*0.8;',
                 '#declare DarkGray = White*0.2;',
-                '#declare T = clock*2*3.1415 ;']))
-            f.write('\n//' +str(self.parametrization()))
+                ('#declare T = ' + samp
+                    + str(RR(self._interval[0]))
+                    + ' + clock*' + str(RR(self._interval[1]-self._interval[0]))
+                    + ');')
+                ]))
+            f.write('\n// parametrization: ' +str(self.parametrization()))
             for e in self._graph.edges(labels=False):
                 f.write('\n// ' + str(e))
                 f.write('\ncylinder{')
@@ -697,10 +748,147 @@ class GraphMotion(SageObject):
                     f.write('\nscale 0.4')
                     f.write('translate <' + transform(self.parametrization()[v][0]) + ',' + str(layer_height *(A[v][1]+Integer(1)/Integer(2))) +
                         ','+ transform(self.parametrization()[v][1]) + '> }')
+        if compile_animation:
+            name = compile_animation if type(compile_animation)==str else 'motion'
+            import subprocess
+            print subprocess.call(['mkdir', name + '_img'])
+            print subprocess.call(['povray', name+'.ini'])
+            print subprocess.call(['ffmpeg', '-y', '-framerate', '24', '-i',
+                             name+'_img/'+name+'%02d.png', '-vb', '2M', name+'.mp4']) #' + str(floor(log(frames, 10))) +'
+            from IPython.display import HTML
+            return HTML('<video width="100%" controls> <source src="'+name+'.mp4" type="video/mp4"></video>')
 
 
+    def _rich_repr_(self, display_manager, **kwds):
+        # copied from GenericGraph
+        prefs = display_manager.preferences
+        is_small = (0 < self._graph.num_verts() < 20)
+        can_plot = (prefs.supplemental_plot != 'never')
+        plot_graph = can_plot and (prefs.supplemental_plot == 'always' or is_small)
+        # Under certain circumstances we display the plot as graphics
+        if plot_graph:
+            from sage.repl.rich_output.output_graphics import OutputImageSvg
+            return OutputImageSvg(self.animation_SVG(edge_partition=False).data)
+        # create text for non-graphical output
+        if can_plot:
+            text = '{0} (use the .animation_SVG() method to show the animation)'.format(repr(self))
+        else:
+            text = repr(self)
+        # latex() produces huge tikz environment, override
+        tp = display_manager.types
+        if (prefs.text == 'latex' and tp.OutputLatex in display_manager.supported_output()):
+            return tp.OutputLatex(r'\text{{{0}}}'.format(text))
+        return tp.OutputPlainText(text)
 
 
+    def collisions(self):
+        r"""
+        Return vertex-edge collisions.
+
+        OUTPUT:
+
+        A dictionary where key ``v`` is a vertex and the corresponding value
+        is a list of edges ``e`` such that ``v`` collides with ``e`` for some parameter value.
+
+        EXAMPLES::
+
+            sage: GraphMotion.Deltoid().collisions()
+            {0: [(1, 2), (2, 3)], 1: [(0, 3), (2, 3)], 3: [(0, 1), (1, 2)]}
+
+        ::
+
+            sage: t = var('t')
+            sage: edges = [(1, 4), (1, 5), (1, 6), (2, 4), (2, 5), (2, 6), (3, 5), (3, 6), (3, 4)]
+            sage: M = GraphMotion.ParametrizedMotion(RigidFlexibleGraph(edges),
+            ....:     {1: vector([sin(t),0]), 2: vector([sqrt(1+sin(t)^2),0]), 3: vector([-sqrt(2+sin(t)^2),0]),
+            ....:     4: vector([0,cos(t)]), 5: vector([0,sqrt(1+cos(t)*cos(t))]), 6: vector([0,-sqrt(2+cos(t)^2)])},
+            ....:     'symbolic')
+            sage: M.collisions()
+            {1: [(3, 4), (2, 4)], 4: [(1, 5), (1, 6)]}
+
+
+        WARNING:
+
+        It is not guaranteed that all collisions are found,
+        since it depends on numerical root finding of complicated expressions.
+        """
+        def find_all_roots(eq, a, b):
+            r = find_root(eq, a, b)
+            res = [r]
+            margin = 0.01
+            r_l = r - margin
+            r_r = r + margin
+            try:
+                if a<r_l:
+                    res += find_all_roots(eq, a, r_l)
+            except RuntimeError:
+                pass
+            try:
+                if r_r<b:
+                    res += find_all_roots(eq, r_r, b)
+            except RuntimeError:
+                pass
+            return res
+        res = {}
+        for u in self._graph:
+            res[u] = []
+            for v,w in self._graph.edges(labels=False):
+                if u in [v, w]:
+                    continue
+                z = self._parametrization[u] - self._parametrization[v]
+                a = z.inner_product(z)
+                z = self._parametrization[u] - self._parametrization[w]
+                b = z.inner_product(z)
+                z = self._parametrization[w] - self._parametrization[v]
+                c = z.inner_product(z)
+                if self._par_type == 'symbolic':
+                    eq = sqrt(a) + sqrt(b) - sqrt(c)
+                elif self._par_type == 'rational':
+                    h = self._field.hom(var('T'))
+                    eq = sqrt(h(a)) + sqrt(h(b)) - sqrt(h(c))
+                try:
+                    r = find_root(eq, self._interval[0], self._interval[1])
+                    res[u].append((v,w))
+                except RuntimeError:
+                    pass
+        for u in self._graph:
+            for v,w in self._graph.edges(labels=False):
+                if u in [v, w]:
+                    continue
+                x = self._parametrization[w] - self._parametrization[u]
+                y = self._parametrization[v] - self._parametrization[u]
+                eq = x[0]*y[1] - y[0]*x[1]
+                if self._par_type == 'rational':
+                    h = self._field.hom(var('T'))
+                    eq = h(eq)
+                try:
+                    for r in find_all_roots(eq, self._interval[0], self._interval[1]):
+                        if self._par_type == 'symbolic':
+                            if x[0].subs({self._parameter:RR(r)})!=0:
+                                ratio = y[0]/x[0]
+                            elif x[1].subs({self._parameter:RR(r)})!=0:
+                                ratio = y[1]/x[1]
+                            else:
+                                res[u].append((v,w))
+                                continue
+                            if (ratio).subs({self._parameter:RR(r)}) <= 0:
+                                res[u].append((v,w))
+                        elif self._par_type == 'rational':
+                            if h(x[0])!=0:
+                                ratio = y[0]/x[0]
+                            elif h(x[1])!=0:
+                                ratio = y[1]/x[1]
+                            else:
+                                res[u].append((v,w))
+                                continue
+                            h = self._field.hom(RR(r))
+                            if h(ratio) <= 0:
+                                res[u].append((v,w))
+                        else:
+                            raise NotImplementedError()
+                except RuntimeError:
+                    pass
+        return {v: Set(res[v]).list() for v in res if res[v]}
 
 
 
@@ -709,4 +897,7 @@ class GraphMotion(SageObject):
 
 
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS}", (gen_rest_table_index(GraphMotion)))
+    "{INDEX_OF_METHODS_GRAPH_MOTION}", gen_rest_table_index(GraphMotion))
+
+__doc__ = __doc__.replace(
+    "{INDEX_OF_METHODS_PARAMETRIC_GRAPH_MOTION}", gen_rest_table_index(ParametricGraphMotion))
