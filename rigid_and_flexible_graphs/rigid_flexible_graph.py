@@ -162,7 +162,7 @@ class RigidFlexibleGraph(Graph):
             pos = tmp_g.get_pos()
 
         Graph.__init__(self,data=[[e[0],e[1]] for e in edges], format='list_of_edges',
-                       name=name, pos=pos, loops=False, multiedges=False)
+                       name=name, pos=pos, loops=False, multiedges=False, immutable=True)
 
         if check:
             if not self.is_connected():
@@ -567,36 +567,37 @@ class RigidFlexibleGraph(Graph):
 
         TODO:
 
-        Change so that the edge labels are not used.
+        Change so that the edge labels are not used (without creating extra copy).
         """
+        G = Graph(self.edges(labels=False))
 
         def addToTrComp(u0,u1,n_tr):
-            if self.edge_label(u0,u1)==None:
-                self.set_edge_label(u0,u1,n_tr)
+            if G.edge_label(u0,u1)==None:
+                G.set_edge_label(u0,u1,n_tr)
                 common_neighbours=Set(
-                    self.neighbors(u0)).intersection(Set(self.neighbors(u1)))
+                    G.neighbors(u0)).intersection(Set(G.neighbors(u1)))
                 if common_neighbours:
                     for u in common_neighbours:
                         addToTrComp(u0,u,n_tr)
                         addToTrComp(u,u1,n_tr)
                     return 'trcomp'
                 else:
-                    self.set_edge_label(u0,u1,'c')
+                    G.set_edge_label(u0,u1,'c')
                     return 'connectingEdge'
 
-        for e in self.edges():
-            self.set_edge_label(e[0],e[1],None)
+        for e in G.edges():
+            G.set_edge_label(e[0],e[1],None)
 
         n_tr = 0
-        e = self.edges()[0]
+        e = G.edges()[0]
         while e[2]==None:
             res = addToTrComp(e[0],e[1],n_tr)
-            e = self.edges(key=lambda x: x[2])[0]
+            e = G.edges(key=lambda x: x[2])[0]
             if res=='trcomp':
                 n_tr += 1
 
         triangleComponents = [[] for _ in xrange(0,n_tr)]
-        for u,v,l in self.edges():
+        for u,v,l in G.edges():
             if l == 'c':
                 triangleComponents.append([[u,v]])
             else:
@@ -1149,7 +1150,7 @@ class RigidFlexibleGraph(Graph):
         An interesting example with less NAC-colorings.
         """
         res = deepcopy(self)
-        res.name('CDC of '+res.name())
+        res._name = 'CDC of ' + res.name()
         if active_colorings == None:
             active_colorings = self.NAC_colorings()
         upairs = res.unicolor_pairs(active_colorings)
@@ -1421,7 +1422,7 @@ class RigidFlexibleGraph(Graph):
         The method tests the necessary condition :meth:`cdc_is_complete`
         and sufficient ones: :meth:`has_injective_grid_construction`,
         :meth:`has_injective_spatial_embedding` and
-        **`is_bipartite() <http://doc.sagemath.org/html/en/reference/graphs/sage/graphs/generic_graph.html#sage.graphs.generic_graph.GenericGraph.is_bipartite>`_**
+        `is_bipartite() <http://doc.sagemath.org/html/en/reference/graphs/sage/graphs/generic_graph.html#sage.graphs.generic_graph.GenericGraph.is_bipartite>`_.
 
         OUTPUT:
 
