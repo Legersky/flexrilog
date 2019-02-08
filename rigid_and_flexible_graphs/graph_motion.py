@@ -162,8 +162,8 @@ class GraphMotion(SageObject):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
-            sage: from rigid_and_flexible_graphs.graph_motion import GraphMotion
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from rigid_and_flexible_graphs import GraphMotion
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: delta = G.NAC_colorings()[0]
             sage: M = GraphMotion.GridConstruction(G, delta.conjugated(), zigzag=[[[0,0], [0,1]], [[0,0], [3/4,1/2], [2,0]]])
@@ -600,8 +600,8 @@ class ParametricGraphMotion(GraphMotion):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
-            sage: from rigid_and_flexible_graphs.graph_motion import GraphMotion
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from rigid_and_flexible_graphs import GraphMotion
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: delta = G.NAC_colorings()[0]
             sage: M = GraphMotion.GridConstruction(G, delta.conjugated(), zigzag=[[[0,0], [0,1]], [[0,0], [3/4,1/2], [2,0]]])
@@ -794,13 +794,13 @@ class ParametricGraphMotion(GraphMotion):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs.graph_motion import GraphMotion
+            sage: from rigid_and_flexible_graphs import GraphMotion
             sage: GraphMotion.Deltoid().collisions()
             {0: [(1, 2), (2, 3)], 1: [(0, 3), (2, 3)], 3: [(0, 1), (1, 2)]}
 
         ::
 
-            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
             sage: t = var('t')
             sage: edges = [(1, 4), (1, 5), (1, 6), (2, 4), (2, 5), (2, 6), (3, 5), (3, 6), (3, 4)]
             sage: M = GraphMotion.ParametrizedMotion(RigidFlexibleGraph(edges),

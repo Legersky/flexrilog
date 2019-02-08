@@ -20,7 +20,7 @@ develop:
 test:
 	$(SAGE) setup.py test
 
-test-parallel:
+ptest:
 	$(SAGE) -t --force-lib -i -p 4 $(PACKAGE)
 
 test-long:
@@ -43,4 +43,4 @@ clean: clean-doc
 clean-doc:
 	cd doc && $(SAGE) -sh -c "make clean"
 
-.PHONY: all install develop test test-parallel test-long test-all coverage clean clean-doc doc doc-pdf
+.PHONY: all install develop test ptest test-long test-all coverage clean clean-doc doc doc-pdf

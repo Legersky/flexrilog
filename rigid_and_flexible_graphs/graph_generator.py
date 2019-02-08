@@ -43,15 +43,15 @@ class GraphGenerator():
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
-            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
             sage: RigidFlexibleGraph([(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]) == GraphGenerator.ThreePrismGraph()
             True
 
         .. PLOT::
             :scale: 70
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.ThreePrismGraph()
             sphinx_plot(G)
         """
@@ -75,15 +75,15 @@ class GraphGenerator():
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
-            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
             sage: RigidFlexibleGraph([[0,1],[1,2],[0,2],[0,3],[1,3],[2,4],[3,4]]) == GraphGenerator.SmallestFlexibleLamanGraph()
             True
 
         .. PLOT::
             :scale: 70
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.SmallestFlexibleLamanGraph()
             sphinx_plot(G)
         """
@@ -105,7 +105,7 @@ class GraphGenerator():
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: from rigid_and_flexible_graphs import GraphGenerator
             sage: GraphGenerator.MaxEmbeddingsLamanGraph(6) == GraphGenerator.ThreePrismGraph()
             True
 
@@ -114,14 +114,14 @@ class GraphGenerator():
         .. PLOT::
             :width: 70%
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.MaxEmbeddingsLamanGraph(6)
             sphinx_plot(G)
 
         .. PLOT::
             :width: 70%
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.MaxEmbeddingsLamanGraph(7)
             sphinx_plot(G)
 
@@ -129,35 +129,35 @@ class GraphGenerator():
         .. PLOT::
             :width: 70%
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.MaxEmbeddingsLamanGraph(8)
             sphinx_plot(G)
 
         .. PLOT::
             :width: 70%
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.MaxEmbeddingsLamanGraph(9)
             sphinx_plot(G)
 
         .. PLOT::
             :width: 70%
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.MaxEmbeddingsLamanGraph(10)
             sphinx_plot(G)
 
         .. PLOT::
             :width: 70%
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.MaxEmbeddingsLamanGraph(11)
             sphinx_plot(G)
 
         .. PLOT::
             :width: 70%
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.MaxEmbeddingsLamanGraph(12)
             sphinx_plot(G)
         """
@@ -197,14 +197,14 @@ class GraphGenerator():
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: from rigid_and_flexible_graphs import GraphGenerator
             sage: GraphGenerator.Q1Graph()
             Q_1: RigidFlexibleGraph with 7 vertices and 11 edges
 
         .. PLOT::
             :scale: 70
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.Q1Graph()
             sphinx_plot(G)
         """
@@ -221,14 +221,14 @@ class GraphGenerator():
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: from rigid_and_flexible_graphs import GraphGenerator
             sage: GraphGenerator.S1Graph()
             S_1: RigidFlexibleGraph with 8 vertices and 14 edges
 
         .. PLOT::
             :scale: 70
 
-            from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            from rigid_and_flexible_graphs import GraphGenerator
             G = GraphGenerator.S1Graph()
             sphinx_plot(G)
         """
@@ -263,7 +263,7 @@ class GraphGenerator():
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: from rigid_and_flexible_graphs import GraphGenerator
             sage: [len(GraphGenerator.LamanGraphs(n)) for n in range(3,8)]
             [1, 1, 3, 13, 70]
             sage: GraphGenerator.ThreePrismGraph() in GraphGenerator.LamanGraphs(6)
