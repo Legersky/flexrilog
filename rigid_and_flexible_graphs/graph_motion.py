@@ -162,8 +162,7 @@ class GraphMotion(SageObject):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
-            sage: from rigid_and_flexible_graphs import GraphMotion
+            sage: from rigid_and_flexible_graphs import GraphGenerator, GraphMotion
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: delta = G.NAC_colorings()[0]
             sage: M = GraphMotion.GridConstruction(G, delta.conjugated(), zigzag=[[[0,0], [0,1]], [[0,0], [3/4,1/2], [2,0]]])
@@ -600,8 +599,7 @@ class ParametricGraphMotion(GraphMotion):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
-            sage: from rigid_and_flexible_graphs import GraphMotion
+            sage: from rigid_and_flexible_graphs import GraphGenerator, GraphMotion
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: delta = G.NAC_colorings()[0]
             sage: M = GraphMotion.GridConstruction(G, delta.conjugated(), zigzag=[[[0,0], [0,1]], [[0,0], [3/4,1/2], [2,0]]])

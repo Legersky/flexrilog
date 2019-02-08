@@ -174,8 +174,7 @@ class NACcoloring(SageObject):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import NACcoloring
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from rigid_and_flexible_graphs import NACcoloring, GraphGenerator
             sage: G = GraphGenerator.SmallestFlexibleLamanGraph(); G
             SmallestFlexibleLamanGraph: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
             sage: delta = NACcoloring(G,[[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)], [(2, 4), (3, 4)]], check=False)
@@ -405,8 +404,7 @@ class NACcoloring(SageObject):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
-            sage: from rigid_and_flexible_graphs import NACcoloring
+            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph, NACcoloring
             sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: colorings = G.NAC_colorings()
             sage: col1, col2, col3 = colorings[4], colorings[5], colorings[7]
@@ -429,8 +427,7 @@ class NACcoloring(SageObject):
 
         .. PLOT::
 
-            from rigid_and_flexible_graphs import RigidFlexibleGraph
-            from rigid_and_flexible_graphs import NACcoloring
+            from rigid_and_flexible_graphs import RigidFlexibleGraph, NACcoloring
             G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
             sphinx_plot(G.NAC_colorings()[4])
 
@@ -438,8 +435,7 @@ class NACcoloring(SageObject):
 
         .. PLOT::
 
-            from rigid_and_flexible_graphs import RigidFlexibleGraph
-            from rigid_and_flexible_graphs import NACcoloring
+            from rigid_and_flexible_graphs import RigidFlexibleGraph, NACcoloring
             G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
             sphinx_plot(G.NAC_colorings()[5])
         """
@@ -488,8 +484,7 @@ class NACcoloring(SageObject):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import NACcoloring
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from rigid_and_flexible_graphs import NACcoloring, GraphGenerator
             sage: G = GraphGenerator.SmallestFlexibleLamanGraph(); G
             SmallestFlexibleLamanGraph: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
             sage: delta1 = NACcoloring(G,[[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)], [(2, 4), (3, 4)]])
