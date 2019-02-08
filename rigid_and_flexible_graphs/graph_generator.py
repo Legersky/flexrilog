@@ -44,6 +44,7 @@ class GraphGenerator():
         EXAMPLES::
 
             sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: RigidFlexibleGraph([(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]) == GraphGenerator.ThreePrismGraph()
             True
 
@@ -75,6 +76,7 @@ class GraphGenerator():
         EXAMPLES::
 
             sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: RigidFlexibleGraph([[0,1],[1,2],[0,2],[0,3],[1,3],[2,4],[3,4]]) == GraphGenerator.SmallestFlexibleLamanGraph()
             True
 
@@ -219,6 +221,7 @@ class GraphGenerator():
 
         EXAMPLE::
 
+            sage: from rigid_and_flexible_graphs.graph_generator import GraphGenerator
             sage: GraphGenerator.S1Graph()
             S_1: RigidFlexibleGraph with 8 vertices and 14 edges
 

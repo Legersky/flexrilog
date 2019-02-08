@@ -100,7 +100,7 @@ class RigidFlexibleGraph(Graph):
 
         The single edge graph::
 
-            from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(1); G
             RigidFlexibleGraph with the vertices [0, 1] and edges [(0, 1)]
 
@@ -249,6 +249,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(graphs.CycleGraph(4)); G
             Cycle graph: RigidFlexibleGraph with the vertices [0, 1, 2, 3] and edges [(0, 1), (0, 3), (1, 2), (2, 3)]
             sage: G.graph2int(canonical=False)
@@ -315,6 +316,7 @@ class RigidFlexibleGraph(Graph):
 
         4-cycle is not Laman::
 
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph([[0,1],[1,2],[2,3],[0,3]])
             sage: G.is_Laman(algorithm='definition', certificate=True)
             (False, Graph on 4 vertices)
@@ -431,6 +433,7 @@ class RigidFlexibleGraph(Graph):
 
         A Henneberg sequence for 3-prism::
 
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(7916); G
             RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4, 5] and edges [(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]
             sage: print G.Henneberg_sequence()
@@ -548,6 +551,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph([(1,6),(2,6),(0,6),(0, 3), (0, 4),
             ....: (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]); G
             RigidFlexibleGraph with 7 vertices and 12 edges
@@ -921,6 +925,7 @@ class RigidFlexibleGraph(Graph):
 
         Bipartite graphs have no triangles::
 
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
             sage: G.triangles()
             []
@@ -961,6 +966,7 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: len(RigidFlexibleGraph(graphs.CompleteGraph(7)).four_cycles()) == binomial(7,4)*3
             True
 
@@ -999,6 +1005,7 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
+            sage: from rigid_and_flexible_graphs.rigid_flexible_graph import RigidFlexibleGraph
             sage: RigidFlexibleGraph(graphs.CompleteGraph(7)).induced_K23s()
             []
 
