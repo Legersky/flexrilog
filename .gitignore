@@ -11,3 +11,6 @@
 *build*
 *.pyc
 *.axl
+*.e4?
+*.egg*
+.ipynb_checkpoints
