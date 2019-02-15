@@ -78,8 +78,7 @@ class RigidFlexibleGraph(Graph):
     `sage.graphs.graph.Graph <http://doc.sagemath.org/html/en/reference/graphs/sage/graphs/graph.html>`_.
     It is a simple undirected connected graph with at least one edge.
     It adds functionality for rigidity and flexibility of the graph.
-    For the definition of a graph, see
-    :wikipedia:`Wikipedia <Graph_(mathematics)>`.
+    The graph is immutable in order to prevent adding/removing edges or vertices.
 
     INPUT:
 
@@ -1640,6 +1639,28 @@ class RigidFlexibleGraph(Graph):
                 return MVs
             else:
                 return min([mv for _,mv in MVs])
+
+
+    @doc_index("Rigidity")
+    def num_realizations(self, check=True):
+        r"""
+        Return the number of complex realizations if the graph is Laman.
+
+        The method uses the code by Jose Capco, it must be compiled separately.
+
+        TODO:
+
+        compilation or wheel, example
+
+        """
+        if check and not self.is_Laman():
+            raise exceptions.ValueError('The graph is not Laman')
+
+        from os import path as os_path
+        from ctypes import cdll, c_size_t
+        dir_path = os_path.dirname(os_path.realpath(__file__))
+        lib = cdll.LoadLibrary(os_path.join(dir_path, "lnumber.pyd"))
+        return lib.laman_number(str(self.graph2int()).encode("utf-8"), c_size_t(self.num_verts()))
 
 
     @doc_index("Rigidity")

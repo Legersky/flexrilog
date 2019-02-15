@@ -2,14 +2,14 @@
 r"""
 This is implementation of motions of a graph.
 
-Methods - GraphMotion
-----------------------
+Methods
+-------
 
+**GraphMotion**
 
 {INDEX_OF_METHODS_GRAPH_MOTION}
 
-Methods - ParametricGraphMotion
--------------------------------
+**ParametricGraphMotion**
 
 {INDEX_OF_METHODS_PARAMETRIC_GRAPH_MOTION}
 
@@ -17,7 +17,7 @@ AUTHORS:
 
 -  Jan Legerský (2019-01-24): initial version
 
-Class
+Classes
 -------
 """
 
@@ -38,7 +38,7 @@ Class
 
 from sage.all import deepcopy, Set, Graph, find_root#, ceil, sqrt, matrix, copy
 from sage.all import SageObject,  parent, Subsets #, rainbow, latex, flatten
-from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan,  log
+from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan
 from sage.all import FunctionField, QQ,  sqrt,  function
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.rings.integer import Integer
