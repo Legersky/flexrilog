@@ -125,6 +125,8 @@ class NACcoloring(SageObject):
             res += str(len(self._blue_edges)) + ' blue edges '
         return res
 
+    def name(self):
+        return self._name if self._name != None else ''
 
     def _rich_repr_(self, display_manager, **kwds):
         # copied from GenericGraph
@@ -134,9 +136,7 @@ class NACcoloring(SageObject):
         plot_graph = can_plot and (prefs.supplemental_plot == 'always' or is_small)
         # Under certain circumstances we display the plot as graphics
         if plot_graph:
-            plot_kwds = dict(kwds)
-            plot_kwds.setdefault('title', '$'+latex(self)+'$')
-            output = self._graph.plot(NAC_coloring=self,**plot_kwds)._rich_repr_(display_manager)
+            output = self.plot()._rich_repr_(display_manager)
             if output is not None:
                 return output
         # create text for non-graphical output
@@ -354,10 +354,12 @@ class NACcoloring(SageObject):
 
         doc
         """
+        args_kwd = {}
+        if self.name():
+            args_kwd['title'] = '$'+latex_variable_name(self.name())+'$'
         if grid_pos:
             from .graph_motion import GraphMotion
-            return self._graph.plot(NAC_coloring=self,
-                                    pos=GraphMotion.GridConstruction(self._graph, self, zigzag).realization(0, numeric=True))
+            args_kwd['pos'] = GraphMotion.GridConstruction(self._graph, self, zigzag).realization(0, numeric=True)
 #            grid_coor = self.grid_coordinates()
 #            if zigzag:
 #                if type(zigzag) == list and len(zigzag) == 2:
@@ -380,8 +382,7 @@ class NACcoloring(SageObject):
 #            for v in self._graph.vertices():
 #                positions[v] = rotation * a[grid_coor[v][1]] + b[grid_coor[v][0]]
 #            return self._graph.plot(NAC_coloring=self, pos=positions)
-        else:
-            return self._graph.plot(NAC_coloring=self)
+        return self._graph.plot(NAC_coloring=self, name_in_title=False, **args_kwd)
 
     def is_isomorphic(self, other_coloring, check=True, certificate=False, aut_group=None):
         r"""
@@ -576,7 +577,52 @@ class NACcoloring(SageObject):
         return NACcoloring(self._graph, [self.blue_edges(), self.red_edges()], check=False)
 
 
+    def is_singleton(self, NACs=[]):
+        r"""
+        Return if the NAC-coloring is a singleton.
 
+        Let $G$ be a graph and $N$ be a subset of its NAC-colorings.
+        A NAC-coloring $\\delta$ is called \\emph{singleton} w.r.t.\ $N$
+        if $|\\{(\\delta(e),\\delta'(e))\colon e\\in E_{Q_1}\\}|\\,\\neq 3$ for all $\\delta'\\in N$.
+
+        INPUT:
+
+        - ``NACs`` -- being singleton is considered w.r.t the list of NAC-colorings ``NACs``.
+          If this is empty (default), then all NAC-colorings of the graph are considered.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: T = GraphGenerator.ThreePrismGraph()
+            sage: delta = T.NAC_colorings()[0]
+            sage: delta.is_singleton()
+            True
+
+        ::
+
+            sage: Q1 = GraphGenerator.Q1Graph()
+            sage: Q1.set_NAC_colorings_names()
+            sage: [[(delta.name(), delta.is_singleton()) for delta in equiv_cls] for equiv_cls in Q1.NAC_colorings_isomorphism_classes()]
+            [[('alpha1', False), ('alpha2', False)],
+             [('beta1', False), ('beta2', False)],
+             [('gamma1', True), ('gamma2', True), ('gamma3', True), ('gamma4', True)],
+             [('delta', False)],
+             [('epsilon1', True), ('epsilon2', True)],
+             [('zeta', True)]]
+
+        ::
+
+            sage: Q1.set_NAC_colorings_names()
+            sage: delta = Q1.name2NAC_coloring('alpha1')
+            sage: delta.is_singleton([Q1.name2NAC_coloring(name) for name in ['gamma1', 'gamma2', 'gamma3', 'gamma4']])
+            True
+        """
+        if NACs == []:
+            NACs = self._graph.NAC_colorings()
+        for delta in NACs:
+            if len(Set([(self.is_red(e), delta.is_red(e)) for e in self._graph.edges(labels=False)])) == 3:
+                return False
+        return True
 
 
 

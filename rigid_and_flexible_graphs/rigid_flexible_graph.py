@@ -693,6 +693,16 @@ class RigidFlexibleGraph(Graph):
 
 
     @doc_index("NAC-colorings")
+    def name2NAC_coloring(self, name):
+        r"""
+        Return the NAC-coloring with the given name.
+        """
+        for delta in self.NAC_colorings():
+            if delta.name() == name:
+                return delta
+        return None
+
+    @doc_index("NAC-colorings")
     def has_NAC_coloring(self, certificate=False):
         r"""
         Return if the graph has a NAC-coloring.
@@ -746,7 +756,7 @@ class RigidFlexibleGraph(Graph):
 
 
     @doc_index("Plotting")
-    def plot(self, NAC_coloring=None, show_triangle_components=False, **kwargs):
+    def plot(self, NAC_coloring=None, show_triangle_components=False, name_in_title=True, **kwargs):
         r"""
         Return the plot of the graph.
 
@@ -810,7 +820,7 @@ class RigidFlexibleGraph(Graph):
                 'blue' : NAC_coloring.blue_edges(),
                 'red' : NAC_coloring.red_edges()
                 }
-        if self.name():
+        if self.name() and name_in_title:
             kwargs['title'] = self.name()
         return Graph(self).plot(**kwargs)
 
@@ -1647,6 +1657,12 @@ class RigidFlexibleGraph(Graph):
         Return the number of complex realizations if the graph is Laman.
 
         The method uses the code by Jose Capco, it must be compiled separately.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: [GraphGenerator.MaxEmbeddingsLamanGraph(i).num_realizations() for i in range(6,13)]   # optional jose
+            [24, 56, 136, 344, 880, 2288, 6180]
 
         TODO:
 
