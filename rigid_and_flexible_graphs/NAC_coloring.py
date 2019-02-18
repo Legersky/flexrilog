@@ -243,7 +243,7 @@ class NACcoloring(SageObject):
             ValueError: There is no edge [1, 2]
 
         """
-        if v:
+        if not v is None:
             if not self._graph.has_edge(u,v):
                 raise exceptions.ValueError('There is no edge ' + str([u,v]))
             return Set([u,v]) in self._red_edges

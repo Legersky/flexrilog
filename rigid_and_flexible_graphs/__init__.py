@@ -19,3 +19,4 @@ from graph_motion import GraphMotion, ParametricGraphMotion
 from rigid_flexible_graph import RigidFlexibleGraph
 from graph_generator import GraphGenerator
 from NAC_coloring import NACcoloring
+from motion_classification import MotionClassifier

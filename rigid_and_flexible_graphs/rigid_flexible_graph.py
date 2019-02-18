@@ -25,9 +25,6 @@ A graph $G=(V_G,E_G)$ is called *Laman* if $|E_G| = 2|V_G|-3$,
 and $|E_H|\\leq 2|V_H|-3$ for all subgraphs $H$ of $G$,
 see :wikipedia:`Wikipedia <Laman_graph>`.
 
-TODO:
-
-Adding and removing vertices
 
 Methods
 -------
@@ -564,10 +561,6 @@ class RigidFlexibleGraph(Graph):
             sage: G.triangle_connected_components()
             [[[0, 3], [0, 4], [3, 4]], [[1, 2], [1, 5], [2, 5]], [[0, 5]], [[1, 4]], [[2, 3]]]
 
-        WARNING:
-
-        Labels of edges are modified during the computation.
-
         TODO:
 
         Change so that the edge labels are not used (without creating extra copy).
@@ -831,6 +824,13 @@ class RigidFlexibleGraph(Graph):
         """
         for col in self.NAC_colorings():
             show(col)
+
+    @doc_index("NAC-colorings")
+    def are_NAC_colorings_named(self):
+        r"""
+        Return if all NAC-colorings have a unique name.
+        """
+        return len(Set([col.name() for col in self.NAC_colorings()])) == len(self.NAC_colorings())
 
     @doc_index("NAC-colorings")
     def NAC_colorings_isomorphism_classes(self):

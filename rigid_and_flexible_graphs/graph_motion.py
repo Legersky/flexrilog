@@ -624,6 +624,10 @@ class ParametricGraphMotion(GraphMotion):
                         compile_animation=False):
         r"""
         Generate files for POV-ray animation.
+
+        TODO:
+
+        Fix the number of digits for compilation
         """
         A = {}
         for v in self._graph.vertices():
