@@ -31,8 +31,8 @@ Classes
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from sage.all import Graph, Set, Subsets#,, find_root ceil, sqrt, matrix, copy, deepcopy,
-from sage.all import SageObject, PolynomialRing, QQ, flatten, ideal
+from sage.all import Graph, Set, Subsets, deepcopy#,, find_root ceil, sqrt, matrix, copy,
+from sage.all import SageObject, PolynomialRing, QQ, flatten, ideal, sgn
 #from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan
 #from sage.all import FunctionField, QQ,  sqrt,  function
 from sage.misc.rest_index_of_methods import gen_rest_table_index
@@ -78,9 +78,11 @@ class MotionClassifier(SageObject):
 
         self._ringLC = PolynomialRing(QQ, names=ws+zs+lambdas, order='lex')
         self._ringLC._latex_names = ws_latex + zs_latex + lambdas_latex
+        self._ringLC_gens = self._ringLC.gens_dict()
 
 #        ----Ramification-----
-        self._ring_ramification = PolynomialRing(QQ, names=[col.name() for col in self._graph.NAC_colorings()] + ['d'])
+        self._ring_ramification = PolynomialRing(QQ, names=[col.name() for col in self._graph.NAC_colorings()])
+        self._ring_ramification_gens = self._ring_ramification.gens_dict()
         self._restriction_NAC_types = self.NAC_coloring_restrictions()
 
 #        -----Graph of 4-cycles-----
@@ -94,7 +96,7 @@ class MotionClassifier(SageObject):
                     c1.index(common_vert)%2 == c2.index(common_vert)%2)
                     # the label is boolean whether the cycles are aligned
 
-    def four_cycles_sorted(self):
+    def four_cycles_ordered(self):
         r"""
         Heuristic order of 4-cycles.
         """
@@ -141,24 +143,24 @@ class MotionClassifier(SageObject):
 
     def w(self, e):
         if e[0] < e[1]:
-            return self._ringLC.gens_dict()['w'+self._edge2str(e)]
+            return self._ringLC_gens['w'+self._edge2str(e)]
         else:
-            return -self._ringLC.gens_dict()['w'+self._edge2str(e)]
+            return -self._ringLC_gens['w'+self._edge2str(e)]
 
     def z(self, e):
         if e[0] < e[1]:
-            return self._ringLC.gens_dict()['z'+self._edge2str(e)]
+            return self._ringLC_gens['z'+self._edge2str(e)]
         else:
-            return -self._ringLC.gens_dict()['z'+self._edge2str(e)]
+            return -self._ringLC_gens['z'+self._edge2str(e)]
 
     def lam(self, e):
-        return self._ringLC.gens_dict()['lambda'+self._edge2str(e)]
+        return self._ringLC_gens['lambda'+self._edge2str(e)]
 
     def mu(self, delta):
         if type(delta)==str:
-            return self._ring_ramification.gens_dict()[delta]
+            return self._ring_ramification_gens[delta]
         else:
-            return self._ring_ramification.gens_dict()[delta.name()]
+            return self._ring_ramification_gens[delta.name()]
 
     def equations_from_leading_coefs(self, col, extra_eqs=[], check=True):
         r"""
@@ -229,11 +231,18 @@ class MotionClassifier(SageObject):
         return ideal(equations).elimination_ideal(flatten([[self.w(e), self.z(e)] for e in self._graph.edges()])).basis
 
     @staticmethod
-    def _edge_ordered(u,v):
+    def _pair_ordered(u,v):
         if u<v:
             return (u, v)
-        else:
+        elif u>v:
             return (v, u)
+        else:
+            return u
+
+    @staticmethod
+    def _edge_ordered(u,v):
+        return MotionClassifier._pair_ordered(u, v)
+
 
     def _set_two_edge_same_lengths(self, H, u, v, w, y, k):
         if H[self._edge_ordered(u,v)]==None and H[self._edge_ordered(w,y)]==None:
@@ -311,14 +320,29 @@ class MotionClassifier(SageObject):
             sage: MC.ramification_formula((1,2,3,4), 'g')
             [epsilon12, epsilon23, epsilon14, epsilon34, omega3 + omega1 + epsilon36 + epsilon16 - omega4 - epsilon45 - omega2 - epsilon25]
         """
-        eqs = []
+#        eqs = []
+#        NAC_types = self.motion2NAC_types(motion)
+#        for t in ['L','O','R']:
+#            if t in NAC_types:
+#                eqs.append(sum([self.mu(delta)-self.mu('d') for delta in self._restriction_NAC_types[cycle][t]]))
+#            else:
+#                eqs += [self.mu(delta) for delta in self._restriction_NAC_types[cycle][t]]
+#        return ideal(eqs).elimination_ideal([self.mu('d')]).gens()
+
+        eqs_present = []
+        eqs_zeros = []
         NAC_types = self.motion2NAC_types(motion)
         for t in ['L','O','R']:
             if t in NAC_types:
-                eqs.append(sum([self.mu(delta)-self.mu('d') for delta in self._restriction_NAC_types[cycle][t]]))
+                eqs_present.append(sum([self.mu(delta) for delta in self._restriction_NAC_types[cycle][t]]))
             else:
-                eqs += [self.mu(delta) for delta in self._restriction_NAC_types[cycle][t]]
-        return ideal(eqs).elimination_ideal([self.mu('d')]).gens()
+                eqs_zeros += [self.mu(delta) for delta in self._restriction_NAC_types[cycle][t]]
+        if len(eqs_present)==2:
+            return eqs_zeros + [eqs_present[0] - eqs_present[1]]
+        elif len(eqs_present)==3:
+            return eqs_zeros + [eqs_present[0] - eqs_present[1], eqs_present[1] - eqs_present[2]]
+        else:
+            return eqs_zeros
 
     @staticmethod
     def motion2NAC_types(m):
@@ -332,6 +356,109 @@ class MotionClassifier(SageObject):
             return ['R','O']
         if m=='o':
             return ['L','O']
+
+    @staticmethod
+    def _same_edge_lengths(K, edges_to_check):
+        if edges_to_check:
+            length = K[MotionClassifier._edge_ordered(edges_to_check[0][0], edges_to_check[0][1])]
+            if length==None:
+                return False
+            for u,v in edges_to_check:
+                if length!=K[MotionClassifier._edge_ordered(u,v)]:
+                    return False
+            return True
+        else:
+            return True
+
+    @staticmethod
+    def consequences_of_nonnegative_solution_assumption(eqs):
+        n_zeros_prev = -1
+        zeros = []
+        while n_zeros_prev!=len(zeros):
+            n_zeros_prev = len(zeros)
+            gb = ideal(eqs + zeros).groebner_basis()
+            zeros = []
+            for eq in gb:
+                coefs = eq.coefficients()
+                if sum([sgn(a)*sgn(b) for a,b in zip(coefs[:-1],coefs[1:])])==len(coefs)-1:
+                    zeros += eq.variables()
+        return [zeros, gb]
+
+    def consistent_motion_types(self, cycles=[]):
+        if cycles==[]:
+            cycles = self.four_cycles_ordered()
+
+        k23s = [Graph(self._graph).subgraph(k23_ver).edges(labels=False) for k23_ver in self._graph.induced_K23s()]
+
+        prohibited = ['a', self._pair_ordered('a','e'), self._pair_ordered('a','o')]
+        deltoid_types = self._pair_ordered('o', 'e')
+
+        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
+        types_prev=[{}]
+
+        for i in xrange(len(cycles)):
+            new_cycle = cycles[i]
+            types_ext = []
+            new_cycle_neighbors = [[c2,
+                                    self._four_cycle_graph.edge_label(new_cycle, c2)
+                                   ] for c2 in self._four_cycle_graph.neighbors(new_cycle) if c2 in cycles[:i]]
+            for types_original in types_prev:
+                for type_new_cycle in ['g','a','p','o','e']:
+                    types = deepcopy(types_original)
+                    types[tuple(new_cycle)] = type_new_cycle
+    #                 H = deepcopy(orig_graph)
+                    fine = True
+
+                    for c2, s in new_cycle_neighbors:
+                        type_pair = self._pair_ordered(types[new_cycle], types[c2])
+                        if (type_pair in prohibited
+                                or (s and type_pair == deltoid_types)
+                                or (not s and type_pair in deltoid_types)):
+                            fine = False
+                            break
+                    if not fine:
+                        continue
+
+                    self._set_same_lengths(H, types)
+                    for c in types:
+                        if types[c]=='g':
+                            labels = [H[self._edge_ordered(c[i-1],c[i])] for i in range(0,4)]
+                            if (not None in labels
+                                and ((len(Set(labels))==2 and labels.count(labels[0])==2)
+                                    or len(Set(labels))==1)):
+                                fine = False
+                                break
+                    if not fine:
+                        continue
+                    for K23_edges in k23s:
+                        if MotionClassifier._same_edge_lengths(H, K23_edges):
+                            fine = False
+                            break
+                    if not fine:
+                        continue
+
+                    ramification_eqs = flatten([self.ramification_formula(cycle,  types[cycle]) for cycle in types])
+                    zero_variables, _ = self.consequences_of_nonnegative_solution_assumption(ramification_eqs)
+                    for cycle in types:
+                        for t in self.motion2NAC_types(types[cycle]):
+                            has_necessary_NAC_type = False
+                            for delta in self._restriction_NAC_types[cycle][t]:
+                                if not self.mu(delta) in zero_variables:
+                                    has_necessary_NAC_type = True
+                                    break
+                            if not has_necessary_NAC_type:
+                                fine = False
+                                break
+                        if not fine:
+                            break
+                    if not fine:
+                        continue
+
+                    types_ext.append(types)
+
+            types_prev=types_ext
+
+        return types_prev
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", gen_rest_table_index(MotionClassifier))
