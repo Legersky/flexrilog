@@ -333,6 +333,5 @@ class MotionClassifier(SageObject):
         if m=='o':
             return ['L','O']
 
-
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", gen_rest_table_index(MotionClassifier))
