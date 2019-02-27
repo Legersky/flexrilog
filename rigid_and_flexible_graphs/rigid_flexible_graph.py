@@ -689,6 +689,10 @@ class RigidFlexibleGraph(Graph):
     def name2NAC_coloring(self, name):
         r"""
         Return the NAC-coloring with the given name.
+
+        TODO:
+
+        Implement using a dictionary instead of traversing the whole list each time.
         """
         for delta in self.NAC_colorings():
             if delta.name() == name:

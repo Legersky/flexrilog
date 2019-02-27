@@ -212,6 +212,39 @@ class NACcoloring(SageObject):
         """
         return list(self._blue_edges)
 
+    def color(self, u, v=None):
+        r"""
+        Return the color of an edge.
+
+        INPUT:
+
+        If ``v`` is ``None``, then ``u`` is consider to be an edge.
+        Otherwise, ``uv`` is taken as the edge.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: delta = G.NAC_colorings()[0]
+            sage: delta.color(0,3)
+            red
+            sage: delta.color([2,4])
+            blue
+            sage: delta.color(1,2)
+            Traceback (most recent call last):
+            ...
+            ValueError: There is no edge [1, 2]
+
+        """
+        if not v is None:
+            if not self._graph.has_edge(u,v):
+                raise exceptions.ValueError('There is no edge ' + str([u,v]))
+            return 'red' if Set([u,v]) in self._red_edges else 'blue'
+        else:
+            if not self._graph.has_edge(u[0],u[1]):
+                raise exceptions.ValueError('There is no edge ' + str([u[0],u[1]]))
+            return 'red' if Set([u[0],u[1]]) in self._red_edges else 'blue'
+
 
     def red_edges(self):
         r"""

@@ -33,6 +33,8 @@ from sage.rings.integer import Integer
 from rigid_flexible_graph import RigidFlexibleGraph
 import exceptions
 from sage.misc.rest_index_of_methods import gen_rest_table_index
+from sage.all import flatten, Set
+
 
 class GraphGenerator():
 
@@ -66,6 +68,37 @@ class GraphGenerator():
         Alias for :meth:`ThreePrismGraph`.
         """
         return GraphGenerator.ThreePrismGraph()
+
+    @staticmethod
+    def K33Graph():
+        r"""
+        Return the graph $K_{3,3}$.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator, RigidFlexibleGraph
+            sage: RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3)).is_isomorphic(GraphGenerator.SmallestFlexibleLamanGraph())
+            True
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.K33Graph()
+            sphinx_plot(G)
+        """
+        K33 = RigidFlexibleGraph([(1, 2) , (1, 4) , (1, 6) , (3, 2) , (3, 4) , (3, 6) , (5, 2) , (5, 4) , (5, 6)], name='K33',
+                           pos={4 : (0.500, 0.866), 5 : (-0.500, 0.866), 6 : (-1.00, 0.000), 3 : (1.00, 0.000),
+                                       2 : (0.500, -0.866), 1 : (-0.500, -0.866)})
+        for delta in K33.NAC_colorings():
+            for edges in [delta.red_edges(), delta.blue_edges()]:
+                if len(edges)==3:
+                    delta.set_name('omega' + str(edges[0].intersection(edges[1]).intersection(edges[2])[0]))
+                elif len(edges)==5:
+                    for e in edges:
+                        if not e.intersection(Set(flatten([list(e2) for e2 in edges if e2!=e]))):
+                            delta.set_name('epsilon' + str(e[0]) + str(e[1]))
+        return K33
 
     @staticmethod
     def SmallestFlexibleLamanGraph():
