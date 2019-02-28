@@ -2,6 +2,12 @@
 r"""
 This is implementation of classification motions of a graph.
 
+TODO:
+
+- setdefault, defaultdict
+- for ... else:
+
+
 Methods
 -------
 
@@ -394,15 +400,14 @@ class MotionClassifier(SageObject):
         deltoid_types = self._pair_ordered('o', 'e')
 
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
-        types_prev=[{}]
+        types_prev=[[{}, []]]
 
-        for i in xrange(len(cycles)):
-            new_cycle = cycles[i]
+        for i, new_cycle in enumerate(cycles):
             types_ext = []
             new_cycle_neighbors = [[c2,
                                     self._four_cycle_graph.edge_label(new_cycle, c2)
                                    ] for c2 in self._four_cycle_graph.neighbors(new_cycle) if c2 in cycles[:i]]
-            for types_original in types_prev:
+            for types_original, ramification_eqs_prev in types_prev:
                 for type_new_cycle in ['g','a','p','o','e']:
                     types = deepcopy(types_original)
                     types[tuple(new_cycle)] = type_new_cycle
@@ -437,8 +442,8 @@ class MotionClassifier(SageObject):
                     if not fine:
                         continue
 
-                    ramification_eqs = flatten([self.ramification_formula(cycle,  types[cycle]) for cycle in types])
-                    zero_variables, _ = self.consequences_of_nonnegative_solution_assumption(ramification_eqs)
+                    ramification_eqs = ramification_eqs_prev + self.ramification_formula(new_cycle, type_new_cycle)
+                    zero_variables, ramification_eqs = self.consequences_of_nonnegative_solution_assumption(ramification_eqs)
                     for cycle in types:
                         for t in self.motion2NAC_types(types[cycle]):
                             has_necessary_NAC_type = False
@@ -454,11 +459,23 @@ class MotionClassifier(SageObject):
                     if not fine:
                         continue
 
-                    types_ext.append(types)
+                    types_ext.append([types, ramification_eqs])
 
             types_prev=types_ext
 
         return types_prev
+
+    def active_NAC_colorings(self, motion_types, eqs=[]):
+        if eqs==[]:
+            zeros, eqs = self.consequences_of_nonnegative_solution_assumption([
+                self.ramification_formula(c, motion_types[c]) for c in motion_types
+            ])
+        else:
+            zeros = [eq for eq in eqs if eq.is_monomial()]
+        if ideal(eqs).dimension()==1:
+            return [delta for delta in self._graph.NAC_colorings() if not self.mu(delta) in zeros]
+        else:
+            raise NotImplementedError('If the dimension of the ideal is greater than one, it is not clear how to proceed.')
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", gen_rest_table_index(MotionClassifier))
