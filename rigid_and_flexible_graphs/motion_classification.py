@@ -6,8 +6,6 @@ TODO:
 
 - setdefault, defaultdict
 - for ... else:
-- substitute instead of Groebner basis
-
 
 Methods
 -------
@@ -50,6 +48,7 @@ _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(
 #from sage.rings.rational import Rational
 from rigid_flexible_graph import RigidFlexibleGraph
 import exceptions
+from collections import Counter
 
 class MotionClassifier(SageObject):
     def __init__(self, graph, four_cycles=[], separator=''):
@@ -145,6 +144,26 @@ class MotionClassifier(SageObject):
             return Set([Set(list(e)) for e in zip(cycle, list(cycle[1:])+[cycle[0]])])
         else:
             return [list(e) for e in zip(cycle, list(cycle[1:])+[cycle[0]])]
+
+    @staticmethod
+    def four_cycle_normal_form(cycle, motion_type):
+        i = cycle.index(min(cycle))
+        oe =  ['o', 'e']
+        if i % 2 == 1 and motion_type in oe:
+            motion_type = oe[1 - oe.index(motion_type)]
+        tmp_c = cycle[i:]+cycle[:i]
+        if tmp_c[1]<tmp_c[3]:
+            return tmp_c,  motion_type
+        else:
+            return (tmp_c[0], tmp_c[3], tmp_c[2], tmp_c[1]), motion_type
+
+    @staticmethod
+    def normalized_motion_types(motion_types):
+        res = {}
+        for c, t in motion_types.iteritems():
+            norm_c, norm_t = MotionClassifier.four_cycle_normal_form(c, t)
+            res[norm_c] = norm_t
+        return res
 
     def w(self, e):
         if e[0] < e[1]:
@@ -388,6 +407,21 @@ class MotionClassifier(SageObject):
                     zeros += eq.variables()
         return [zeros, gb]
 
+#    @staticmethod
+#    def consequences_of_nonnegative_solution_assumption(eqs):
+#        n_zeros_prev = -1
+#        zeros = {}
+#        gb = ideal(eqs).groebner_basis()
+#        while n_zeros_prev!=len(zeros):
+#            n_zeros_prev = len(zeros)
+#            gb = [eq.substitute(zeros) for eq in gb if eq.substitute(zeros)!=0]
+#            for eq in gb:
+#                coefs = eq.coefficients()
+#                if sum([sgn(a)*sgn(b) for a,b in zip(coefs[:-1],coefs[1:])])==len(coefs)-1:
+#                    for zero_var in eq.variables():
+#                        zeros[zero_var] = 0
+#        return [zeros.keys(), gb]
+
     def consistent_motion_types(self, cycles=[]):
         if cycles==[]:
             cycles = self.four_cycles_ordered()
@@ -395,9 +429,9 @@ class MotionClassifier(SageObject):
         k23s = [Graph(self._graph).subgraph(k23_ver).edges(labels=False) for k23_ver in self._graph.induced_K23s()]
 
         aa_pp = [('a', 'a'), ('p', 'p')]
-        ao = [self._pair_ordered('a','o')]
-        ae = [self._pair_ordered('a','e')]
-        oe = [self._pair_ordered('o', 'e')]
+        ao = [('a','o'), ('o','a')]
+        ae = [('a','e'), ('e','a')]
+        oe = [('o', 'e'), ('e', 'o')]
         oo_ee = [('e','e'), ('o','o')]
 
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
@@ -414,27 +448,27 @@ class MotionClassifier(SageObject):
                     types = deepcopy(types_original)
                     types[tuple(new_cycle)] = type_new_cycle
     #                 H = deepcopy(orig_graph)
-                    fine = True
+                    inconsistent = False
 
                     for c2, new_index, c2_index in new_cycle_neighbors:
-                        type_pair = self._pair_ordered(types[new_cycle], types[c2])
+                        type_pair = (types[new_cycle], types[c2])
                         if (type_pair in aa_pp
                                 or (type_pair in oe and new_index%2 == c2_index%2)
                                 or (type_pair in oo_ee and new_index%2 != c2_index%2)):
-                            fine = False
+                            inconsistent = True
                             break
-                        if (type_pair in ao
-                            and ((types[new_cycle]=='o' and new_index%2==1)
+                        if type_pair in ao:
+                            ind_o = type_pair.index('o')
+                            if [new_index, c2_index][ind_o] % 2 == 1:
                             #odd deltoid (1,2,3,4) is consistent with 'a' if the common vertex is odd, but Python lists are indexed from 0
-                                or (types[c2]=='o' and c2_index%2==1))):
-                            fine = False
-                            break
-                        if (type_pair in ae
-                            and ((types[new_cycle]=='e' and new_index%2==0)
-                                or (types[c2]=='e' and c2_index%2==0))):
-                            fine = False
-                            break
-                    if not fine:
+                                inconsistent = True
+                                break
+                        if type_pair in ae:
+                            ind_e = type_pair.index('e')
+                            if [new_index, c2_index][ind_e] % 2 == 0:
+                                inconsistent = True
+                                break
+                    if inconsistent:
                         continue
 
                     self._set_same_lengths(H, types)
@@ -444,21 +478,21 @@ class MotionClassifier(SageObject):
                             if (not None in labels
                                 and ((len(Set(labels))==2 and labels.count(labels[0])==2)
                                     or len(Set(labels))==1)):
-                                fine = False
+                                inconsistent = True
                                 break
-                    if not fine:
+                    if inconsistent:
                         continue
                     for K23_edges in k23s:
                         if MotionClassifier._same_edge_lengths(H, K23_edges):
-                            fine = False
+                            inconsistent = True
                             break
-                    if not fine:
+                    if inconsistent:
                         continue
 
                     ramification_eqs = ramification_eqs_prev + self.ramification_formula(new_cycle, type_new_cycle)
                     zero_variables, ramification_eqs = self.consequences_of_nonnegative_solution_assumption(ramification_eqs)
                     for cycle in types:
-                        if not fine:
+                        if inconsistent:
                             break
                         for t in self.motion2NAC_types(types[cycle]):
                             has_necessary_NAC_type = False
@@ -467,9 +501,9 @@ class MotionClassifier(SageObject):
                                     has_necessary_NAC_type = True
                                     break
                             if not has_necessary_NAC_type:
-                                fine = False
+                                inconsistent = True
                                 break
-                    if not fine:
+                    if inconsistent:
                         continue
 
                     types_ext.append([types, ramification_eqs])
@@ -489,6 +523,41 @@ class MotionClassifier(SageObject):
             return [delta for delta in self._graph.NAC_colorings() if not self.mu(delta) in zeros]
         else:
             raise NotImplementedError('If the dimension of the ideal is greater than one, it is not clear how to proceed.')
+
+    def motion_types_equivalent_classes(self, motion_types):
+        aut_group = self._graph.automorphism_group()
+        classes = [
+            [(motion_types[0],
+              self.normalized_motion_types(motion_types[0]),
+              Counter([('d' if t in ['e','o'] else t) for c, t in motion_types[0].iteritems()]))]
+        ]
+        for next_motion in motion_types[1:]:
+            added = False
+            next_sign = Counter([('d' if t in ['e','o'] else t) for c, t in next_motion.iteritems()])
+            for cls in classes:
+                repr_motion_types = cls[0][1]
+                if cls[0][2]!=next_sign:
+                    continue
+                for sigma in aut_group:
+                    next_motion_image = self.normalized_motion_types({tuple(sigma(v) for v in c): t
+                                                        for c,t in next_motion.iteritems()})
+                    for c in repr_motion_types:
+                        if repr_motion_types[c]!=next_motion_image[c]:
+                            break
+                    else:
+                        cls.append([next_motion])
+                        added = True
+                        break
+#                    if not False in [repr_motion_types[c]==next_motion_image[c] for c in repr_motion_types]:
+#                        cls.append(next_motion)
+#                        added = True
+#                        break
+                if added:
+                    break
+            else:
+                classes.append([(next_motion, self.normalized_motion_types(next_motion), next_sign)])
+        return [[t[0] for t in cls] for cls in classes]
+
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", gen_rest_table_index(MotionClassifier))
