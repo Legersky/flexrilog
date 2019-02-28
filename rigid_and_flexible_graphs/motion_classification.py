@@ -6,6 +6,7 @@ TODO:
 
 - setdefault, defaultdict
 - for ... else:
+- substitute instead of Groebner basis
 
 
 Methods
@@ -98,9 +99,7 @@ class MotionClassifier(SageObject):
             intersection = self.cycle_edges(c1, sets=True).intersection(self.cycle_edges(c2, sets=True))
             if len(intersection)>=2 and len(intersection[0].intersection(intersection[1]))==1:
                 common_vert = intersection[0].intersection(intersection[1])[0]
-                self._four_cycle_graph.add_edge(c1, c2,
-                    c1.index(common_vert)%2 == c2.index(common_vert)%2)
-                    # the label is boolean whether the cycles are aligned
+                self._four_cycle_graph.add_edge(c1, c2, common_vert)
 
     def four_cycles_ordered(self):
         r"""
@@ -240,10 +239,8 @@ class MotionClassifier(SageObject):
     def _pair_ordered(u,v):
         if u<v:
             return (u, v)
-        elif u>v:
-            return (v, u)
         else:
-            return u
+            return (v, u)
 
     @staticmethod
     def _edge_ordered(u,v):
@@ -276,14 +273,14 @@ class MotionClassifier(SageObject):
         for c in types:
             motion = types[c]
             if motion=='a' or motion=='p':
-                k += self._set_two_edge_same_lengths(H, c[0], c[1], c[2], c[3],k)
-                k += self._set_two_edge_same_lengths(H, c[1], c[2], c[0], c[3],k)
-            elif motion=='v':
-                k += self._set_two_edge_same_lengths(H, c[0], c[1], c[1], c[2],k)
-                k += self._set_two_edge_same_lengths(H, c[2], c[3], c[0], c[3],k)
-            elif motion=='h':
-                k += self._set_two_edge_same_lengths(H, c[1], c[2], c[2], c[3],k)
-                k += self._set_two_edge_same_lengths(H, c[0], c[1], c[0], c[3],k)
+                k += self._set_two_edge_same_lengths(H, c[0], c[1], c[2], c[3], k)
+                k += self._set_two_edge_same_lengths(H, c[1], c[2], c[0], c[3], k)
+            elif motion=='o':
+                k += self._set_two_edge_same_lengths(H, c[0], c[1], c[1], c[2], k)
+                k += self._set_two_edge_same_lengths(H, c[2], c[3], c[0], c[3], k)
+            elif motion=='e':
+                k += self._set_two_edge_same_lengths(H, c[1], c[2], c[2], c[3], k)
+                k += self._set_two_edge_same_lengths(H, c[0], c[1], c[0], c[3], k)
 
     def NAC_coloring_restrictions(self):
         r"""
@@ -380,9 +377,10 @@ class MotionClassifier(SageObject):
     def consequences_of_nonnegative_solution_assumption(eqs):
         n_zeros_prev = -1
         zeros = []
+        gb = eqs
         while n_zeros_prev!=len(zeros):
             n_zeros_prev = len(zeros)
-            gb = ideal(eqs + zeros).groebner_basis()
+            gb = ideal(gb + zeros).groebner_basis()
             zeros = []
             for eq in gb:
                 coefs = eq.coefficients()
@@ -396,8 +394,11 @@ class MotionClassifier(SageObject):
 
         k23s = [Graph(self._graph).subgraph(k23_ver).edges(labels=False) for k23_ver in self._graph.induced_K23s()]
 
-        prohibited = ['a', self._pair_ordered('a','e'), self._pair_ordered('a','o')]
-        deltoid_types = self._pair_ordered('o', 'e')
+        aa_pp = [('a', 'a'), ('p', 'p')]
+        ao = [self._pair_ordered('a','o')]
+        ae = [self._pair_ordered('a','e')]
+        oe = [self._pair_ordered('o', 'e')]
+        oo_ee = [('e','e'), ('o','o')]
 
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
         types_prev=[[{}, []]]
@@ -405,7 +406,8 @@ class MotionClassifier(SageObject):
         for i, new_cycle in enumerate(cycles):
             types_ext = []
             new_cycle_neighbors = [[c2,
-                                    self._four_cycle_graph.edge_label(new_cycle, c2)
+                                    new_cycle.index(self._four_cycle_graph.edge_label(new_cycle, c2)),
+                                    c2.index(self._four_cycle_graph.edge_label(new_cycle, c2)),
                                    ] for c2 in self._four_cycle_graph.neighbors(new_cycle) if c2 in cycles[:i]]
             for types_original, ramification_eqs_prev in types_prev:
                 for type_new_cycle in ['g','a','p','o','e']:
@@ -414,11 +416,22 @@ class MotionClassifier(SageObject):
     #                 H = deepcopy(orig_graph)
                     fine = True
 
-                    for c2, s in new_cycle_neighbors:
+                    for c2, new_index, c2_index in new_cycle_neighbors:
                         type_pair = self._pair_ordered(types[new_cycle], types[c2])
-                        if (type_pair in prohibited
-                                or (s and type_pair == deltoid_types)
-                                or (not s and type_pair in deltoid_types)):
+                        if (type_pair in aa_pp
+                                or (type_pair in oe and new_index%2 == c2_index%2)
+                                or (type_pair in oo_ee and new_index%2 != c2_index%2)):
+                            fine = False
+                            break
+                        if (type_pair in ao
+                            and ((types[new_cycle]=='o' and new_index%2==1)
+                            #odd deltoid (1,2,3,4) is consistent with 'a' if the common vertex is odd, but Python lists are indexed from 0
+                                or (types[c2]=='o' and c2_index%2==1))):
+                            fine = False
+                            break
+                        if (type_pair in ae
+                            and ((types[new_cycle]=='e' and new_index%2==0)
+                                or (types[c2]=='e' and c2_index%2==0))):
                             fine = False
                             break
                     if not fine:
@@ -445,6 +458,8 @@ class MotionClassifier(SageObject):
                     ramification_eqs = ramification_eqs_prev + self.ramification_formula(new_cycle, type_new_cycle)
                     zero_variables, ramification_eqs = self.consequences_of_nonnegative_solution_assumption(ramification_eqs)
                     for cycle in types:
+                        if not fine:
+                            break
                         for t in self.motion2NAC_types(types[cycle]):
                             has_necessary_NAC_type = False
                             for delta in self._restriction_NAC_types[cycle][t]:
@@ -454,8 +469,6 @@ class MotionClassifier(SageObject):
                             if not has_necessary_NAC_type:
                                 fine = False
                                 break
-                        if not fine:
-                            break
                     if not fine:
                         continue
 
