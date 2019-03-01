@@ -192,24 +192,23 @@ class MotionClassifier(SageObject):
 
         EXAMPLES::
 
-            sage: from rigid_flexible_graph import RigidFlexibleGraph, MotionClassifier
-            sage: K33 = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: from rigid_and_flexible_graphs import GraphGenerator, MotionClassifier
+            sage: K33 = GraphGenerator.K33Graph()
             sage: M = MotionClassifier(K33)
-            sage: M.equation_from_leading_coefs('beta1')
-            [lambda0_3^2 - lambda0_4^2 - lambda1_3^2 + lambda1_4^2]
+            sage: M.equations_from_leading_coefs('epsilon56')
+            [lambda1_2^2 - lambda1_4^2 - lambda2_3^2 + lambda3_4^2]
 
         ::
 
-            sage: M.equation_from_leading_coefs('alpha1')
-            ---------------------------------------------------------------------------
-            ValueError                                Traceback (most recent call last):
+            sage: M.equations_from_leading_coefs('omega1')
+            Traceback (most recent call last):
             ...
             ValueError: The NAC-coloring must be a singleton.
 
         ::
 
-            sage: MC.equations_from_leading_coefs('alpha1', check=False)
-            [-lambda0_3^2*lambda1_4^2 + lambda0_3^2*lambda1_5^2 + lambda0_4^2*lambda1_3^2 - lambda0_4^2*lambda1_5^2 - lambda0_5^2*lambda1_3^2 + lambda0_5^2*lambda1_4^2]
+            sage: M.equations_from_leading_coefs('omega1', check=False)
+            [-lambda2_3^2*lambda4_5^2 + lambda2_3^2*lambda5_6^2 + lambda2_5^2*lambda3_4^2 - lambda2_5^2*lambda3_6^2 - lambda3_4^2*lambda5_6^2 + lambda3_6^2*lambda4_5^2]
         """
 
         if type(col) == str:
@@ -310,13 +309,13 @@ class MotionClassifier(SageObject):
             sage: from rigid_and_flexible_graphs import MotionClassifier, GraphGenerator
             sage: MC = MotionClassifier(GraphGenerator.K33Graph())
             sage: MC.NAC_coloring_restrictions()
-            {(1, 2, 3, 4): {'L': ['alpha3', 'alpha1', 'epsilon36', 'epsilon16'],
+            {(1, 2, 3, 4): {'L': ['omega3', 'omega1', 'epsilon36', 'epsilon16'],
               'O': ['epsilon34', 'epsilon14', 'epsilon23', 'epsilon12'],
-              'R': ['alpha4', 'epsilon45', 'alpha2', 'epsilon25']},
+              'R': ['omega4', 'epsilon45', 'omega2', 'epsilon25']},
             ...
-             (3, 4, 5, 6): {'L': ['alpha5', 'alpha3', 'epsilon25', 'epsilon23'],
+             (3, 4, 5, 6): {'L': ['omega5', 'omega3', 'epsilon25', 'epsilon23'],
               'O': ['epsilon56', 'epsilon36', 'epsilon45', 'epsilon34'],
-              'R': ['alpha6', 'epsilon16', 'alpha4', 'epsilon14']}}
+              'R': ['omega6', 'epsilon16', 'omega4', 'epsilon14']}}
         """
         res = {cycle:{'O':[], 'L':[], 'R':[]} for cycle in self._four_cycles}
         for delta in self._graph.NAC_colorings():
@@ -339,18 +338,13 @@ class MotionClassifier(SageObject):
 
             sage: from rigid_and_flexible_graphs import MotionClassifier, GraphGenerator
             sage: MC = MotionClassifier(GraphGenerator.K33Graph())
-            sage: MC.ramification_formula((1,2,3,4), 'g')
-            [epsilon12, epsilon23, epsilon14, epsilon34, omega3 + omega1 + epsilon36 + epsilon16 - omega4 - epsilon45 - omega2 - epsilon25]
+            sage: MC.ramification_formula((1,2,3,4), 'a')
+            [epsilon34,
+             epsilon14,
+             epsilon23,
+             epsilon12,
+             omega3 + omega1 + epsilon36 + epsilon16 - omega4 - epsilon45 - omega2 - epsilon25]
         """
-#        eqs = []
-#        NAC_types = self.motion2NAC_types(motion)
-#        for t in ['L','O','R']:
-#            if t in NAC_types:
-#                eqs.append(sum([self.mu(delta)-self.mu('d') for delta in self._restriction_NAC_types[cycle][t]]))
-#            else:
-#                eqs += [self.mu(delta) for delta in self._restriction_NAC_types[cycle][t]]
-#        return ideal(eqs).elimination_ideal([self.mu('d')]).gens()
-
         eqs_present = []
         eqs_zeros = []
         NAC_types = self.motion2NAC_types(motion)

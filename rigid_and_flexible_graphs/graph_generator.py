@@ -77,7 +77,7 @@ class GraphGenerator():
         EXAMPLES::
 
             sage: from rigid_and_flexible_graphs import GraphGenerator, RigidFlexibleGraph
-            sage: RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3)).is_isomorphic(GraphGenerator.SmallestFlexibleLamanGraph())
+            sage: RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3)).is_isomorphic(GraphGenerator.K33Graph())
             True
 
         .. PLOT::
