@@ -657,15 +657,15 @@ class NACcoloring(SageObject):
                 return False
         return True
 
-    def cycle_has_perpendicular_diagonals(self, cycle):
+    def cycle_has_orthogonal_diagonals(self, cycle):
         r"""
-        Return if the NAC-coloring implies perpendicular diagonals for a given 4-cycle.
+        Return if the NAC-coloring implies orthogonal diagonals for a given 4-cycle.
 
         EXAMPLE::
 
             sage: from rigid_and_flexible_graphs import GraphGenerator
             sage: K33 = GraphGenerator.K33Graph()
-            sage: [[delta.name(), [cycle for cycle in K33.four_cycles() if delta.cycle_has_perpendicular_diagonals(cycle)]] for delta in K33.NAC_colorings()]
+            sage: [[delta.name(), [cycle for cycle in K33.four_cycles() if delta.cycle_has_orthogonal_diagonals(cycle)]] for delta in K33.NAC_colorings()]
             [['omega5', []],
              ['omega3', []],
              ['omega1', []],

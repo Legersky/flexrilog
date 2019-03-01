@@ -100,6 +100,11 @@ class MotionClassifier(SageObject):
                 common_vert = intersection[0].intersection(intersection[1])[0]
                 self._four_cycle_graph.add_edge(c1, c2, common_vert)
 
+#        -----Cycle with orthogonal diagonals due to NAC-----
+        self._orthogonal_diagonals = {
+                delta.name(): [cycle for cycle in self._four_cycle_graph if delta.cycle_has_orthogonal_diagonals(cycle)]
+                for delta in self._graph.NAC_colorings()}
+
     def four_cycles_ordered(self):
         r"""
         Heuristic order of 4-cycles.
@@ -504,17 +509,14 @@ class MotionClassifier(SageObject):
 
             types_prev=types_ext
 
-        return types_prev
+        return [t for t, _ in types_prev]
 
-    def active_NAC_colorings(self, motion_types, eqs=[]):
-        if eqs==[]:
-            zeros, eqs = self.consequences_of_nonnegative_solution_assumption([
-                self.ramification_formula(c, motion_types[c]) for c in motion_types
-            ])
-        else:
-            zeros = [eq for eq in eqs if eq.is_monomial()]
+    def active_NAC_coloring_names(self, motion_types):
+        zeros, eqs = self.consequences_of_nonnegative_solution_assumption(
+            flatten([self.ramification_formula(c, motion_types[c]) for c in motion_types]))
+
         if ideal(eqs).dimension()==1:
-            return [delta for delta in self._graph.NAC_colorings() if not self.mu(delta) in zeros]
+            return [delta.name() for delta in self._graph.NAC_colorings() if not self.mu(delta) in zeros]
         else:
             raise NotImplementedError('If the dimension of the ideal is greater than one, it is not clear how to proceed.')
 
@@ -551,6 +553,82 @@ class MotionClassifier(SageObject):
             else:
                 classes.append([(next_motion, self.normalized_motion_types(next_motion), next_sign)])
         return [[t[0] for t in cls] for cls in classes]
+
+
+    def check_orthogonal_diagonals(self, types,  active_NACs):
+
+        perp_by_NAC = [cycle for delta in active_NACs for cycle in self._orthogonal_diagonals[delta]]
+        deltoids = [cycle for cycle, t in types.iteritems() if t in ['e','o']]
+
+        orthogonalLines = []
+        for perpCycle in perp_by_NAC + deltoids:
+            orthogonalLines.append(Set([Set([perpCycle[0],perpCycle[2]]), Set([perpCycle[1],perpCycle[3]])]))
+
+        orthogonalityGraph = Graph(orthogonalLines, format='list_of_edges', multiedges=False)
+        n_edges = -1
+
+        while  n_edges != orthogonalityGraph.num_edges():
+            n_edges = orthogonalityGraph.num_edges()
+            for perp_subgraph in orthogonalityGraph.connected_components_subgraphs():
+                isBipartite, partition = perp_subgraph.is_bipartite(certificate=True)
+                if isBipartite:
+                    graph_0 = Graph([v.list() for v in partition if partition[v]==0])
+                    graph_1 = Graph([v.list() for v in partition if partition[v]==1])
+                    for comp_0 in graph_0.connected_components():
+                        for comp_1 in graph_1.connected_components():
+                            for e0 in Subsets(comp_0,2):
+                                for e1 in Subsets(comp_1,2):
+                                    orthogonalityGraph.add_edge([Set(e0), Set(e1)])
+                else:
+                    raise exceptions.RuntimeError('A component of the orthogonality graph is not bipartite!')
+
+        check_again = False
+        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
+        self._set_same_lengths(H, types)
+
+        for c in types:
+            if not orthogonalityGraph.has_edge(Set([c[0],c[2]]),Set([c[1],c[3]])):
+                continue
+            if types[c]=='a':       # inconsistent since antiparallel motion cannot have orthogonal diagonals
+                return False
+            elif types[c]=='p':     # this cycle must be rhombus
+                self._set_two_edge_same_lengths(H, c[0], c[1], c[2], c[3], 0)
+                self._set_two_edge_same_lengths(H, c[0], c[1], c[1], c[2], 0)
+                self._set_two_edge_same_lengths(H, c[0], c[1], c[0], c[3], 0)
+                check_again = True
+
+        for c in types:
+            if types[c]=='g':
+                labels = [H[self._edge_ordered(c[i-1],c[i])] for i in range(0,4)]
+                if (not None in labels
+                    and ((len(Set(labels))==2 and labels.count(labels[0])==2)
+                        or len(Set(labels))==1)):
+                    return False
+                if (orthogonalityGraph.has_edge(Set([c[0],c[2]]),Set([c[1],c[3]]))
+                    and True in [(H[self._edge_ordered(c[i-1], c[i])]==H[self._edge_ordered(c[i-2], c[i-1])]
+                                  and H[self._edge_ordered(c[i-1],c[i])]!= None) for i in range(0,4)]):
+                    return False
+
+        if check_again:
+            for K23_edges in [Graph(self._graph).subgraph(k23_ver).edges(labels=False) for k23_ver in self._graph.induced_K23s()]:
+                if MotionClassifier._same_edge_lengths(H, K23_edges):
+                    return False
+
+        return True
+
+    def motion_types2equations(self, motion_types):
+        eqs = []
+        for c, motion in motion_types.iteritems():
+            if motion=='a' or motion=='p':
+                eqs.append(self.lam([c[0], c[1]]) - self.lam([c[2], c[3]]))
+                eqs.append(self.lam([c[1], c[2]]) - self.lam([c[0], c[3]]))
+            elif motion=='o':
+                eqs.append(self.lam([c[0], c[1]]) - self.lam([c[1], c[2]]))
+                eqs.append(self.lam([c[2], c[3]]) - self.lam([c[0], c[3]]))
+            elif motion=='e':
+                eqs.append(self.lam([c[1], c[2]]) - self.lam([c[2], c[3]]))
+                eqs.append(self.lam([c[0], c[1]]) - self.lam([c[0], c[3]]))
+        return ideal(eqs).groebner_basis()
 
 
 __doc__ = __doc__.replace(
