@@ -36,7 +36,7 @@ Class
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from sage.all import Graph, Set
+from sage.all import Graph, Set#, show
 from sage.all import SageObject, latex, flatten
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.misc.latex import latex_variable_name
@@ -227,9 +227,9 @@ class NACcoloring(SageObject):
             sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: delta = G.NAC_colorings()[0]
             sage: delta.color(0,3)
-            red
+            'red'
             sage: delta.color([2,4])
-            blue
+            'blue'
             sage: delta.color(1,2)
             Traceback (most recent call last):
             ...
@@ -657,7 +657,43 @@ class NACcoloring(SageObject):
                 return False
         return True
 
+    def cycle_has_perpendicular_diagonals(self, cycle):
+        r"""
+        Return if the NAC-coloring implies perpendicular diagonals for a given 4-cycle.
 
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: K33 = GraphGenerator.K33Graph()
+            sage: [[delta.name(), [cycle for cycle in K33.four_cycles() if delta.cycle_has_perpendicular_diagonals(cycle)]] for delta in K33.NAC_colorings()]
+            [['omega5', []],
+             ['omega3', []],
+             ['omega1', []],
+             ['omega6', []],
+             ['epsilon56', [(1, 2, 3, 4)]],
+             ['epsilon36', [(1, 2, 5, 4)]],
+             ['epsilon16', [(2, 3, 4, 5)]],
+             ['omega4', []],
+             ['epsilon45', [(1, 2, 3, 6)]],
+             ['epsilon34', [(1, 2, 5, 6)]],
+             ['epsilon14', [(2, 3, 6, 5)]],
+             ['omega2', []],
+             ['epsilon25', [(1, 4, 3, 6)]],
+             ['epsilon23', [(1, 4, 5, 6)]],
+             ['epsilon12', [(3, 4, 5, 6)]]]
+        """
+        if len(cycle)!= 4:
+            raise exceptions.ValueError('The cycle must be a 4-cycle.')
+        if self.path_is_unicolor(list(cycle) + [cycle[0]]):
+            if self.is_red(cycle[0], cycle[1]):
+                subgraph = Graph([self._graph.vertices(), [list(e) for e in self.blue_edges()]],  format='vertices_and_edges')
+            else:
+                subgraph = Graph([self._graph.vertices(), [list(e) for e in self.red_edges()]],  format='vertices_and_edges')
+            if subgraph.shortest_path(cycle[0], cycle[2]) and subgraph.shortest_path(cycle[1], cycle[3]):
+                return True
+            else:
+                return False
+        return False
 
 
 __doc__ = __doc__.replace(
