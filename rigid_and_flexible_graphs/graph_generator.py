@@ -33,7 +33,7 @@ from sage.rings.integer import Integer
 from rigid_flexible_graph import RigidFlexibleGraph
 import exceptions
 from sage.misc.rest_index_of_methods import gen_rest_table_index
-from sage.all import flatten, Set
+from sage.all import flatten, Set,  Graph
 
 
 class GraphGenerator():
@@ -239,11 +239,40 @@ class GraphGenerator():
             G = GraphGenerator.Q1Graph()
             sphinx_plot(G)
         """
-        return RigidFlexibleGraph([(0, 1), (0, 2), (0, 6), (1, 2), (1, 4), (1, 5), (2, 3), (3, 4), (3, 5), (4, 6), (5, 6)],
-                                  pos={5 : (0.500, 0.866), 4 : (-0.500, 0.866), 6 : (-1.00, 0.000), 3 : (1.00, 0.000),
-                                       2 : (0.500, -0.866), 0 : (-0.500, -0.866), 1 : (0.000, 0.000)},
-                                  name='Q_1')
-
+#        return RigidFlexibleGraph([(0, 1), (0, 2), (0, 6), (1, 2), (1, 4), (1, 5), (2, 3), (3, 4), (3, 5), (4, 6), (5, 6)],
+#                                  pos={5 : (0.500, 0.866), 4 : (-0.500, 0.866), 6 : (-1.00, 0.000), 3 : (1.00, 0.000),
+#                                       2 : (0.500, -0.866), 0 : (-0.500, -0.866), 1 : (0.000, 0.000)},
+#                                  name='Q_1')
+        G = RigidFlexibleGraph([[5, 6], [5, 7], [6, 7], [1, 5], [2, 6], [2, 4], [1, 3], [3, 7], [4, 7], [1, 4], [2, 3]],
+                          pos={4 : (0.500, 0.866), 3 : (-0.500, 0.866), 1 : (-1.00, 0.000), 2 : (1.00, 0.000),
+                               6 : (0.500, -0.866), 5 : (-0.500, -0.866), 7 : (0.000, 0.000)},
+                          name='Q_1')
+        for cls in G.NAC_colorings_isomorphism_classes():
+            if len(cls)==1:
+                delta = cls[0]
+                if len(delta.blue_edges()) in [4, 7]:
+                    delta.set_name('eta')
+                else:
+                    delta.set_name('zeta')
+            else:
+                for delta in cls:
+                    for edges in [delta.red_edges(), delta.blue_edges()]:
+                        if len(cls)==4 and len(edges)==7:
+                            u,v = [comp for comp in Graph([list(e) for e in edges]).connected_components()
+                                              if len(comp)==2][0]
+                            delta.set_name('epsilon' + (str(u)+str(v) if u<v else str(v)+str(u)))
+                            break
+                        if len(edges)==3:
+                            vertex = edges[0].intersection(edges[1]).intersection(edges[2])[0]
+                            name = 'phi' if [w for w in G.neighbors(vertex) if G.degree(w)==4] else 'psi'
+                            delta.set_name(name + str(vertex))
+                            break
+                        if len(edges)==5:
+                            u,v = [comp for comp in Graph([list(e) for e in edges]).connected_components()
+                                   if len(comp)==2][0]
+                            delta.set_name('gamma' + str(min(u,v)))
+                            break
+        return G
 
     @staticmethod
     def S1Graph():

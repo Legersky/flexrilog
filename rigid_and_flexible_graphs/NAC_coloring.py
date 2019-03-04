@@ -634,20 +634,21 @@ class NACcoloring(SageObject):
         ::
 
             sage: Q1 = GraphGenerator.Q1Graph()
-            sage: Q1.set_NAC_colorings_names()
             sage: [[(delta.name(), delta.is_singleton()) for delta in equiv_cls] for equiv_cls in Q1.NAC_colorings_isomorphism_classes()]
-            [[('alpha1', False), ('alpha2', False)],
-             [('beta1', False), ('beta2', False)],
-             [('gamma1', True), ('gamma2', True), ('gamma3', True), ('gamma4', True)],
-             [('delta', False)],
-             [('epsilon1', True), ('epsilon2', True)],
-             [('zeta', True)]]
+            [[('psi2', False), ('psi1', False)],
+             [('eta', True)],
+             [('gamma1', True), ('gamma2', True)],
+             [('phi4', False), ('phi3', False)],
+             [('epsilon24', True),
+              ('epsilon13', True),
+              ('epsilon23', True),
+              ('epsilon14', True)],
+             [('zeta', False)]]
 
         ::
 
-            sage: Q1.set_NAC_colorings_names()
-            sage: delta = Q1.name2NAC_coloring('alpha1')
-            sage: delta.is_singleton([Q1.name2NAC_coloring(name) for name in ['gamma1', 'gamma2', 'gamma3', 'gamma4']])
+            sage: delta = Q1.name2NAC_coloring('psi1')
+            sage: delta.is_singleton([Q1.name2NAC_coloring(name) for name in ['epsilon23', 'epsilon24', 'epsilon13', 'epsilon14']])
             True
         """
         if NACs == []:

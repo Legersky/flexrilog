@@ -1014,7 +1014,7 @@ class RigidFlexibleGraph(Graph):
             sage: from rigid_and_flexible_graphs import GraphGenerator
             sage: G = GraphGenerator.Q1Graph()
             sage: G.induced_K23s()
-            [[0, 4, 5, 1, 6], [1, 3, 6, 4, 5], [2, 4, 5, 1, 3]]
+            [[1, 2, 7, 3, 4], [3, 4, 5, 1, 7], [3, 4, 6, 2, 7]]
 
         ::
 
@@ -1309,9 +1309,14 @@ class RigidFlexibleGraph(Graph):
 
             sage: from rigid_and_flexible_graphs import GraphGenerator
             sage: G = GraphGenerator.Q1Graph()
-            sage: NACs = G.NAC_colorings()
-            sage: G.spatial_embeddings_four_directions(NACs[2], NACs[9])
-            {0: (0, 0, 0), 1: (a, a, a), 2: (2*a, 2*a, 2*a), 3: (2*a, a, 2*a), 4: (a, a, 2*a), 5: (a, 0, a), 6: (0, 0, a)}
+            sage: G.spatial_embeddings_four_directions(G.name2NAC_coloring('epsilon13'), G.name2NAC_coloring('epsilon24'))
+            {1: (0, 0, 0),
+             2: (2*a, a, a),
+             3: (a, a, a),
+             4: (a, 0, 0),
+             5: (0, -a, 0),
+             6: (2*a, a, 2*a),
+             7: (a, 0, a)}
         """
         if vertex_at_origin == None:
             vertex_at_origin = self.vertices()[0]
@@ -1402,15 +1407,15 @@ class RigidFlexibleGraph(Graph):
 
             sage: G = GraphGenerator.Q1Graph()
             sage: G.has_injective_spatial_embedding(certificate=True)
-            (True, [NAC-coloring with 7 red edges and 4 blue edges , NAC-coloring with 7 red edges and 4 blue edges ])
+            (True, [eta: NAC-coloring with 7 red edges and 4 blue edges , epsilon24: NAC-coloring with 7 red edges and 4 blue edges ])
 
         ::
 
             sage: G.has_injective_spatial_embedding(certificate=True, onlyOne=False) # long time
             (True,
-            [[NAC-coloring with 7 red edges and 4 blue edges ,
+            [[eta: NAC-coloring with 7 red edges and 4 blue edges ,
             ...
-            NAC-coloring with 7 red edges and 4 blue edges ]])
+            epsilon14: NAC-coloring with 7 red edges and 4 blue edges ]])
         """
         certs = []
         n = len(self.NAC_colorings())

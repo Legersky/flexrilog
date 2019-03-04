@@ -82,9 +82,13 @@ class MotionClassifier(SageObject):
             zs_latex.append('z_{' + self._edge2str(e).replace('_', separator) + '}')
             lambdas_latex.append('\\lambda_{' + self._edge2str(e).replace('_', separator) + '}')
 
-        self._ringLC = PolynomialRing(QQ, names=ws+zs+lambdas, order='lex')
+        self._ringLC = PolynomialRing(QQ, names=ws+zs+lambdas) #, order='lex')
         self._ringLC._latex_names = ws_latex + zs_latex + lambdas_latex
         self._ringLC_gens = self._ringLC.gens_dict()
+
+        self._ring_lambdas = PolynomialRing(QQ, names=lambdas + ['u'])
+        self._ring_lambdas._latex_names = lambdas_latex + ['u']
+        self.aux_var = self._ring_lambdas.gens_dict()['u']
 
 #        ----Ramification-----
         self._ring_ramification = PolynomialRing(QQ, names=[col.name() for col in self._graph.NAC_colorings()])
@@ -213,7 +217,7 @@ class MotionClassifier(SageObject):
         ::
 
             sage: M.equations_from_leading_coefs('omega1', check=False)
-            [-lambda2_3^2*lambda4_5^2 + lambda2_3^2*lambda5_6^2 + lambda2_5^2*lambda3_4^2 - lambda2_5^2*lambda3_6^2 - lambda3_4^2*lambda5_6^2 + lambda3_6^2*lambda4_5^2]
+            [lambda2_5^2*lambda3_4^2 - lambda2_5^2*lambda3_6^2 - lambda2_3^2*lambda4_5^2 + lambda3_6^2*lambda4_5^2 + lambda2_3^2*lambda5_6^2 - lambda3_4^2*lambda5_6^2]
         """
 
         if type(col) == str:
@@ -256,7 +260,10 @@ class MotionClassifier(SageObject):
                      + ideal(eqs_z).groebner_basis()
                      + eqs_lengths
                      + extra_eqs)
-        return ideal(equations).elimination_ideal(flatten([[self.w(e), self.z(e)] for e in self._graph.edges()])).basis
+        return [self._ring_lambdas(eq)
+                for eq in ideal(equations).elimination_ideal(flatten(
+                    [[self.w(e), self.z(e)] for e in self._graph.edges()])).basis
+                ]
 
     @staticmethod
     def _pair_ordered(u,v):
@@ -269,7 +276,7 @@ class MotionClassifier(SageObject):
     def _edge_ordered(u,v):
         return MotionClassifier._pair_ordered(u, v)
 
-
+#    @staticmethod
     def _set_two_edge_same_lengths(self, H, u, v, w, y, k):
         if H[self._edge_ordered(u,v)]==None and H[self._edge_ordered(w,y)]==None:
             H[self._edge_ordered(u,v)] = k
@@ -304,6 +311,11 @@ class MotionClassifier(SageObject):
             elif motion=='e':
                 k += self._set_two_edge_same_lengths(H, c[1], c[2], c[2], c[3], k)
                 k += self._set_two_edge_same_lengths(H, c[0], c[1], c[0], c[3], k)
+
+    def motion_types2same_edge_lenghts(self, motion_types):
+        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
+        self._set_same_lengths(H, motion_types)
+        return H
 
     def NAC_coloring_restrictions(self):
         r"""
@@ -555,13 +567,13 @@ class MotionClassifier(SageObject):
         return [[t[0] for t in cls] for cls in classes]
 
 
-    def check_orthogonal_diagonals(self, types,  active_NACs):
+    def check_orthogonal_diagonals(self, types,  active_NACs, extra_cycles_orthog_diag=[]):
 
         perp_by_NAC = [cycle for delta in active_NACs for cycle in self._orthogonal_diagonals[delta]]
         deltoids = [cycle for cycle, t in types.iteritems() if t in ['e','o']]
 
         orthogonalLines = []
-        for perpCycle in perp_by_NAC + deltoids:
+        for perpCycle in perp_by_NAC + deltoids + extra_cycles_orthog_diag:
             orthogonalLines.append(Set([Set([perpCycle[0],perpCycle[2]]), Set([perpCycle[1],perpCycle[3]])]))
 
         orthogonalityGraph = Graph(orthogonalLines, format='list_of_edges', multiedges=False)
@@ -582,6 +594,7 @@ class MotionClassifier(SageObject):
                 else:
                     raise exceptions.RuntimeError('A component of the orthogonality graph is not bipartite!')
 
+        self._orthogonality_graph = orthogonalityGraph
         check_again = False
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
         self._set_same_lengths(H, types)
@@ -628,7 +641,7 @@ class MotionClassifier(SageObject):
             elif motion=='e':
                 eqs.append(self.lam([c[1], c[2]]) - self.lam([c[2], c[3]]))
                 eqs.append(self.lam([c[0], c[1]]) - self.lam([c[0], c[3]]))
-        return ideal(eqs).groebner_basis()
+        return [self._ring_lambdas(eq) for eq in ideal(eqs).groebner_basis()]
 
 
 __doc__ = __doc__.replace(
