@@ -538,7 +538,7 @@ class RigidFlexibleGraph(Graph):
         Return triangle connected components.
 
         Two edges are in relation if they are in the same 3-cycle subgraph.
-        The eqiuvalence classes of the reflexive-transitive closure
+        The equivalence classes of the reflexive-transitive closure
         of this relation are called $\\triangle$-connected components [GLS2018]_.
 
         OUTPUT:
