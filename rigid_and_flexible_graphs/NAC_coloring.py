@@ -696,6 +696,8 @@ class NACcoloring(SageObject):
                 return False
         return False
 
+    def print_tikz(self):
+        self._graph.print_tikz([self.blue_edges(), self.red_edges()], ['redge', 'bedge'])
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", (gen_rest_table_index(NACcoloring)))

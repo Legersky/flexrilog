@@ -82,16 +82,36 @@ class MotionClassifier(SageObject):
             zs_latex.append('z_{' + self._edge2str(e).replace('_', separator) + '}')
             lambdas_latex.append('\\lambda_{' + self._edge2str(e).replace('_', separator) + '}')
 
-        self._ringLC = PolynomialRing(QQ, names=ws+zs+lambdas) #, order='lex')
-        self._ringLC._latex_names = ws_latex + zs_latex + lambdas_latex
+        self._ringLC = PolynomialRing(QQ, names=lambdas+ws+zs) #, order='lex')
+        self._ringLC._latex_names = lambdas_latex + ws_latex + zs_latex
         self._ringLC_gens = self._ringLC.gens_dict()
 
         self._ring_lambdas = PolynomialRing(QQ, names=lambdas + ['u'])
         self._ring_lambdas._latex_names = lambdas_latex + ['u']
         self.aux_var = self._ring_lambdas.gens_dict()['u']
-
+        
+        xs = []
+        ys = []
+        xs_latex = []
+        ys_latex = []
+        for v in self._graph.vertices():
+            xs.append('x' + str(v))
+            ys.append('y' + str(v))
+            xs_latex.append('x_{' + str(v) + '}')
+            ys_latex.append('y_{' + str(v) + '}')
+            
+        self._ring_coordinates = PolynomialRing(QQ, names=lambdas+xs+ys)
+        self._ring_coordinates._latex_names = lambdas_latex + xs_latex + ys_latex
+        self._ring_coordinates_gens = self._ring_coordinates.gens_dict()
+        
+        
 #        ----Ramification-----
-        self._ring_ramification = PolynomialRing(QQ, names=[col.name() for col in self._graph.NAC_colorings()])
+#         if len(self._graph.NAC_colorings()) > 1: 
+        self._ring_ramification = PolynomialRing(QQ,
+                                                 [col.name() for col in self._graph.NAC_colorings()],
+                                                 len(self._graph.NAC_colorings()))
+#         else:
+#             self._ring_ramification = PolynomialRing(QQ, self._graph.NAC_colorings()[0].name())
         self._ring_ramification_gens = self._ring_ramification.gens_dict()
         self._restriction_NAC_types = self.NAC_coloring_restrictions()
 
@@ -370,6 +390,9 @@ class MotionClassifier(SageObject):
                 eqs_present.append(sum([self.mu(delta) for delta in self._restriction_NAC_types[cycle][t]]))
             else:
                 eqs_zeros += [self.mu(delta) for delta in self._restriction_NAC_types[cycle][t]]
+        
+        if 0 in eqs_present:
+            return [self.mu(delta) for delta in self._graph.NAC_colorings()]
         if len(eqs_present)==2:
             return eqs_zeros + [eqs_present[0] - eqs_present[1]]
         elif len(eqs_present)==3:
@@ -403,14 +426,15 @@ class MotionClassifier(SageObject):
         else:
             return True
 
-    @staticmethod
-    def consequences_of_nonnegative_solution_assumption(eqs):
+#    @staticmethod
+    def consequences_of_nonnegative_solution_assumption(self, eqs):
         n_zeros_prev = -1
         zeros = []
         gb = eqs
         while n_zeros_prev!=len(zeros):
             n_zeros_prev = len(zeros)
-            gb = ideal(gb + zeros).groebner_basis()
+            gb = self._ring_ramification.ideal(gb + zeros).groebner_basis()
+#             gb = self._ring_ramification.ideal(gb + zeros).groebner_basis()
             zeros = []
             for eq in gb:
                 coefs = eq.coefficients()
@@ -527,7 +551,7 @@ class MotionClassifier(SageObject):
         zeros, eqs = self.consequences_of_nonnegative_solution_assumption(
             flatten([self.ramification_formula(c, motion_types[c]) for c in motion_types]))
 
-        if ideal(eqs).dimension()==1:
+        if self._ring_ramification.ideal(eqs).dimension()==1:
             return [delta.name() for delta in self._graph.NAC_colorings() if not self.mu(delta) in zeros]
         else:
             raise NotImplementedError('If the dimension of the ideal is greater than one, it is not clear how to proceed.')

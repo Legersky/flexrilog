@@ -101,6 +101,40 @@ class GraphGenerator():
         return K33
 
     @staticmethod
+    def K23Graph():
+        r"""
+        Return the graph $K_{2,3}$.
+
+        EXAMPLES::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator, RigidFlexibleGraph
+            sage: RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3)).is_isomorphic(GraphGenerator.K23Graph())
+            True
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.K23Graph()
+            sphinx_plot(G)
+        """
+        K23 = RigidFlexibleGraph([(1, 2) , (1, 4) , (3, 2) , (3, 4) , (5, 2) , (5, 4)], name='K23',
+                           pos={4 : (0, 1), 5 : (1, 0), 3 : (0.00, 0.000),
+                                       2 : (0, -1), 1 : (-1, 0)})
+        for delta in K23.NAC_colorings():
+            for edges in [delta.red_edges(), delta.blue_edges()]:
+                if len(edges)==2:
+                    delta.set_name('alpha' + str(edges[0].intersection(edges[1])[0]))
+                elif len(edges)==3:
+                    if Set(edges[0]).intersection(Set(edges[1])).intersection(Set(edges[2])):
+                        delta.set_name('gamma')
+                    else:
+                        for e in edges:
+                            if not e.intersection(Set(flatten([list(e2) for e2 in edges if e2!=e]))):
+                                delta.set_name('beta' + str(e[0]) + str(e[1]))
+        return K23
+
+    @staticmethod
     def SmallestFlexibleLamanGraph():
         r"""
         Return the smallest Laman graph that has a flexible labeling.
@@ -222,7 +256,7 @@ class GraphGenerator():
             raise exceptions.ValueError('Only graphs with 6-12 vertices are supported.')
 
     @staticmethod
-    def Q1Graph():
+    def Q1Graph(old_labeling=False):
         r"""
         Return the graph $Q_1$.
 
@@ -239,10 +273,11 @@ class GraphGenerator():
             G = GraphGenerator.Q1Graph()
             sphinx_plot(G)
         """
-#        return RigidFlexibleGraph([(0, 1), (0, 2), (0, 6), (1, 2), (1, 4), (1, 5), (2, 3), (3, 4), (3, 5), (4, 6), (5, 6)],
-#                                  pos={5 : (0.500, 0.866), 4 : (-0.500, 0.866), 6 : (-1.00, 0.000), 3 : (1.00, 0.000),
-#                                       2 : (0.500, -0.866), 0 : (-0.500, -0.866), 1 : (0.000, 0.000)},
-#                                  name='Q_1')
+        if old_labeling:
+            return RigidFlexibleGraph([(0, 1), (0, 2), (0, 6), (1, 2), (1, 4), (1, 5), (2, 3), (3, 4), (3, 5), (4, 6), (5, 6)],
+                                      pos={5 : (0.500, 0.866), 4 : (-0.500, 0.866), 6 : (-1.00, 0.000), 3 : (1.00, 0.000),
+                                           2 : (0.500, -0.866), 0 : (-0.500, -0.866), 1 : (0.000, 0.000)},
+                                      name='Q_1')
         G = RigidFlexibleGraph([[5, 6], [5, 7], [6, 7], [1, 5], [2, 6], [2, 4], [1, 3], [3, 7], [4, 7], [1, 4], [2, 3]],
                           pos={4 : (0.500, 0.866), 3 : (-0.500, 0.866), 1 : (-1.00, 0.000), 2 : (1.00, 0.000),
                                6 : (0.500, -0.866), 5 : (-0.500, -0.866), 7 : (0.000, 0.000)},

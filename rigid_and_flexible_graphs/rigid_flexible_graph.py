@@ -57,7 +57,7 @@ Classes
 
 #from sage.all_cmdline import *   # import sage library
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
-from sage.all import Subsets, rainbow, show, binomial
+from sage.all import Subsets, rainbow, show, binomial, RealField
 from sage.all import var, solve, RR, vector, norm, CC
 import random
 
@@ -834,7 +834,8 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return if all NAC-colorings have a unique name.
         """
-        return len(Set([col.name() for col in self.NAC_colorings()])) == len(self.NAC_colorings())
+        return (len(Set([col.name() for col in self.NAC_colorings()])) == len(self.NAC_colorings())
+                and self.NAC_colorings()[0].name()!='') 
 
     @doc_index("NAC-colorings")
     def NAC_colorings_isomorphism_classes(self):
@@ -1861,6 +1862,22 @@ class RigidFlexibleGraph(Graph):
             tmp = self._pos[v][0]
             self._pos[v][0] = self._pos[v][1]
             self._pos[v][1] = tmp
+
+            
+    def print_tikz(self, colored_edges=[], color_names=['edge']):
+        lowPrecField = RealField(20)
+        print('\\begin{tikzpicture}[scale=1]')
+        for k in self.vertices():
+            print( '\t\\node[vertex] ('+str(k)+') at '+
+                    str((lowPrecField(self._pos[k][0]),lowPrecField(self._pos[k][1])))+' {'+str(k)+'};')
+        if len(colored_edges) == len(color_names):
+            for subset, col_name in zip(colored_edges, color_names):
+                print( '\t\\draw[' + col_name + ']' +
+                       ' '.join(['('+str(e[0])+')edge('+str(e[1])+')' for e in subset]) + ';')
+        else:
+            print( '\t\\draw[edge]' +
+                       ' '.join(['('+str(e[0])+')edge('+str(e[1])+')' for e in self.edges()]) + ';')
+        print( '\\end{tikzpicture}')
 
 _additional_categories = {
     RigidFlexibleGraph.plot         : "Plotting",

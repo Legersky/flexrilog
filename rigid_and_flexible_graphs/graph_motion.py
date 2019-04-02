@@ -552,7 +552,7 @@ class ParametricGraphMotion(GraphMotion):
             raise exceptions.NotImplementedError('')
 
 
-    def sample_motion(self, N):
+    def sample_motion(self, N, numeric=True, start_margin=0, end_margin=0):
         r"""
         Return a sampling of the motion.
 
@@ -561,12 +561,24 @@ class ParametricGraphMotion(GraphMotion):
         Doc, examples
         """
         a, b = self._interval
-        if self._sampling_type == 'uniform':
-            return [self.realization(RR(a + (i/Integer(N)) * (b-a)),  numeric=True) for i in range(0, N+1)]
-        elif self._sampling_type == 'tan':
-            return [self.realization(tan(RR(a + (i/Integer(N)) * (b-a))),  numeric=True) for i in range(0, N+1)]
+        if numeric:
+            if self._sampling_type == 'uniform':
+                return [self.realization(RR(a + (i/Integer(N)) * (b-a)),  numeric=True) 
+                        for i in range(start_margin, N+1-end_margin)]
+            elif self._sampling_type == 'tan':
+                return [self.realization(tan(RR(a + (i/Integer(N)) * (b-a))),  numeric=True) 
+                        for i in range(start_margin, N+1-end_margin)]
+            else:
+                raise exceptions.NotImplementedError('Sampling ' + str(self._sampling_type) + ' is not supported.')
         else:
-            raise exceptions.NotImplementedError('Sampling ' + str(self._sampling_type) + ' is not supported.')
+            if self._sampling_type == 'uniform':
+                return [self.realization(a + (i/Integer(N)) * (b-a)) 
+                        for i in range(start_margin, N+1-end_margin)]
+            elif self._sampling_type == 'tan':
+                return [self.realization(tan(a + (i/Integer(N)) * (b-a))) 
+                        for i in range(start_margin, N+1-end_margin)]
+            else:
+                raise exceptions.NotImplementedError('Sampling ' + str(self._sampling_type) + ' is not supported.')
 
 
     def fix_edge(self, fixed_edge, check=True):
