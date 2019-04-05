@@ -59,7 +59,7 @@ class MotionClassifier(SageObject):
         self._graph = graph
 
         if four_cycles == []:
-            self._four_cycles = self._graph.four_cycles()
+            self._four_cycles = self._graph.four_cycles(only_with_NAC=True) 
         else:
             self._four_cycles = four_cycles
 
@@ -426,7 +426,6 @@ class MotionClassifier(SageObject):
         else:
             return True
 
-#    @staticmethod
     def consequences_of_nonnegative_solution_assumption(self, eqs):
         n_zeros_prev = -1
         zeros = []
@@ -457,9 +456,9 @@ class MotionClassifier(SageObject):
 #                        zeros[zero_var] = 0
 #        return [zeros.keys(), gb]
 
-    def consistent_motion_types(self, cycles=[]):
-        if cycles==[]:
-            cycles = self.four_cycles_ordered()
+    def consistent_motion_types(self):#, cycles=[]):
+#         if cycles==[]:
+        cycles = self.four_cycles_ordered()
 
         k23s = [Graph(self._graph).subgraph(k23_ver).edges(labels=False) for k23_ver in self._graph.induced_K23s()]
 
@@ -471,6 +470,8 @@ class MotionClassifier(SageObject):
 
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
         types_prev=[[{}, []]]
+        
+        self._num_tested_combinations = 0
 
         for i, new_cycle in enumerate(cycles):
             types_ext = []
@@ -480,6 +481,7 @@ class MotionClassifier(SageObject):
                                    ] for c2 in self._four_cycle_graph.neighbors(new_cycle) if c2 in cycles[:i]]
             for types_original, ramification_eqs_prev in types_prev:
                 for type_new_cycle in ['g','a','p','o','e']:
+                    self._num_tested_combinations +=1
                     types = deepcopy(types_original)
                     types[tuple(new_cycle)] = type_new_cycle
     #                 H = deepcopy(orig_graph)
@@ -495,7 +497,8 @@ class MotionClassifier(SageObject):
                         if type_pair in ao:
                             ind_o = type_pair.index('o')
                             if [new_index, c2_index][ind_o] % 2 == 1:
-                            #odd deltoid (1,2,3,4) is consistent with 'a' if the common vertex is odd, but Python lists are indexed from 0
+                            # odd deltoid (1,2,3,4) is consistent with 'a' if the common vertex is odd,
+                            # but Python lists are indexed from 0
                                 inconsistent = True
                                 break
                         if type_pair in ae:
@@ -554,7 +557,8 @@ class MotionClassifier(SageObject):
         if self._ring_ramification.ideal(eqs).dimension()==1:
             return [delta.name() for delta in self._graph.NAC_colorings() if not self.mu(delta) in zeros]
         else:
-            raise NotImplementedError('If the dimension of the ideal is greater than one, it is not clear how to proceed.')
+            raise NotImplementedError('The dimension of the solution set is '+str(
+                self._ring_ramification.ideal(eqs).dimension()) + ', so it is not clear how to proceed.')
 
     def motion_types_equivalent_classes(self, motion_types):
         aut_group = self._graph.automorphism_group()
