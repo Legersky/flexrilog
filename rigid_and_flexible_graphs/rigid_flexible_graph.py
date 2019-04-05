@@ -887,7 +887,7 @@ class RigidFlexibleGraph(Graph):
         INPUT:
 
         - ``cls_names`` (default ``[]``)-- if specified, then these names are taken for
-          the isomorphism classes. Otherwise, greek letters are taken.
+          the isomorphism classes. Otherwise, Greek letters are taken.
 
         EXAMPLE::
 
@@ -963,9 +963,14 @@ class RigidFlexibleGraph(Graph):
         return [list(triangle) for triangle in Set(res)]
 
     @doc_index('Subgraphs')
-    def four_cycles(self):
+    def four_cycles(self, only_with_NAC=False):
         r"""
         Return all 4-cycles in the graph.
+        
+        INPUT:
+
+        - ``only_with_NAC`` (default ``False``) -- if ``True``, then a 4-cycle is in the returned list
+          only if there exists a NAC-coloring of the graph which is not unicolor on the 4-cycle. 
 
         OUTPUT:
 
@@ -986,7 +991,7 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage len(RigidFlexibleGraph(graphs.CycleGraph(7)).four_cycles())
+            sage: RigidFlexibleGraph(graphs.CycleGraph(7)).four_cycles()
             []
         """
         res = []
@@ -996,7 +1001,15 @@ class RigidFlexibleGraph(Graph):
             for u1,u2 in Subsets(neigh_v,2):
                 for u in Set(G.neighbors(u1)).intersection(Set(G.neighbors(u2))):
                     if u!=v:
-                        res.append(tuple([v,u1,u,u2]))
+                        cycle = (v,u1,u,u2)
+                        if only_with_NAC:
+                            for delta in self.NAC_colorings():
+                                if len(Set([delta.color(u,v) for u,v 
+                                            in zip(cycle, list(cycle[1:])+[cycle[0]])]))>1:
+                                    res.append(cycle)
+                                    break
+                        else:
+                            res.append(cycle)
             G.delete_vertex(v)
         return res
 
@@ -1038,7 +1051,6 @@ class RigidFlexibleGraph(Graph):
                         res.append([u,v,w,x,y])
         return res
 
-
     @doc_index("NAC-colorings")
     def unicolor_path(self, u, v, active_colorings=None):
         r"""
@@ -1052,6 +1064,7 @@ class RigidFlexibleGraph(Graph):
         - ``u`` and ``v`` -- start and endpoint.
         - ``active_colorings`` (default ``None``) -- if specified,
           then only the given colorings are considered instead of all.
+
 
         OUTPUT:
 
@@ -1081,7 +1094,6 @@ class RigidFlexibleGraph(Graph):
             []
             sage: G.unicolor_path(1,3, active_colorings=G.NAC_colorings()[-2:])
             [1, 0, 3]
-
         """
         if self.has_edge(u,v):
             return [u,v]
@@ -1093,8 +1105,8 @@ class RigidFlexibleGraph(Graph):
             is_unicolor_for_all = True
             for col in active_colorings:
                 if not col.path_is_unicolor(path):
-                     is_unicolor_for_all = False
-                     break
+                    is_unicolor_for_all = False
+                    break
             if is_unicolor_for_all:
                 return path
         return []
@@ -1299,7 +1311,7 @@ class RigidFlexibleGraph(Graph):
 
         - ``col1`` and ``col2`` -- NAC-colorings
         - ``vertex_at_origin`` -- if ``None`` (default),
-         then the first vertex is placed to the origin.
+          then the first vertex is placed to the origin.
 
         OUTPUT:
 
