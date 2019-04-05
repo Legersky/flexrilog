@@ -308,6 +308,154 @@ class GraphGenerator():
                             delta.set_name('gamma' + str(min(u,v)))
                             break
         return G
+    
+    @staticmethod
+    def Q2Graph():
+        r"""
+        Return the graph $Q_2$.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: GraphGenerator.Q2Graph()
+            Q_2: RigidFlexibleGraph with 8 vertices and 13 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.Q2Graph()
+            sphinx_plot(G)
+        """
+        G = RigidFlexibleGraph([(0, 4), (0, 5), (0, 6), (1, 2), (1, 3), (1, 6), (2, 5),
+                                 (2, 7), (3, 4), (3, 7), (4, 7), (5, 7), (6, 7)],
+                                pos={0: (-1, 0), 1: (1, 0), 2: (0.5, -0.866025), 3: (0.5, 0.866025),
+                                      4: (-0.5, 0.866025), 5: (-0.5, -0.866025), 6: (0, 0.3), 7: (0, -0.3)},
+                                name='Q_2')
+        return G
+
+    
+    @staticmethod
+    def Q3Graph():
+        r"""
+        Return the graph $Q_3$.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: GraphGenerator.Q3Graph()
+            Q_3: RigidFlexibleGraph with 8 vertices and 14 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.Q3Graph()
+            sphinx_plot(G)
+        """
+        G = RigidFlexibleGraph([(0, 2), (0, 3), (0, 7), (1, 2), (1, 3), (1, 7), (2, 6), (3, 5),
+                                 (4, 5), (4, 6), (4, 7), (5, 6), (5, 7), (6, 7)],
+                                pos={0: (0.5, 0.866), 1: (-0.5, 0.866), 2: (-1, 0), 3: (1, 0),
+                                      4: (0, -0.433), 5: (0.5, -0.866), 6: (-0.5, -0.866), 7: (0, 0)},
+                                name='Q_3')
+        return G
+
+    
+    @staticmethod
+    def Q4Graph():
+        r"""
+        Return the graph $Q_4$.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: GraphGenerator.Q4Graph()
+            Q_4: RigidFlexibleGraph with 8 vertices and 14 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.Q4Graph()
+            sphinx_plot(G)
+        """
+        G = RigidFlexibleGraph([(0, 1), (0, 5), (0, 7), (1, 4), (1, 6), (2, 4), (2, 5), (2, 6),
+                                 (3, 4), (3, 5), (3, 7), (4, 7), (5, 6), (6, 7)],
+                                pos={0: (0.5, -0.866), 
+                                     1: (-0.5, -0.866),
+                                     2: (0.5, 0.866),
+                                     3: (-0.5, 0.866),
+                                     4: (-1.0, 0.0),
+                                     5: (1.0, 0.0),
+                                     6: (0.3, -0.1),
+                                     7: (-0.3, -0.1)},
+                                name='Q_4')
+        return G
+    
+    
+    @staticmethod
+    def Q5Graph():
+        r"""
+        Return the graph $Q_5$.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: GraphGenerator.Q5Graph()
+            Q_5: RigidFlexibleGraph with 8 vertices and 13 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.Q5Graph()
+            sphinx_plot(G)
+        """
+        G = RigidFlexibleGraph([(0, 1), (0, 3), (0, 6), (1, 2), (1, 6), (2, 4), (2, 7),
+                                 (3, 5), (3, 7), (4, 6), (4, 7), (5, 6), (5, 7)],
+                                pos={0: (-0.587, -0.809),
+                                 1: (0.587, -0.809),
+                                 2: (0.951, 0.309),
+                                 3: (-0.951, 0.309),
+                                 4: (0.235, 0.323),
+                                 5: (-0.235, 0.323),
+                                 6: (0.0, -0.4),
+                                 7: (0.0, 1.0)},
+                                name='Q_5')
+        return G
+
+    
+    @staticmethod
+    def Q6Graph():
+        r"""
+        Return the graph $Q_6$.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: GraphGenerator.Q6Graph()
+            Q_6: RigidFlexibleGraph with 8 vertices and 13 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.Q6Graph()
+            sphinx_plot(G)
+        """
+        G = RigidFlexibleGraph([(0, 1), (0, 2), (0, 5), (1, 4), (1, 7), (2, 3), (2, 6), (3, 6),
+                                (3, 7), (4, 6), (4, 7), (5, 6), (5, 7)],
+                                pos={0: (0.0, -0.433),
+                                     1: (-0.5, -0.866),
+                                     2: (0.5, -0.866),
+                                     3: (1.0, 0.0),
+                                     4: (-1.0, 0.0),
+                                     5: (0.0, 0.0),
+                                     6: (0.5, 0.866),
+                                     7: (-0.5, 0.866)},
+                                name='Q_6')
+        return G
+
 
     @staticmethod
     def S1Graph():
@@ -332,6 +480,128 @@ class GraphGenerator():
                                   pos={1: (-1, 0.8), 2: (-2, -0.2), 3: (0, -1), 4: (-1, 0),
                                        5: (0, 1), 6: (1, 0), 7: (0, -1.75), 8: (1.8, 0)},
                                   name='S_1')
+
+    @staticmethod
+    def S2Graph():
+        r"""
+        Return the graph $S_2$.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: GraphGenerator.S2Graph()
+            S_2: RigidFlexibleGraph with 8 vertices and 14 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.S2Graph()
+            sphinx_plot(G)
+        """
+        return RigidFlexibleGraph([ (5, 3), (2, 6), (4, 0),
+                                     (2, 4), (0, 1), (5, 7),
+                                     (2, 5), (7, 4), (3, 6),
+                                     (1, 6), (7, 6), (3, 4), (1, 7), (5, 0)],
+                                  pos={1: (-0.8,-1.4),
+                                    5: (1., 0.),
+                                    3: (-1.,  0.),
+                                    6: (-0.5, 0.866025),
+                                    2: (0.5, 0.866025),
+                                    4: (-0.5, -0.866025),
+                                    7: (0.5, -0.866025),
+                                    0: (0.8,-1.4)},
+                                  name='S_2')
+
+    @staticmethod
+    def S3Graph():
+        r"""
+        Return the graph $S_3$.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: GraphGenerator.S3Graph()
+            S_3: RigidFlexibleGraph with 8 vertices and 14 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.S3Graph()
+            sphinx_plot(G)
+        """
+        return RigidFlexibleGraph([ (7, 3), (2, 6), (5, 1), (2, 5), (7, 4), (0, 6),
+                                   (2, 7), (4, 5), (3, 6), (4, 6), (3, 5), (7, 1), (0, 7),(0, 1)],
+                                  pos={1: (-0.8,-1.4),
+                                        7: (1., 0.),
+                                        3: (-1.,  0.),
+                                        6: (-0.5, -0.866025),
+                                        2: (0.5, -0.866025),
+                                        5: (-0.5, 0.866025),
+                                        4: (0.5, 0.866025),
+                                        0: (0.8,-1.4)},
+                                  name='S_3')
+
+    @staticmethod
+    def S4Graph():
+        r"""
+        Return the graph $S_4$.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: GraphGenerator.S4Graph()
+            S_4: RigidFlexibleGraph with 8 vertices and 14 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.S4Graph()
+            sphinx_plot(G)
+        """
+        return RigidFlexibleGraph([(1, 4), (2, 3), (3, 6), (6, 5), (2, 5), (5, 4), 
+                                   (6, 1), (3, 4), (2, 1), (5, 7), (5, 8), (7, 4), (7, 8), (4, 8)],
+                                  pos={1: (0.5, -0.866025),
+                                        2: (1., 0.),
+                                        3: (0.5, 0.866025),
+                                        4: (-0.5, 0.866025),
+                                        5: (-1.,  0.),
+                                        6: (-0.5, -0.866025),
+                                        7: (-0.519, 0.30),
+                                        8: (-0.952, 0.550),},
+                                  name='S_4')
+
+    @staticmethod
+    def S5Graph():
+        r"""
+        Return the graph $S_5$.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: GraphGenerator.S5Graph()
+            S_5: RigidFlexibleGraph with 8 vertices and 13 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.S5Graph()
+            sphinx_plot(G)
+        """
+        return RigidFlexibleGraph([(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 6), (2, 3), (2, 6), (3, 7), 
+                                   (4, 7), (5, 6), (5, 7), (6, 7)],
+                                  pos = {1 : (-0.588, -0.809),
+                                        2 : (0.588, -0.809),
+                                        3 : (0.588, 0.309),
+                                        4 : (-0.588, 0.309),
+                                        7 : (0.235, 0),
+                                        5 : (-0.235, 0),
+                                        6 : (0.000, -0.400),
+                                        0 : (0.000, 0.7)},
+                                  name='S_5')
 
 
     @staticmethod
