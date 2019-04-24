@@ -354,6 +354,11 @@ class RigidFlexibleGraph(Graph):
             else:
                 return True
         elif algorithm=="Henneberg":
+            if len(self.edges())!=2*len(self.vertices())-3:
+                if certificate:
+                    return (False, None)
+                else:
+                    return False
             s = self.Henneberg_sequence()
             if certificate:
                 return (s!=None, s)
