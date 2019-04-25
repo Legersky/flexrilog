@@ -93,8 +93,7 @@ class NACcoloring(SageObject):
         Traceback (most recent call last):
         ...
         RuntimeError: The edges of the NAC-coloring do not match the edges of the graph.
-        
-    TODO: NAC2int
+    
 
     """
     def __init__(self, G, coloring, name=None, check=True):
@@ -701,7 +700,31 @@ class NACcoloring(SageObject):
     def print_tikz(self):
         self._graph.print_tikz([self.blue_edges(), self.red_edges()], ['redge', 'bedge'])
         
-
+    def NAC2int(self):
+        """
+        Return the integer representation of the NAC-coloring.
+        
+        OUTPUT:
+        
+        The binary representation of the number is obtained by sorting
+        the edges lexicographically and setting 1 for red edges,
+        0 for blue edges, or the other way around if the first edge is blue.
+        
+        EXAMPLE:
+        
+        sage: from rigid_and_flexible_graphs import GraphGenerator
+        sage: delta = GraphGenerator.Q1Graph().NAC_colorings()[0]
+        sage: delta.NAC2int()
+        3871
+        sage: 3871.binary()
+        '111100011111'
+        """
+        s = '1'
+        u1, v1 = self._graph.edges(labels=False)[0]
+        first_color = self.color(u1, v1)
+        for u,v in self._graph.edges(labels=False):
+            s += '1' if self.color(u,v)==first_color else '0'
+        return int(s,2)
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", (gen_rest_table_index(NACcoloring)))
