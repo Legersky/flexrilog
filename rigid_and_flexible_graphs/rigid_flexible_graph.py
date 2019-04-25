@@ -90,7 +90,7 @@ class RigidFlexibleGraph(Graph):
     - ``name`` --  gives the graph a name
     - ``pos`` -- a positioning dictionary. For example, to
       draw 4 vertices on a square ``pos={0: [-1,-1], 1: [ 1,-1], 2: [ 1, 1], 3: [-1, 1]}``.
-    - ``check`` (boolen) -- If ``True`` (default), then it is checked whether the graph connected and has at least one edge.
+    - ``check`` (boolean) -- If ``True`` (default), then it is checked whether the graph connected and has at least one edge.
 
     EXAMPLES:
 

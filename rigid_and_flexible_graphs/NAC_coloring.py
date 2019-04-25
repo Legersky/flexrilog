@@ -93,6 +93,8 @@ class NACcoloring(SageObject):
         Traceback (most recent call last):
         ...
         RuntimeError: The edges of the NAC-coloring do not match the edges of the graph.
+        
+    TODO: NAC2int
 
     """
     def __init__(self, G, coloring, name=None, check=True):
