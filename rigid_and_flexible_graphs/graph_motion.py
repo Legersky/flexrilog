@@ -405,7 +405,6 @@ class ParametricGraphMotion(GraphMotion):
                 a = [vector([0.3*((-1)**i-1)+0.3*sin(i), i]) for i in range(0,m+1)]
                 b = [vector([j, 0.3*((-1)**j-1)+0.3*sin(j)]) for j in range(0,n+1)]
         else:
-            positions = {}
             m = max([k for _, k in grid_coor.values()])
             n = max([k for k, _ in grid_coor.values()])
             a = [vector([0, i]) for i in range(0,m+1)]
@@ -459,12 +458,12 @@ class ParametricGraphMotion(GraphMotion):
         embedding = self._graph.spatial_embeddings_four_directions(active_NACs[0], active_NACs[1], vertex_at_origin=data['vertex_at_origin'])
         if embedding is None:
             raise exceptions.RuntimeError('There is no injective spatial embeddings.')
-        vars = []
+        vrs = []
         for v in embedding:
-            vars += list(embedding[v][0].variables())
-            vars += list(embedding[v][1].variables())
+            vrs += list(embedding[v][0].variables())
+            vrs += list(embedding[v][1].variables())
         subs_dict = {}
-        for vrbl in Set(vars):
+        for vrbl in Set(vrs):
             if data['subs_dict'].has_key(str(vrbl)):
                 subs_dict[vrbl] = data['subs_dict'][str(vrbl)]
             else:
