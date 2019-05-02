@@ -279,7 +279,7 @@ class MotionClassifier(SageObject):
         equations = (ideal(eqs_w).groebner_basis()
                      + ideal(eqs_z).groebner_basis()
                      + eqs_lengths
-                     + extra_eqs)
+                     + [self._ringLC(eq) for eq in extra_eqs])
         return [self._ring_lambdas(eq)
                 for eq in ideal(equations).elimination_ideal(flatten(
                     [[self.w(e), self.z(e)] for e in self._graph.edges()])).basis
@@ -670,6 +670,29 @@ class MotionClassifier(SageObject):
                 eqs.append(self.lam([c[1], c[2]]) - self.lam([c[2], c[3]]))
                 eqs.append(self.lam([c[0], c[1]]) - self.lam([c[0], c[3]]))
         return [self._ring_lambdas(eq) for eq in ideal(eqs).groebner_basis()]
+
+    def graph_with_same_edge_lengths(self, motion_types, plot=True):
+        """
+        Return a graph with edge labels corresponding to same edge lengths.
+        
+        INPUT:
+        
+        - `plot` -- if `True` (default), then plot of the graph is returned. 
+        
+        OUTPUT:
+        
+        The edge labels of the output graph are same for if the edge lengths
+        are same due to `motion_types`. 
+        """
+        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
+        self._set_same_lengths(H, motion_types)
+        G_labeled = Graph([[u,v,H[(u,v)]] for u,v in H])
+        G_labeled._pos = self._graph._pos
+        if plot:
+            return G_labeled.plot(edge_labels=True, color_by_label=True)
+        else:
+            return G_labeled
+
 
 
 __doc__ = __doc__.replace(
