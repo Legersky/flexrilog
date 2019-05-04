@@ -764,12 +764,12 @@ class ParametricGraphMotion(GraphMotion):
                     f.write('translate <' + transform(self.parametrization()[v][0]) + ',' + str(layer_height *(A[v][1]+Integer(1)/Integer(2))) +
                         ','+ transform(self.parametrization()[v][1]) + '> }')
         if compile_animation:
-            name = filename #compile_animation if type(compile_animation)==str else 'motion'
+            name = filename
             import subprocess
             print subprocess.call(['mkdir', name + '_img'])
             print subprocess.call(['povray', name+'.ini'])
             print subprocess.call(['ffmpeg', '-y', '-framerate', '24', '-i',
-                             name+'_img/'+name+'%0' + str(len(str(frames))) +'d.png', '-vb', '2M', name+'.mp4']) #' + str(floor(log(frames, 10))) +'
+                             name+'_img/'+name+'%0' + str(len(str(frames))) +'d.png', '-vb', '2M', name+'.mp4'])
             from IPython.display import HTML
             return HTML('<video width="100%" controls> <source src="'+name+'.mp4" type="video/mp4"></video>')
 
