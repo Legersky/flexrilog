@@ -36,9 +36,9 @@ Classes
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from sage.all import deepcopy, Set, Graph, find_root#, ceil, sqrt, matrix, copy
+from sage.all import deepcopy, Set, Graph, find_root, ceil#, sqrt, matrix, copy
 from sage.all import SageObject,  parent, Subsets #, rainbow, latex, flatten
-from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan
+from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan, log
 from sage.all import FunctionField, QQ,  sqrt,  function
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.rings.integer import Integer
@@ -638,7 +638,7 @@ class ParametricGraphMotion(GraphMotion):
 
         TODO:
 
-        Fix the number of digits for compilation
+        description
         """
         A = {}
         for v in self._graph.vertices():
@@ -764,12 +764,12 @@ class ParametricGraphMotion(GraphMotion):
                     f.write('translate <' + transform(self.parametrization()[v][0]) + ',' + str(layer_height *(A[v][1]+Integer(1)/Integer(2))) +
                         ','+ transform(self.parametrization()[v][1]) + '> }')
         if compile_animation:
-            name = compile_animation if type(compile_animation)==str else 'motion'
+            name = filename #compile_animation if type(compile_animation)==str else 'motion'
             import subprocess
             print subprocess.call(['mkdir', name + '_img'])
             print subprocess.call(['povray', name+'.ini'])
             print subprocess.call(['ffmpeg', '-y', '-framerate', '24', '-i',
-                             name+'_img/'+name+'%02d.png', '-vb', '2M', name+'.mp4']) #' + str(floor(log(frames, 10))) +'
+                             name+'_img/'+name+'%0' + str(len(str(frames))) +'d.png', '-vb', '2M', name+'.mp4']) #' + str(floor(log(frames, 10))) +'
             from IPython.display import HTML
             return HTML('<video width="100%" controls> <source src="'+name+'.mp4" type="video/mp4"></video>')
 
