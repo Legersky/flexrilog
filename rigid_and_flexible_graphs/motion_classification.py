@@ -414,6 +414,32 @@ class MotionClassifier(SageObject):
             return ['L','O']
 
     @staticmethod
+    def NAC_types2motion_type(t):
+        if Set(t)==Set(['L','R','O']):
+            return 'g'
+        if Set(t)==Set(['L','R']):
+            return 'a'
+        if Set(t)==Set(['O']):
+            return 'p'
+        if Set(t)==Set(['R','O']):
+            return 'e'
+        if Set(t)==Set(['L','O']):
+            return 'o'
+    
+    def active_NACs2motion_types(self, active):
+        motion_types = {cycle:[] for cycle in self._four_cycles}
+        for delta in active:
+            if type(delta)!=str:
+                delta = delta.name()
+            for cycle in motion_types:
+                motion_types[cycle] += [t for t, colorings 
+                                        in self._restriction_NAC_types[cycle].items()
+                                        if delta in colorings]
+        for cycle in motion_types:
+            motion_types[cycle] = self.NAC_types2motion_type(motion_types[cycle])
+        return motion_types
+
+    @staticmethod
     def _same_edge_lengths(K, edges_to_check):
         if edges_to_check:
             length = K[MotionClassifier._edge_ordered(edges_to_check[0][0], edges_to_check[0][1])]
