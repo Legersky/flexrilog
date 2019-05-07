@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from IPython.core.display import display
 r"""
 This is implementation of classification motions of a graph.
 
@@ -38,6 +39,7 @@ Classes
 
 from sage.all import Graph, Set, Subsets, deepcopy#,, find_root ceil, sqrt, matrix, copy,
 from sage.all import SageObject, PolynomialRing, QQ, flatten, ideal, sgn
+from sage.all import table
 #from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan
 #from sage.all import FunctionField, QQ,  sqrt,  function
 from sage.misc.rest_index_of_methods import gen_rest_table_index
@@ -583,8 +585,8 @@ class MotionClassifier(SageObject):
         if self._ring_ramification.ideal(eqs).dimension()==1:
             return [delta.name() for delta in self._graph.NAC_colorings() if not self.mu(delta) in zeros]
         else:
-            raise NotImplementedError('The dimension of the solution set is '+str(
-                self._ring_ramification.ideal(eqs).dimension()) + ', so it is not clear how to proceed.')
+            raise NotImplementedError('There might be more solutions (dim '+str(
+                self._ring_ramification.ideal(eqs).dimension()) + ')')
 
     def motion_types_equivalent_classes(self, motion_types):
         aut_group = self._graph.automorphism_group()
@@ -682,6 +684,71 @@ class MotionClassifier(SageObject):
                     return False
 
         return True
+
+    def possible_motion_types_and_active_NACs(self,
+                                              comments = {},
+                                              show_table=True,
+                                              one_representative=True,
+                                              tab_rows=False,
+                                              keep_orth_failed=False):
+        types = self.consistent_motion_types()
+        classes = self.motion_types_equivalent_classes(types)
+        valid_classes = []
+        
+        motions = [ 'g','a','p','d']
+        if one_representative:
+            header = [['index', '#', 'motion types'] + motions + ['active NACs', 'comment']]
+        else:
+            header = [['index', '#', 'elem.', 'motion types'] + motions + ['active NACs', 'comment']]
+        rows = []
+        for i, cls in enumerate(classes):
+            rows_cls = []
+            to_be_appended = True
+            for j, t in enumerate(cls):
+                row = [i, len(cls)]
+                if not one_representative:
+                    row.append(j)
+                row.append(' '.join([t[c] for c in self.four_cycles_ordered()]))
+                row += [Counter([('d' if s in ['e','o'] else s) for c, s in t.iteritems()])[m] for m in motions]
+                try:
+                    active = self.active_NAC_coloring_names(t)
+                    row.append([self.mu(name) for name in active])
+                    if self.check_orthogonal_diagonals(t, active):
+                        row.append(comments.get(i,''))
+                    else:
+                        to_be_appended = False
+                        if not keep_orth_failed:
+                            continue
+                        else:
+                            row.append('orthogonality check failed' + str(comments.get(i,'')))
+                            
+                except NotImplementedError as e:
+                    zeros, eqs = self.consequences_of_nonnegative_solution_assumption(
+                        flatten([self.ramification_formula(c, t[c]) for c in t]))
+                    row.append([eq for eq in eqs if not eq in zeros])
+                    row.append(str(comments.get(i,'')) + str(e))
+                    
+                rows_cls.append(row)
+                
+                if one_representative:
+                    break
+            if to_be_appended or keep_orth_failed:
+                valid_classes.append(cls)
+                if one_representative:
+                    rows += rows_cls
+                else:
+                    rows.append(rows_cls)
+        if show_table:
+            if one_representative:
+                display(table(header + rows))
+            else:
+                display(table(header + [row for rows_cls in rows for row in rows_cls]))
+        if tab_rows:
+            return valid_classes, rows
+        return valid_classes
+        
+        
+        
 
     def motion_types2equations(self, motion_types):
         eqs = []
