@@ -712,7 +712,7 @@ class MotionClassifier(SageObject):
                 row += [Counter([('d' if s in ['e','o'] else s) for c, s in t.iteritems()])[m] for m in motions]
                 try:
                     active = self.active_NAC_coloring_names(t)
-                    row.append([self.mu(name) for name in active])
+                    row.append([self.mu(name) for name in sorted(active)])
                     if self.check_orthogonal_diagonals(t, active):
                         row.append(comments.get(i,''))
                     else:

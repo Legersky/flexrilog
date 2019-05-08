@@ -574,7 +574,7 @@ class GraphGenerator():
                                   name='S_4')
 
     @staticmethod
-    def S5Graph():
+    def S5Graph(old_labeling=False):
         r"""
         Return the graph $S_5$.
 
@@ -591,6 +591,19 @@ class GraphGenerator():
             G = GraphGenerator.S5Graph()
             sphinx_plot(G)
         """
+        if not old_labeling:
+            return RigidFlexibleGraph([(1, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 3), (3, 7), 
+                               (4, 5), (4, 6), (4, 7), (5, 8), (6, 8), (7, 8)],
+                              pos = {2 : (-0.588, -0.809),
+                                    3 : (0.588, -0.809),
+                                    7 : (0.588, 0.309),
+                                    6 : (-0.588, 0.309),
+                                    4 : (0.235, 0),
+                                    5 : (-0.235, 0),
+                                    1 : (0.000, -0.400),
+                                    8 : (0.000, 0.7)},
+                              name='S_5')
+                
         return RigidFlexibleGraph([(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 6), (2, 3), (2, 6), (3, 7), 
                                    (4, 7), (5, 6), (5, 7), (6, 7)],
                                   pos = {1 : (-0.588, -0.809),
