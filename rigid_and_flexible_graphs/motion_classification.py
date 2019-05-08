@@ -690,7 +690,8 @@ class MotionClassifier(SageObject):
                                               show_table=True,
                                               one_representative=True,
                                               tab_rows=False,
-                                              keep_orth_failed=False):
+                                              keep_orth_failed=False,
+                                              eqs=False):
         types = self.consistent_motion_types()
         classes = self.motion_types_equivalent_classes(types)
         valid_classes = []
@@ -700,6 +701,8 @@ class MotionClassifier(SageObject):
             header = [['index', '#', 'motion types'] + motions + ['active NACs', 'comment']]
         else:
             header = [['index', '#', 'elem.', 'motion types'] + motions + ['active NACs', 'comment']]
+        if eqs:
+            header[0].append('equations')
         rows = []
         for i, cls in enumerate(classes):
             rows_cls = []
@@ -727,6 +730,11 @@ class MotionClassifier(SageObject):
                         flatten([self.ramification_formula(c, t[c]) for c in t]))
                     row.append([eq for eq in eqs if not eq in zeros])
                     row.append(str(comments.get(i,'')) + str(e))
+                    
+                if eqs:
+                    zeros, eqs = self.consequences_of_nonnegative_solution_assumption(
+                        flatten([self.ramification_formula(c, t[c]) for c in t]))
+                    row.append([eq for eq in eqs if not eq in zeros])
                     
                 rows_cls.append(row)
                 
