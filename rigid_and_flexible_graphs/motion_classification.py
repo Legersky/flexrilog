@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from IPython.core.display import display
 r"""
 This is implementation of classification motions of a graph.
 
@@ -51,6 +50,7 @@ _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(
 from rigid_flexible_graph import RigidFlexibleGraph
 import exceptions
 from collections import Counter
+from IPython.core.display import display
 
 class MotionClassifier(SageObject):
     def __init__(self, graph, four_cycles=[], separator=''):
