@@ -38,7 +38,7 @@ Classes
 
 from sage.all import Graph, Set, Subsets, deepcopy#,, find_root ceil, sqrt, matrix, copy,
 from sage.all import SageObject, PolynomialRing, QQ, flatten, ideal, sgn
-from sage.all import table, show, factor
+from sage.all import table, show, factor, latex
 #from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan
 #from sage.all import FunctionField, QQ,  sqrt,  function
 from sage.misc.rest_index_of_methods import gen_rest_table_index
@@ -892,16 +892,19 @@ class MotionClassifier(SageObject):
         return ideal(eqs_lambdas + [self.aux_var]).dimension()
     
     @staticmethod
-    def show_factored_eqs(eqs, only_print=False, numbers=False, variables=False):
+    def show_factored_eqs(eqs, only_print=False, numbers=False, variables=False, print_latex=False):
         for i, eq in enumerate(eqs):
+            factors = factor(eq)
             if numbers:
                 print(i)
             if variables:
                 print(eq.variables())
+            if print_latex:
+                print latex(factors)
             if only_print:
-                print(factor(eq))
+                print(factors)
             else:
-                show(factor(eq))
+                show(factors)
     
     @staticmethod
     def is_subcase(eqs_a, eqs_b):
@@ -917,12 +920,12 @@ class MotionClassifier(SageObject):
     def motion_types2tikz(self,
                           motion_types,
                           color_names=[
-                              'edge,LimeGreen',
-                              'edge,Orchid',
-                              'edge,Orange',
-                              'edge,Cerulean',
-                              'edge,SlateGrey',
-                              'edge,LightGray',]
+                              'edge, col1',
+                              'edge, col2',
+                              'edge, col3',
+                              'edge, col4',
+                              'edge, col5',
+                              'edge, col6',]
                           , vertex_style='lnodesmall'
                           ):
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
