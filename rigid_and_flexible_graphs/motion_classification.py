@@ -38,7 +38,7 @@ Classes
 
 from sage.all import Graph, Set, Subsets, deepcopy#,, find_root ceil, sqrt, matrix, copy,
 from sage.all import SageObject, PolynomialRing, QQ, flatten, ideal, sgn
-from sage.all import table
+from sage.all import table, show
 #from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan
 #from sage.all import FunctionField, QQ,  sqrt,  function
 from sage.misc.rest_index_of_methods import gen_rest_table_index
@@ -604,11 +604,14 @@ class MotionClassifier(SageObject):
         return [t for t, _ in types_prev]
 
     def active_NAC_coloring_names(self, motion_types):
+        return [delta.name() for delta in self.motion_types2active_NACs(motion_types)]
+        
+    def motion_types2active_NACs(self, motion_types):
         zeros, eqs = self.consequences_of_nonnegative_solution_assumption(
             flatten([self.ramification_formula(c, motion_types[c]) for c in motion_types]))
 
         if self._ring_ramification.ideal(eqs).dimension()==1:
-            return [delta.name() for delta in self._graph.NAC_colorings() if not self.mu(delta) in zeros]
+            return [delta for delta in self._graph.NAC_colorings() if not self.mu(delta) in zeros]
         else:
             raise NotImplementedError('There might be more solutions (dim '+str(
                 self._ring_ramification.ideal(eqs).dimension()) + ')')
@@ -649,7 +652,11 @@ class MotionClassifier(SageObject):
 
 
     def check_orthogonal_diagonals(self, types,  active_NACs, extra_cycles_orthog_diag=[]):
-
+        """
+        TODO:
+        
+        return orthogonality_graph
+        """
         perp_by_NAC = [cycle for delta in active_NACs for cycle in self._orthogonal_diagonals[delta]]
         deltoids = [cycle for cycle, t in types.iteritems() if t in ['e','o']]
 
@@ -773,17 +780,38 @@ class MotionClassifier(SageObject):
                     rows.append(rows_cls)
         if show_table:
             if one_representative:
-                display(table(header + rows))
+                T = table(header + rows)
             else:
-                display(table(header + [row for rows_cls in rows for row in rows_cls]))
+                T = table(header + [row for rows_cls in rows for row in rows_cls])
+            T.options()['header_row'] = True
+            display(T)
+
         if tab_rows:
             return valid_classes, rows
         return valid_classes
         
+    def motion_types2equations(self, motion_types,
+                                           active_NACs=None,
+                                           groebner_basis=True,
+                                           extra_eqs=[]):
+        if active_NACs==None:
+            active_NACs = self.motion_types2active_NACs(motion_types)
         
+        eqs_same_lengths = self.motion_types2same_lengths_equations(motion_types)
+        eqs = [self.equations_from_leading_coefs(delta, check=False,
+                                                 extra_eqs=eqs_same_lengths + extra_eqs)
+                    for delta in active_NACs if delta.is_singleton(active_NACs)
+                ]
+        if groebner_basis:
+            return ideal(eqs).groebner_basis()
+        else:
+            return eqs
+    
+    def degenerate_triangle_equation(self, u, v, w):
+        return self.lam(u,v) - self.lam(u,w) - self.lam(w,v)
         
 
-    def motion_types2equations(self, motion_types):
+    def motion_types2same_lengths_equations(self, motion_types):
         eqs = []
         for c, motion in motion_types.iteritems():
             if motion=='a' or motion=='p':
@@ -819,7 +847,45 @@ class MotionClassifier(SageObject):
         else:
             return G_labeled
 
+    def singletons_table(self, active_NACs=None):
+        """
+        Return table whether (active) NAC-colorings are singletons.
+        """
+        rows = [['NAC-coloring', 'is singleton']]
+        if active_NACs==None:
+            active_NACs = self._graph.NAC_colorings()
+            only_active = False
+        else:
+            only_active = True
+            rows[0].append('is singleton w.r.t. active')
 
+        for delta in active_NACs:
+            rows.append([delta.name(), delta.is_singleton()])
+            if only_active:
+                rows[-1].append(delta.is_singleton(active_NACs))
+        T = table(rows)
+        T.options()['header_row'] = True
+        return T
 
+    def edge_equations_ideal(self, fixed_edge, eqs_lamdas=[], extra_eqs=[], show_input=False):
+        equations = []
+        for u,v in self._graph.edges(labels=False):
+            equations.append((self.x(u)-self.x(v))**_sage_const_2 + (self.y(u)-self.y(v))**_sage_const_2 - self.l(u,v)**_sage_const_2)
+        equations += [
+            self.x(fixed_edge[0]),
+            self.y(fixed_edge[0]),
+            self.x(fixed_edge[1]),
+            self.y(fixed_edge[1]) - self.l(fixed_edge[0], fixed_edge[1]),
+            ] + [
+                self._ring_coordinates(eq) for eq in eqs_lamdas + extra_eqs
+                ]
+        if show_input:
+            for eq in equations:
+                show(eq)
+        return ideal(equations)
+    
+    def edge_lengths_dimension(self, eqs_lambdas):
+        return ideal(eqs_lambdas + [self.aux_var]).dimension()
+    
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", gen_rest_table_index(MotionClassifier))
