@@ -38,7 +38,7 @@ Classes
 
 from sage.all import Graph, Set, Subsets, deepcopy#,, find_root ceil, sqrt, matrix, copy,
 from sage.all import SageObject, PolynomialRing, QQ, flatten, ideal, sgn
-from sage.all import table, show
+from sage.all import table, show, factor
 #from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan
 #from sage.all import FunctionField, QQ,  sqrt,  function
 from sage.misc.rest_index_of_methods import gen_rest_table_index
@@ -212,11 +212,11 @@ class MotionClassifier(SageObject):
     def _lam(self, e):
         return self._ringLC_gens['lambda'+self._edge2str(e)]
     
-    def lam(self, e):
+    def lam(self, u,v):
         """
         Return the variable for edge length in the ring of edge lengths.
         """
-        return self._ring_lambdas_gens['lambda'+self._edge2str(e)]
+        return self._ring_lambdas_gens['lambda'+self._edge2str([u,v])]
 
     def mu(self, delta):
         if type(delta)==str:
@@ -360,6 +360,10 @@ class MotionClassifier(SageObject):
                 k += self._set_two_edge_same_lengths(H, c[0], c[1], c[0], c[3], k)
 
     def motion_types2same_edge_lenghts(self, motion_types):
+        """
+        TODO:
+        make it static method
+        """
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
         self._set_same_lengths(H, motion_types)
         return H
@@ -798,10 +802,10 @@ class MotionClassifier(SageObject):
             active_NACs = self.motion_types2active_NACs(motion_types)
         
         eqs_same_lengths = self.motion_types2same_lengths_equations(motion_types)
-        eqs = [self.equations_from_leading_coefs(delta, check=False,
+        eqs = flatten([self.equations_from_leading_coefs(delta, check=False,
                                                  extra_eqs=eqs_same_lengths + extra_eqs)
                     for delta in active_NACs if delta.is_singleton(active_NACs)
-                ]
+                ])
         if groebner_basis:
             return ideal(eqs).groebner_basis()
         else:
@@ -815,14 +819,14 @@ class MotionClassifier(SageObject):
         eqs = []
         for c, motion in motion_types.iteritems():
             if motion=='a' or motion=='p':
-                eqs.append(self.lam([c[0], c[1]]) - self.lam([c[2], c[3]]))
-                eqs.append(self.lam([c[1], c[2]]) - self.lam([c[0], c[3]]))
+                eqs.append(self.lam(c[0], c[1]) - self.lam(c[2], c[3]))
+                eqs.append(self.lam(c[1], c[2]) - self.lam(c[0], c[3]))
             elif motion=='o':
-                eqs.append(self.lam([c[0], c[1]]) - self.lam([c[1], c[2]]))
-                eqs.append(self.lam([c[2], c[3]]) - self.lam([c[0], c[3]]))
+                eqs.append(self.lam(c[0], c[1]) - self.lam(c[1], c[2]))
+                eqs.append(self.lam(c[2], c[3]) - self.lam(c[0], c[3]))
             elif motion=='e':
-                eqs.append(self.lam([c[1], c[2]]) - self.lam([c[2], c[3]]))
-                eqs.append(self.lam([c[0], c[1]]) - self.lam([c[0], c[3]]))
+                eqs.append(self.lam(c[1], c[2]) - self.lam(c[2], c[3]))
+                eqs.append(self.lam(c[0], c[1]) - self.lam(c[0], c[3]))
         return [eq for eq in ideal(eqs).groebner_basis()]
 
     def graph_with_same_edge_lengths(self, motion_types, plot=True):
@@ -874,10 +878,10 @@ class MotionClassifier(SageObject):
         equations += [
             self.x(fixed_edge[0]),
             self.y(fixed_edge[0]),
-            self.x(fixed_edge[1]),
-            self.y(fixed_edge[1]) - self.l(fixed_edge[0], fixed_edge[1]),
+            self.y(fixed_edge[1]),
+            self.x(fixed_edge[1]) - self.l(fixed_edge[0], fixed_edge[1]),
             ] + [
-                self._ring_coordinates(eq) for eq in eqs_lamdas + extra_eqs
+                self._ring_coordinates(eq) for eq in list(eqs_lamdas) + list(extra_eqs)
                 ]
         if show_input:
             for eq in equations:
@@ -886,6 +890,48 @@ class MotionClassifier(SageObject):
     
     def edge_lengths_dimension(self, eqs_lambdas):
         return ideal(eqs_lambdas + [self.aux_var]).dimension()
+    
+    @staticmethod
+    def show_factored_eqs(eqs, only_print=False, numbers=False, variables=False):
+        for i, eq in enumerate(eqs):
+            if numbers:
+                print(i)
+            if variables:
+                print(eq.variables())
+            if only_print:
+                print(factor(eq))
+            else:
+                show(factor(eq))
+    
+    @staticmethod
+    def is_subcase(eqs_a, eqs_b):
+        """
+        Return if `eqs_a` is a subcase of `eqs_b`, i.e., the ideal of `eqs_a` contains the ideal of `eqs_b`.
+        """
+        I_a = ideal(eqs_a)
+        for eq in eqs_b:
+            if not eq in I_a:
+                return False
+        return True
+    
+    def motion_types2tikz(self,
+                          motion_types,
+                          color_names=[
+                              'edge,LimeGreen',
+                              'edge,Orchid',
+                              'edge,Orange',
+                              'edge,Cerulean',
+                              'edge,SlateGrey',
+                              'edge,LightGray',]
+                          , vertex_style='lnodesmall'
+                          ):
+        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
+        self._set_same_lengths(H, motion_types)
+        edge_partition = [[e for e in H if H[e]==el] for el in Set(H.values()) if el!=None]
+        edge_partition += [[e] for e in H if H[e]==None]
+        self._graph.print_tikz(colored_edges= edge_partition,
+                               color_names=color_names[:len(edge_partition)],
+                               vertex_style=vertex_style)
     
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", gen_rest_table_index(MotionClassifier))

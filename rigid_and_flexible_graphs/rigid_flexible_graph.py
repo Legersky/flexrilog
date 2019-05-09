@@ -1881,11 +1881,11 @@ class RigidFlexibleGraph(Graph):
             self._pos[v][1] = tmp
 
             
-    def print_tikz(self, colored_edges=[], color_names=['edge']):
+    def print_tikz(self, colored_edges=[], color_names=['edge'], vertex_style='vertex'):
         lowPrecField = RealField(20)
         print('\\begin{tikzpicture}[scale=1]')
         for k in self.vertices():
-            print( '\t\\node[vertex] ('+str(k)+') at '+
+            print( '\t\\node[' + vertex_style + '] ('+str(k)+') at '+
                     str((lowPrecField(self._pos[k][0]),lowPrecField(self._pos[k][1])))+' {'+str(k)+'};')
         if len(colored_edges) == len(color_names):
             for subset, col_name in zip(colored_edges, color_names):
