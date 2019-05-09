@@ -892,19 +892,22 @@ class MotionClassifier(SageObject):
         return ideal(eqs_lambdas + [self.aux_var]).dimension()
     
     @staticmethod
-    def show_factored_eqs(eqs, only_print=False, numbers=False, variables=False, print_latex=False):
+    def show_factored_eqs(eqs, only_print=False, numbers=False,
+                          variables=False, print_latex=False,
+                          print_eqs=True):
         for i, eq in enumerate(eqs):
             factors = factor(eq)
             if numbers:
                 print(i)
             if variables:
-                print(eq.variables())
+                print(latex(eq.variables()))
             if print_latex:
-                print latex(factors)
-            if only_print:
-                print(factors)
-            else:
-                show(factors)
+                print(latex(factors) + '=0\,, \\\\')
+            if print_eqs:
+                if only_print:
+                    print(factors)
+                else:
+                    show(factors)
     
     @staticmethod
     def is_subcase(eqs_a, eqs_b):
@@ -919,19 +922,22 @@ class MotionClassifier(SageObject):
     
     def motion_types2tikz(self,
                           motion_types,
-                          color_names=[
-                              'edge, col1',
-                              'edge, col2',
-                              'edge, col3',
-                              'edge, col4',
-                              'edge, col5',
-                              'edge, col6',]
-                          , vertex_style='lnodesmall'
+                          color_names=[]
+                          , vertex_style='lnodesmall',
+                          none_gray=False,
                           ):
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
         self._set_same_lengths(H, motion_types)
         edge_partition = [[e for e in H if H[e]==el] for el in Set(H.values()) if el!=None]
-        edge_partition += [[e] for e in H if H[e]==None]
+        if none_gray:
+            edge_partition.append([e for e in H if H[e]==None]) 
+        else:
+            edge_partition += [[e] for e in H if H[e]==None]
+        if color_names==[]:
+            color_names = ['edge, col{}'.format(i) for i in range(1,len(edge_partition)+1)]
+        if none_gray:
+            color_names[-1] = 'edge'
+
         self._graph.print_tikz(colored_edges= edge_partition,
                                color_names=color_names[:len(edge_partition)],
                                vertex_style=vertex_style)
