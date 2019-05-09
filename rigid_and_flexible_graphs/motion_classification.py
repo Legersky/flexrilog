@@ -196,13 +196,13 @@ class MotionClassifier(SageObject):
             res[norm_c] = norm_t
         return res
 
-    def w(self, e):
+    def _w(self, e):
         if e[0] < e[1]:
             return self._ringLC_gens['w'+self._edge2str(e)]
         else:
             return -self._ringLC_gens['w'+self._edge2str(e)]
 
-    def z(self, e):
+    def _z(self, e):
         if e[0] < e[1]:
             return self._ringLC_gens['z'+self._edge2str(e)]
         else:
@@ -250,7 +250,7 @@ class MotionClassifier(SageObject):
                 raise exceptions.ValueError('The NAC-coloring must be a singleton.')
         eqs_lengths=[]
         for e in self._graph.edges():
-            eqs_lengths.append(self.z(e)*self.w(e) - self.lam(e)**_sage_const_2)
+            eqs_lengths.append(self._z(e)*self._w(e) - self.lam(e)**_sage_const_2)
 
 
         eqs_w=[]
@@ -264,11 +264,11 @@ class MotionClassifier(SageObject):
                 path = T.shortest_path(e[0],e[1])
                 for u,v in zip(path, path[1:]+[path[0]]):
                     if col.is_red(u,v):
-                        eqz+=self.z([u,v])
+                        eqz+=self._z([u,v])
                     else:
-                        eqw+=self.w([u,v])
-                    eqw_all+=self.w([u,v])
-                    eqz_all+=self.z([u,v])
+                        eqw+=self._w([u,v])
+                    eqw_all+=self._w([u,v])
+                    eqz_all+=self._z([u,v])
                 if eqw:
                     eqs_w.append(eqw)
                 else:
@@ -284,7 +284,7 @@ class MotionClassifier(SageObject):
                      + [self._ringLC(eq) for eq in extra_eqs])
         return [self._ring_lambdas(eq)
                 for eq in ideal(equations).elimination_ideal(flatten(
-                    [[self.w(e), self.z(e)] for e in self._graph.edges()])).basis
+                    [[self._w(e), self._z(e)] for e in self._graph.edges()])).basis
                 ]
 
     @staticmethod
