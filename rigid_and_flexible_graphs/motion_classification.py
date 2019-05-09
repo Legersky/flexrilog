@@ -90,7 +90,8 @@ class MotionClassifier(SageObject):
 
         self._ring_lambdas = PolynomialRing(QQ, names=lambdas + ['u'])
         self._ring_lambdas._latex_names = lambdas_latex + ['u']
-        self.aux_var = self._ring_lambdas.gens_dict()['u']
+        self._ring_lambdas_gens = self._ring_lambdas.gens_dict()
+        self.aux_var = self._ring_lambdas_gens['u']
         
         xs = []
         ys = []
@@ -208,14 +209,38 @@ class MotionClassifier(SageObject):
         else:
             return -self._ringLC_gens['z'+self._edge2str(e)]
 
-    def lam(self, e):
+    def _lam(self, e):
         return self._ringLC_gens['lambda'+self._edge2str(e)]
+    
+    def lam(self, e):
+        """
+        Return the variable for edge length in the ring of edge lengths.
+        """
+        return self._ring_lambdas_gens['lambda'+self._edge2str(e)]
 
     def mu(self, delta):
         if type(delta)==str:
             return self._ring_ramification_gens[delta]
         else:
             return self._ring_ramification_gens[delta.name()]
+
+    def x(self, v):
+        """
+        Return the variable for x coordinate of a vertex. 
+        """
+        return self._ring_coordinates_gens['x'+str(v)]
+
+    def y(self, v):
+        """
+        Return the variable for y coordinate of a vertex. 
+        """
+        return self._ring_coordinates_gens['y'+str(v)]
+
+    def l(self, u,v):
+        """
+        Return the variable for edge length in the ring with coordinates.
+        """
+        return self._ring_coordinates_gens['lambda'+self._edge2str([u,v])]
 
     def equations_from_leading_coefs(self, col, extra_eqs=[], check=True):
         r"""
@@ -250,7 +275,7 @@ class MotionClassifier(SageObject):
                 raise exceptions.ValueError('The NAC-coloring must be a singleton.')
         eqs_lengths=[]
         for e in self._graph.edges():
-            eqs_lengths.append(self._z(e)*self._w(e) - self.lam(e)**_sage_const_2)
+            eqs_lengths.append(self._z(e)*self._w(e) - self._lam(e)**_sage_const_2)
 
 
         eqs_w=[]
@@ -770,7 +795,7 @@ class MotionClassifier(SageObject):
             elif motion=='e':
                 eqs.append(self.lam([c[1], c[2]]) - self.lam([c[2], c[3]]))
                 eqs.append(self.lam([c[0], c[1]]) - self.lam([c[0], c[3]]))
-        return [self._ring_lambdas(eq) for eq in ideal(eqs).groebner_basis()]
+        return [eq for eq in ideal(eqs).groebner_basis()]
 
     def graph_with_same_edge_lengths(self, motion_types, plot=True):
         """
