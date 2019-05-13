@@ -1881,9 +1881,9 @@ class RigidFlexibleGraph(Graph):
             self._pos[v][1] = tmp
 
             
-    def print_tikz(self, colored_edges=[], color_names=['edge'], vertex_style='vertex'):
+    def print_tikz(self, colored_edges=[], color_names=['edge'], vertex_style='vertex', scale=1):
         lowPrecField = RealField(20)
-        print('\\begin{tikzpicture}[scale=1]')
+        print('\\begin{tikzpicture}[scale=' + str(lowPrecField(scale)) + ']')
         for k in self.vertices():
             print( '\t\\node[' + vertex_style + '] ('+str(k)+') at '+
                     str((lowPrecField(self._pos[k][0]),lowPrecField(self._pos[k][1])))+' {'+str(k)+'};')

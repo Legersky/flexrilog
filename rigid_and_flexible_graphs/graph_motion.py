@@ -908,7 +908,11 @@ class ParametricGraphMotion(GraphMotion):
         return {v: Set(res[v]).list() for v in res if res[v]}
 
 
-
+    def merge_animations(self, motions, total_time=12, fps=25, **kwargs):
+        realizations = []
+        for M in motions:
+            realizations += M.sample_motion(floor(total_time*fps/len(motions)))
+        return super(ParametricGraphMotion, self).animation_SVG(realizations, **kwargs)
 
 
 
