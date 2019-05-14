@@ -9,6 +9,7 @@ Welcome to Graph Rigidity and Flexibility's documentation!
    module/NAC_coloring
    module/graph_motion
    module/graph_generator
+   module/motion_classification
 
 
 General

@@ -701,10 +701,8 @@ class NACcoloring(SageObject):
         self._graph.print_tikz([self.blue_edges(), self.red_edges()], ['redge', 'bedge'])
         
     def NAC2int(self):
-        """
+        r"""
         Return the integer representation of the NAC-coloring.
-        
-        OUTPUT:
         
         The binary representation of the number is obtained by sorting
         the edges lexicographically and setting 1 for red edges,

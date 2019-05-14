@@ -213,7 +213,7 @@ class MotionClassifier(SageObject):
         return self._ringLC_gens['lambda'+self._edge2str(e)]
     
     def lam(self, u,v):
-        """
+        r"""
         Return the variable for edge length in the ring of edge lengths.
         """
         return self._ring_lambdas_gens['lambda'+self._edge2str([u,v])]
@@ -225,19 +225,19 @@ class MotionClassifier(SageObject):
             return self._ring_ramification_gens[delta.name()]
 
     def x(self, v):
-        """
+        r"""
         Return the variable for x coordinate of a vertex. 
         """
         return self._ring_coordinates_gens['x'+str(v)]
 
     def y(self, v):
-        """
+        r"""
         Return the variable for y coordinate of a vertex. 
         """
         return self._ring_coordinates_gens['y'+str(v)]
 
     def l(self, u,v):
-        """
+        r"""
         Return the variable for edge length in the ring with coordinates.
         """
         return self._ring_coordinates_gens['lambda'+self._edge2str([u,v])]
@@ -360,7 +360,7 @@ class MotionClassifier(SageObject):
                 k += self._set_two_edge_same_lengths(H, c[0], c[1], c[0], c[3], k)
 
     def motion_types2same_edge_lenghts(self, motion_types):
-        """
+        r"""
         TODO:
         make it static method
         """
@@ -656,7 +656,7 @@ class MotionClassifier(SageObject):
 
 
     def check_orthogonal_diagonals(self, types,  active_NACs, extra_cycles_orthog_diag=[]):
-        """
+        r"""
         TODO:
         
         return orthogonality_graph
@@ -830,7 +830,7 @@ class MotionClassifier(SageObject):
         return [eq for eq in ideal(eqs).groebner_basis()]
 
     def graph_with_same_edge_lengths(self, motion_types, plot=True):
-        """
+        r"""
         Return a graph with edge labels corresponding to same edge lengths.
         
         INPUT:
@@ -852,7 +852,7 @@ class MotionClassifier(SageObject):
             return G_labeled
 
     def singletons_table(self, active_NACs=None):
-        """
+        r"""
         Return table whether (active) NAC-colorings are singletons.
         """
         rows = [['NAC-coloring', 'is singleton']]
@@ -891,6 +891,16 @@ class MotionClassifier(SageObject):
     def edge_lengths_dimension(self, eqs_lambdas):
         return ideal(eqs_lambdas + [self.aux_var]).dimension()
     
+    def edge_lengts_dict2eqs(self, edge_lengths):
+        return [self.lam(e[0],e[1]) - QQ(edge_lengths[e]) for e in edge_lengths ]
+
+    def edge_lengths_satisfy_eqs(self, eqs, edge_lengths, print_values=False):
+        I = ideal(self.edge_lengts_dict2eqs(edge_lengths))
+        if print_values:
+            print([(eq.reduce(I)) for eq in eqs])
+        return sum([(eq.reduce(I))**2 for eq in eqs])==0
+
+    
     @staticmethod
     def show_factored_eqs(eqs, only_print=False, numbers=False,
                           variables=False, print_latex=False,
@@ -911,7 +921,7 @@ class MotionClassifier(SageObject):
     
     @staticmethod
     def is_subcase(eqs_a, eqs_b):
-        """
+        r"""
         Return if `eqs_a` is a subcase of `eqs_b`, i.e., the ideal of `eqs_a` contains the ideal of `eqs_b`.
         """
         I_a = ideal(eqs_a)
