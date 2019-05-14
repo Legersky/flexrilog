@@ -832,7 +832,7 @@ class MotionClassifier(SageObject):
     def graph_with_same_edge_lengths(self, motion_types, plot=True):
         r"""
         Return a graph with edge labels corresponding to same edge lengths.
-        
+
         INPUT:
         
         - `plot` -- if `True` (default), then plot of the graph is returned. 

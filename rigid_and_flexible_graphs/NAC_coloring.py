@@ -703,19 +703,19 @@ class NACcoloring(SageObject):
     def NAC2int(self):
         r"""
         Return the integer representation of the NAC-coloring.
-        
+
         The binary representation of the number is obtained by sorting
         the edges lexicographically and setting 1 for red edges,
         0 for blue edges, or the other way around if the first edge is blue.
         
         EXAMPLE:
         
-        sage: from rigid_and_flexible_graphs import GraphGenerator
-        sage: delta = GraphGenerator.Q1Graph().NAC_colorings()[0]
-        sage: delta.NAC2int()
-        3871
-        sage: 3871.binary()
-        '111100011111'
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: delta = GraphGenerator.Q1Graph().NAC_colorings()[0]
+            sage: delta.NAC2int()
+            3871
+            sage: 3871.binary()
+            '111100011111'
         """
         s = '1'
         u1, v1 = self._graph.edges(labels=False)[0]
