@@ -158,7 +158,7 @@ class GraphGenerator():
         return G
 
     @staticmethod
-    def MaxEmbeddingsLamanGraph(n):
+    def MaxEmbeddingsLamanGraph(n, labeled_from_one=True):
         r"""
         Return the Laman graph with ``n`` vertices with the maximum number of complex embeddings.
 
@@ -248,12 +248,20 @@ class GraphGenerator():
             12: {11 : (20.00,-12.00), 6 : (-20.00,-12.00), 10 : (7.80,6.20), 7 : (-8.30,-3.90), 9 : (8.30,-3.90), 8 : (-7.80,6.20),
                  0 : (15.00,0.85), 1 : (20.00,14.00), 2 : (0.00,-2.10), 3 : (-20.00,14.00), 4 : (0.00,-7.80), 5 : (-15.00,0.85)}
             }
+        
         if n == 6:
-            return GraphGenerator.ThreePrismGraph()
+            G =  GraphGenerator.ThreePrismGraph()
         if n > 6 and n < 13:
-            return RigidFlexibleGraph(Integer(graph_repr[n]), pos=positions[n], name='MaxEmbeddingsLamanGraph_' + str(n) + 'vert')
+            G =  RigidFlexibleGraph(Integer(graph_repr[n]), pos=positions[n], name='MaxEmbeddingsLamanGraph_' + str(n) + 'vert')
         else:
             raise exceptions.ValueError('Only graphs with 6-12 vertices are supported.')
+        if not labeled_from_one:
+            return G
+        else:
+            return RigidFlexibleGraph([(u+1,v+1) for u, v in G.edges(labels=False)],
+                                      pos={v+1:G._pos[v] for v in G._pos},
+                                      name=G.name())
+            
 
     @staticmethod
     def Q1Graph(old_labeling=False):
