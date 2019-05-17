@@ -1574,17 +1574,14 @@ class RigidFlexibleGraph(Graph):
             else:
                 return RR(edge_lengths[(v,u)])
         u,v = fixed_edge
-        vars_s = ''
-        vars_x = ''
-        vars_y = ''
+        x = {}
+        y = {}
+        s = {}
         for w in self.vertices():
-            vars_s+='s'+str(w)+' '
-            vars_x+='x'+str(w)+' '
-            vars_y+='y'+str(w)+' '
+            s[w] = var('s'+str(w))
+            x[w] = var('x'+str(w))
+            y[w] = var('y'+str(w))
 
-        x = list(var(vars_x))
-        y = list(var(vars_y))
-        s = list(var(vars_s))
         x[u] = Integer(0)
         y[u] = Integer(0)
         x[v] = edge_length(u,v)
