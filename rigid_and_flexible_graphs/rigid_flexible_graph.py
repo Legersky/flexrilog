@@ -1715,7 +1715,7 @@ class RigidFlexibleGraph(Graph):
 
         INPUT:
 
-        - ``edge_lengths`` -- a dictionary assinging a length to each edge.
+        - ``edge_lengths`` -- a dictionary assigning a length to each edge.
         - ``fixed_edge`` (default ``None``) -- if specified, then it is used
           as the fixed edge. Otherwise, one of the edges giving the minimal mixed
           volume is used
@@ -1731,6 +1731,8 @@ class RigidFlexibleGraph(Graph):
         A pair ``[result_real, result_complex]`` of two lists is returned.
         The first list contains dictionaries with real realizations,
         whereas the second one with the complex solutions.
+        If the ``fixed_edge`` is in a 3-cycle, then realizations only with one orienation of 
+        the triangle are returned.
 
         EXAMPLE::
 
@@ -1877,8 +1879,11 @@ class RigidFlexibleGraph(Graph):
             self._pos[v][0] = self._pos[v][1]
             self._pos[v][1] = tmp
 
-            
+    @doc_index("Plotting")
     def print_tikz(self, colored_edges=[], color_names=['edge'], vertex_style='vertex', scale=1):
+        r"""
+        Print TikZ code of the graph.
+        """
         lowPrecField = RealField(20)
         print('\\begin{tikzpicture}[scale=' + str(lowPrecField(scale)) + ']')
         for k in self.vertices():
@@ -1898,15 +1903,16 @@ _additional_categories = {
     }
 
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS}", (gen_thematic_rest_table_index(RigidFlexibleGraph, _additional_categories) + """
+    "{INDEX_OF_METHODS}", (gen_thematic_rest_table_index(RigidFlexibleGraph, _additional_categories)
+   )).replace('**Plotting**', """
 **Plotting**
-
+ 
 .. csv-table::
    :class: contentstable
    :widths: 30, 70
    :delim: @
-
-   :meth:`~rigid_and_flexible_graphs.rigid_flexible_graph.RigidFlexibleGraph.plot` @ Return the plot of the graph."""))
+   
+   :meth:`~rigid_and_flexible_graphs.rigid_flexible_graph.RigidFlexibleGraph.plot` @ Return the plot of the graph.""")
 
 
 

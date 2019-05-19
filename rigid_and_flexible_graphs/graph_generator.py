@@ -251,7 +251,7 @@ class GraphGenerator():
         
         if n == 6:
             G =  GraphGenerator.ThreePrismGraph()
-        if n > 6 and n < 13:
+        elif n > 6 and n < 13:
             G =  RigidFlexibleGraph(Integer(graph_repr[n]), pos=positions[n], name='MaxEmbeddingsLamanGraph_' + str(n) + 'vert')
         else:
             raise exceptions.ValueError('Only graphs with 6-12 vertices are supported.')

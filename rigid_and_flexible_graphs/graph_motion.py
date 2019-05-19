@@ -66,7 +66,7 @@ class GraphMotion(SageObject):
         return ParametricGraphMotion(graph, 'grid',  [NAC_coloring],  zigzag, check)
 
     @classmethod
-    def ParametrizedMotion(cls, graph, parametrization, par_type, active_NACs=None, sampling_type=None, interval=None, check=True):
+    def ParametricMotionMotion(cls, graph, parametrization, par_type, active_NACs=None, sampling_type=None, interval=None, check=True):
         return ParametricGraphMotion(graph, 'parametrization', active_NACs,
                                      { 'parametrization' : parametrization,
                                      'par_type' : par_type,
@@ -94,7 +94,7 @@ class GraphMotion(SageObject):
                                          _sage_const_6 *(t**_sage_const_3  - _sage_const_2 *t)/(t**_sage_const_4  + _sage_const_5 *t**_sage_const_2  + _sage_const_4 )))
                 }
             G = RigidFlexibleGraph([[0, 1], [1, 2], [2, 3], [0, 3]])
-            return GraphMotion.ParametrizedMotion(G, C, 'rational', sampling_type='tan', check=False)
+            return GraphMotion.ParametricMotion(G, C, 'rational', sampling_type='tan', check=False)
         elif par_type == 'symbolic':
             t = var('t')
             C = {
@@ -107,7 +107,7 @@ class GraphMotion(SageObject):
                                          _sage_const_6 *(t**_sage_const_3  - _sage_const_2 *t)/(t**_sage_const_4  + _sage_const_5 *t**_sage_const_2  + _sage_const_4 )))
                 }
             G = RigidFlexibleGraph([[0, 1], [1, 2], [2, 3], [0, 3]])
-            return ParametricGraphMotion.ParametrizedMotion(G, C, 'symbolic', sampling_type='tan', check=False)
+            return ParametricGraphMotion.ParametricMotion(G, C, 'symbolic', sampling_type='tan', check=False)
         else:
             raise exceptions.ValueError('Deltoid with par_type ' + str(par_type) + ' is not supported.')
 
@@ -816,7 +816,7 @@ class ParametricGraphMotion(GraphMotion):
             sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
             sage: t = var('t')
             sage: edges = [(1, 4), (1, 5), (1, 6), (2, 4), (2, 5), (2, 6), (3, 5), (3, 6), (3, 4)]
-            sage: M = GraphMotion.ParametrizedMotion(RigidFlexibleGraph(edges),
+            sage: M = GraphMotion.ParametricMotion(RigidFlexibleGraph(edges),
             ....:     {1: vector([sin(t),0]), 2: vector([sqrt(1+sin(t)^2),0]), 3: vector([-sqrt(2+sin(t)^2),0]),
             ....:     4: vector([0,cos(t)]), 5: vector([0,sqrt(1+cos(t)*cos(t))]), 6: vector([0,-sqrt(2+cos(t)^2)])},
             ....:     'symbolic')

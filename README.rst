@@ -1,5 +1,5 @@
 ==================================
-Rigidity and Flexibility of Graphs
+FlexRiGraph
 ==================================
 
 TODO: describe installation 
