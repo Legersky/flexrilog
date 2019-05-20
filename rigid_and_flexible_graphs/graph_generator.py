@@ -629,8 +629,21 @@ class GraphGenerator():
     def NoNACGraph():
         r"""
         Return a graph without NAC-coloring.
+
+        EXAMPLE::
+
+            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: GraphGenerator.NoNACGraph()
+            NoNac: RigidFlexibleGraph with 7 vertices and 12 edges
+
+        .. PLOT::
+            :scale: 70
+
+            from rigid_and_flexible_graphs import GraphGenerator
+            G = GraphGenerator.NoNACGraph()
+            sphinx_plot(G)
         """
-        return RigidFlexibleGraph(448412,
+        return RigidFlexibleGraph(Integer(448412),
                                   pos={0 : (-0.5,-0.75), 1 : (0.5,0.5), 2 : (1.5,0.5), 3 : (2.5,-0.75),
                                        4 : (0.5,1.5), 5 : (1.5,1.5), 6 : (1,-0.25)},
                                   name='NoNAC')

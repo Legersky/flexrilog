@@ -1,4 +1,4 @@
-Welcome to Graph Rigidity and Flexibility's documentation!
+FlexRiLoG - Flexible and Rigid Labelings of Graphs
 ==========================================================
 
 .. toctree::

@@ -415,7 +415,7 @@ class MotionClassifier(SageObject):
         """
         eqs_present = []
         eqs_zeros = []
-        NAC_types = self.motion2NAC_types(motion)
+        NAC_types = self.motion_types2NAC_types(motion)
         for t in ['L','O','R']:
             if t in NAC_types:
                 eqs_present.append(sum([self.mu(delta) for delta in self._restriction_NAC_types[cycle][t]]))
@@ -432,7 +432,7 @@ class MotionClassifier(SageObject):
             return eqs_zeros
 
     @staticmethod
-    def motion2NAC_types(m):
+    def motion_types2NAC_types(m):
         if m=='g':
             return ['L','R','O']
         if m=='a':
@@ -589,7 +589,7 @@ class MotionClassifier(SageObject):
                     for cycle in types:
                         if inconsistent:
                             break
-                        for t in self.motion2NAC_types(types[cycle]):
+                        for t in self.motion_types2NAC_types(types[cycle]):
                             has_necessary_NAC_type = False
                             for delta in self._restriction_NAC_types[cycle][t]:
                                 if not self.mu(delta) in zero_variables:
