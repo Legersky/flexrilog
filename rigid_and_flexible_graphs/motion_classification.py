@@ -398,7 +398,7 @@ class MotionClassifier(SageObject):
                     res[cycle]['O'].append(delta.name())
         return res
 
-    def ramification_formula(self, cycle, motion):
+    def ramification_formula(self, cycle, motion_type):
         r"""
         Return ramification formula for a given 4-cycle and motion type.
 
@@ -415,7 +415,7 @@ class MotionClassifier(SageObject):
         """
         eqs_present = []
         eqs_zeros = []
-        NAC_types = self.motion_types2NAC_types(motion)
+        NAC_types = self.motion_types2NAC_types(motion_type)
         for t in ['L','O','R']:
             if t in NAC_types:
                 eqs_present.append(sum([self.mu(delta) for delta in self._restriction_NAC_types[cycle][t]]))
@@ -620,14 +620,14 @@ class MotionClassifier(SageObject):
             raise NotImplementedError('There might be more solutions (dim '+str(
                 self._ring_ramification.ideal(eqs).dimension()) + ')')
 
-    def motion_types_equivalent_classes(self, motion_types):
+    def motion_types_equivalent_classes(self,  motion_types_list):
         aut_group = self._graph.automorphism_group()
         classes = [
-            [(motion_types[0],
-              self.normalized_motion_types(motion_types[0]),
-              Counter([('d' if t in ['e','o'] else t) for c, t in motion_types[0].iteritems()]))]
+            [( motion_types_list[0],
+              self.normalized_motion_types( motion_types_list[0]),
+              Counter([('d' if t in ['e','o'] else t) for c, t in  motion_types_list[0].iteritems()]))]
         ]
-        for next_motion in motion_types[1:]:
+        for next_motion in  motion_types_list[1:]:
             added = False
             next_sign = Counter([('d' if t in ['e','o'] else t) for c, t in next_motion.iteritems()])
             for cls in classes:
@@ -655,14 +655,14 @@ class MotionClassifier(SageObject):
         return [[t[0] for t in cls] for cls in classes]
 
 
-    def check_orthogonal_diagonals(self, types,  active_NACs, extra_cycles_orthog_diag=[]):
+    def check_orthogonal_diagonals(self, motion_types,  active_NACs, extra_cycles_orthog_diag=[]):
         r"""
         TODO:
         
         return orthogonality_graph
         """
         perp_by_NAC = [cycle for delta in active_NACs for cycle in self._orthogonal_diagonals[delta]]
-        deltoids = [cycle for cycle, t in types.iteritems() if t in ['e','o']]
+        deltoids = [cycle for cycle, t in motion_types.iteritems() if t in ['e','o']]
 
         orthogonalLines = []
         for perpCycle in perp_by_NAC + deltoids + extra_cycles_orthog_diag:
@@ -689,21 +689,21 @@ class MotionClassifier(SageObject):
         self._orthogonality_graph = orthogonalityGraph
         check_again = False
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
-        self._set_same_lengths(H, types)
+        self._set_same_lengths(H, motion_types)
 
-        for c in types:
+        for c in motion_types:
             if not orthogonalityGraph.has_edge(Set([c[0],c[2]]),Set([c[1],c[3]])):
                 continue
-            if types[c]=='a':       # inconsistent since antiparallel motion cannot have orthogonal diagonals
+            if motion_types[c]=='a':       # inconsistent since antiparallel motion cannot have orthogonal diagonals
                 return False
-            elif types[c]=='p':     # this cycle must be rhombus
+            elif motion_types[c]=='p':     # this cycle must be rhombus
                 self._set_two_edge_same_lengths(H, c[0], c[1], c[2], c[3], 0)
                 self._set_two_edge_same_lengths(H, c[0], c[1], c[1], c[2], 0)
                 self._set_two_edge_same_lengths(H, c[0], c[1], c[0], c[3], 0)
                 check_again = True
 
-        for c in types:
-            if types[c]=='g':
+        for c in motion_types:
+            if motion_types[c]=='g':
                 labels = [H[self._edge_ordered(c[i-1],c[i])] for i in range(0,4)]
                 if (not None in labels
                     and ((len(Set(labels))==2 and labels.count(labels[0])==2)

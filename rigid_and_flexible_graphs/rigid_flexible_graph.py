@@ -1292,13 +1292,13 @@ class RigidFlexibleGraph(Graph):
 
 
     @doc_index("Movability")
-    def spatial_embeddings_four_directions(self, col1, col2, vertex_at_origin=None):
+    def spatial_embeddings_four_directions(self, delta_1, delta_2, vertex_at_origin=None):
         r"""
         Return injective embeddings in $\\mathbb{R}^3$ with edges in 4 directions.
 
         The method attempts to embedd injectively the vertices of the graph into $\\mathbb{R}^3$
         so that two edges are parallel if and only if
-        they obtain the same colors by ``col1`` and ``col2``.
+        they obtain the same colors by ``delta_1`` and ``delta_2``.
         The four possible directions are (1,0,0), (0,1,0), (0,0,1) and (-1,-1,-1).
         If such an embedding exists, then the graph is movable:
 
@@ -1314,7 +1314,7 @@ class RigidFlexibleGraph(Graph):
 
         INPUT:
 
-        - ``col1`` and ``col2`` -- NAC-colorings
+        - ``delta_1`` and ``delta_2`` -- NAC-colorings
         - ``vertex_at_origin`` -- if ``None`` (default),
           then the first vertex is placed to the origin.
 
@@ -1349,16 +1349,16 @@ class RigidFlexibleGraph(Graph):
 
         equations = []
         for u,v in self.edges(labels=False):
-            if col1.is_red(u, v) and col2.is_blue(u, v): #rb (0,0,1)
+            if delta_1.is_red(u, v) and delta_2.is_blue(u, v): #rb (0,0,1)
                 equations.append(x[u]-x[v])
                 equations.append(y[u]-y[v])
-            if col1.is_red(u, v) and col2.is_red(u, v): #rr (-1,-1,-1)
+            if delta_1.is_red(u, v) and delta_2.is_red(u, v): #rr (-1,-1,-1)
                 equations.append(x[u]-x[v]-(y[u]-y[v]))
                 equations.append(x[u]-x[v]-(z[u]-z[v]))
-            if col1.is_blue(u, v) and col2.is_blue(u, v): #bb (1,0,0)
+            if delta_1.is_blue(u, v) and delta_2.is_blue(u, v): #bb (1,0,0)
                 equations.append(y[u]-y[v])
                 equations.append(z[u]-z[v])
-            if col1.is_blue(u, v) and col2.is_red(u, v): #br (0,1,0)
+            if delta_1.is_blue(u, v) and delta_2.is_red(u, v): #br (0,1,0)
                 equations.append(x[u]-x[v])
                 equations.append(z[u]-z[v])
 

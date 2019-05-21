@@ -66,7 +66,7 @@ class GraphMotion(SageObject):
         return ParametricGraphMotion(graph, 'grid',  [NAC_coloring],  zigzag, check)
 
     @classmethod
-    def ParametricMotionMotion(cls, graph, parametrization, par_type, active_NACs=None, sampling_type=None, interval=None, check=True):
+    def ParametricMotion(cls, graph, parametrization, par_type, active_NACs=None, sampling_type=None, interval=None, check=True):
         return ParametricGraphMotion(graph, 'parametrization', active_NACs,
                                      { 'parametrization' : parametrization,
                                      'par_type' : par_type,
@@ -580,10 +580,10 @@ class ParametricGraphMotion(GraphMotion):
                 raise exceptions.NotImplementedError('Sampling ' + str(self._sampling_type) + ' is not supported.')
 
 
-    def fix_edge(self, fixed_edge, check=True):
-        u,v = fixed_edge
+    def fix_edge(self, edge, check=True):
+        u,v = edge
         if check and not self._graph.has_edge(u, v):
-            raise exceptions.ValueError('The parameter ``fixed_edge`` must be an edge of the graph.')
+            raise exceptions.ValueError('The parameter ``edge`` must be an edge of the graph.')
         res = {}
         direction = self._parametrization[v] - self._parametrization[u]
         l = sqrt(direction.inner_product(direction))
