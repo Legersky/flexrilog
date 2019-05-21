@@ -242,7 +242,7 @@ class MotionClassifier(SageObject):
         """
         return self._ring_coordinates_gens['lambda'+self._edge2str([u,v])]
 
-    def equations_from_leading_coefs(self, col, extra_eqs=[], check=True):
+    def equations_from_leading_coefs(self, delta, extra_eqs=[], check=True):
         r"""
         Return equations for edge lengths from leading coefficients system.
 
@@ -267,11 +267,11 @@ class MotionClassifier(SageObject):
             [lambda2_5^2*lambda3_4^2 - lambda2_5^2*lambda3_6^2 - lambda2_3^2*lambda4_5^2 + lambda3_6^2*lambda4_5^2 + lambda2_3^2*lambda5_6^2 - lambda3_4^2*lambda5_6^2]
         """
 
-        if type(col) == str:
-            col = self._graph.name2NAC_coloring(col)
+        if type(delta) == str:
+            delta = self._graph.name2NAC_coloring(delta)
 
         if check:
-            if not col.is_singleton():
+            if not delta.is_singleton():
                 raise exceptions.ValueError('The NAC-coloring must be a singleton.')
         eqs_lengths=[]
         for e in self._graph.edges():
@@ -288,7 +288,7 @@ class MotionClassifier(SageObject):
                 eqz_all = 0
                 path = T.shortest_path(e[0],e[1])
                 for u,v in zip(path, path[1:]+[path[0]]):
-                    if col.is_red(u,v):
+                    if delta.is_red(u,v):
                         eqz+=self._z([u,v])
                     else:
                         eqw+=self._w([u,v])

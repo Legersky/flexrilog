@@ -1095,10 +1095,10 @@ class RigidFlexibleGraph(Graph):
         ::
 
             sage: G = GraphGenerator.MaxEmbeddingsLamanGraph(8)
-            sage: G.unicolor_path(1,3)
+            sage: G.unicolor_path(2,4)
             []
-            sage: G.unicolor_path(1,3, active_colorings=G.NAC_colorings()[-2:])
-            [1, 0, 3]
+            sage: G.unicolor_path(2,4, active_colorings=G.NAC_colorings()[-2:])
+            [2, 1, 4]
         """
         if self.has_edge(u,v):
             return [u,v]
@@ -1639,12 +1639,12 @@ class RigidFlexibleGraph(Graph):
 
             sage: GraphGenerator.MaxEmbeddingsLamanGraph(7).mixed_volume() # optional - phcpy
             64
-            sage: GraphGenerator.MaxEmbeddingsLamanGraph(7).mixed_volume([0,4]) # optional - phcpy
+            sage: GraphGenerator.MaxEmbeddingsLamanGraph(7).mixed_volume([1,5]) # optional - phcpy
             96
             sage: GraphGenerator.MaxEmbeddingsLamanGraph(7).mixed_volume(full_list=True) # optional - phcpy
-            [[(0, 1), 128],
+            [[(1, 2), 128],
             ...
-            [(5, 6), 64]]
+            [(6, 7), 64]]
 
         """
         from phcpy import solver

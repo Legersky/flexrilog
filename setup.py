@@ -43,4 +43,5 @@ setup(
     cmdclass = {'test': SageTest}, # adding a special setup command for tests
     setup_requires   = ['sage-package'],
     install_requires = ['sage-package', 'sphinx'],
+    package_data={'rigid_and_flexible_graphs': ['lnumber.pyd']},
 )

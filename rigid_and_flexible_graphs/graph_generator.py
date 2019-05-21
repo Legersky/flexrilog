@@ -171,7 +171,7 @@ class GraphGenerator():
         EXAMPLES::
 
             sage: from rigid_and_flexible_graphs import GraphGenerator
-            sage: GraphGenerator.MaxEmbeddingsLamanGraph(6) == GraphGenerator.ThreePrismGraph()
+            sage: GraphGenerator.MaxEmbeddingsLamanGraph(6).is_isomorphic(GraphGenerator.ThreePrismGraph())
             True
 
         The graphs:
@@ -634,7 +634,7 @@ class GraphGenerator():
 
             sage: from rigid_and_flexible_graphs import GraphGenerator
             sage: GraphGenerator.NoNACGraph()
-            NoNac: RigidFlexibleGraph with 7 vertices and 12 edges
+            NoNAC: RigidFlexibleGraph with 7 vertices and 12 edges
 
         .. PLOT::
             :scale: 70
