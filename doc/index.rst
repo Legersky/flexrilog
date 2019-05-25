@@ -5,7 +5,7 @@ FlexRiLoG - Flexible and Rigid Labelings of Graphs
    :maxdepth: 2
    :caption: Contents:
 
-   module/rigid_flexible_graph
+   module/flexible_rigid_graph
    module/NAC_coloring
    module/graph_motion
    module/graph_generator

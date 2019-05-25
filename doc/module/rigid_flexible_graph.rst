@@ -1,7 +1,7 @@
 Rigid and Flexible Graphs
 =========================
 
-.. automodule:: flexrilog.rigid_flexible_graph
+.. automodule:: flexrilog.flexible_rigid_graph
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1912,7 +1912,7 @@ __doc__ = __doc__.replace(
    :widths: 30, 70
    :delim: @
    
-   :meth:`~flexrilog.rigid_flexible_graph.FlexRiGraph.plot` @ Return the plot of the graph.""")
+   :meth:`~flexrilog.flexible_rigid_graph.FlexRiGraph.plot` @ Return the plot of the graph.""")
 
 
 
