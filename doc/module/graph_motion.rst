@@ -1,7 +1,7 @@
 Graph Motion
 =========================
 
-.. automodule:: rigid_and_flexible_graphs.graph_motion
+.. automodule:: flexrilog.graph_motion
    :members:
    :undoc-members:
    :show-inheritance:
