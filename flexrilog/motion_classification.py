@@ -248,7 +248,7 @@ class MotionClassifier(SageObject):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator, MotionClassifier
+            sage: from flexrilog import GraphGenerator, MotionClassifier
             sage: K33 = GraphGenerator.K33Graph()
             sage: M = MotionClassifier(K33)
             sage: M.equations_from_leading_coefs('epsilon56')
@@ -374,7 +374,7 @@ class MotionClassifier(SageObject):
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs import MotionClassifier, GraphGenerator
+            sage: from flexrilog import MotionClassifier, GraphGenerator
             sage: MC = MotionClassifier(GraphGenerator.K33Graph())
             sage: MC.NAC_coloring_restrictions()
             {(1, 2, 3, 4): {'L': ['omega3', 'omega1', 'epsilon36', 'epsilon16'],
@@ -404,7 +404,7 @@ class MotionClassifier(SageObject):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import MotionClassifier, GraphGenerator
+            sage: from flexrilog import MotionClassifier, GraphGenerator
             sage: MC = MotionClassifier(GraphGenerator.K33Graph())
             sage: MC.ramification_formula((1,2,3,4), 'a')
             [epsilon34,

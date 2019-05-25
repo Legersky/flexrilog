@@ -96,7 +96,7 @@ class RigidFlexibleGraph(Graph):
 
         The single edge graph::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(1); G
             RigidFlexibleGraph with the vertices [0, 1] and edges [(0, 1)]
 
@@ -113,7 +113,7 @@ class RigidFlexibleGraph(Graph):
             ....:       pos={0: [0.6, 0.4], 1: [0, 1.4], 2: [1, 1.4],
             ....:            3: [1, 0], 4: [0, 0], 5: [0.6, 1]}); G
             3-prism: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4, 5] and edges [(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G == GraphGenerator.ThreePrismGraph()
             True
 
@@ -122,7 +122,7 @@ class RigidFlexibleGraph(Graph):
         .. PLOT::
             :width: 70%
 
-            from rigid_and_flexible_graphs import GraphGenerator
+            from flexrilog import GraphGenerator
             G = GraphGenerator.ThreePrismGraph()
             sphinx_plot(G)
 
@@ -245,7 +245,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(graphs.CycleGraph(4)); G
             Cycle graph: RigidFlexibleGraph with the vertices [0, 1, 2, 3] and edges [(0, 1), (0, 3), (1, 2), (2, 3)]
             sage: G.graph2int(canonical=False)
@@ -301,7 +301,7 @@ class RigidFlexibleGraph(Graph):
 
         3-prism is Laman::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.is_Laman()
             True
@@ -312,7 +312,7 @@ class RigidFlexibleGraph(Graph):
 
         4-cycle is not Laman::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph([[0,1],[1,2],[2,3],[0,3]])
             sage: G.is_Laman(algorithm='definition', certificate=True)
             (False, Graph on 4 vertices)
@@ -434,7 +434,7 @@ class RigidFlexibleGraph(Graph):
 
         A Henneberg sequence for 3-prism::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(7916); G
             RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4, 5] and edges [(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]
             sage: print G.Henneberg_sequence()
@@ -505,7 +505,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: seq = G.Henneberg_sequence(); seq
             [('II', 0, (3, 5)), ('I', 4), ('I', 1), ('I', 2)]
@@ -552,7 +552,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph([(1,6),(2,6),(0,6),(0, 3), (0, 4),
             ....: (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]); G
             RigidFlexibleGraph with 7 vertices and 12 edges
@@ -561,7 +561,7 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.triangle_connected_components()
             [[[0, 3], [0, 4], [3, 4]], [[1, 2], [1, 5], [2, 5]], [[0, 5]], [[1, 4]], [[2, 3]]]
@@ -654,14 +654,14 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.NAC_colorings()
             [NAC-coloring with red edges {{3, 4}, {2, 5}, {1, 2}, {1, 5}, {0, 4}, {0, 3}} and blue edges {{0, 5}, {2, 3}, {1, 4}}]
 
         ::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: K = RigidFlexibleGraph(graphs.CompleteGraph(4))
             sage: K.NAC_colorings()
             []
@@ -717,7 +717,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.has_NAC_coloring()
             True
@@ -726,7 +726,7 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: K = RigidFlexibleGraph(graphs.CompleteGraph(4))
             sage: K.has_NAC_coloring()
             False
@@ -773,7 +773,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: print(G.plot(NAC_coloring=G.NAC_colorings()[0]))
             Graphics object consisting of 16 graphics primitives
@@ -781,7 +781,7 @@ class RigidFlexibleGraph(Graph):
         .. PLOT::
             :scale: 70
 
-            from rigid_and_flexible_graphs import GraphGenerator
+            from flexrilog import GraphGenerator
             G = GraphGenerator.ThreePrismGraph()
             sphinx_plot(G.plot(NAC_coloring=G.NAC_colorings()[0]))
 
@@ -795,7 +795,7 @@ class RigidFlexibleGraph(Graph):
         .. PLOT::
             :width: 70%
 
-            from rigid_and_flexible_graphs import GraphGenerator
+            from flexrilog import GraphGenerator
             G = GraphGenerator.ThreePrismGraph()
             sphinx_plot(G.plot(show_triangle_components=True))
 
@@ -807,7 +807,7 @@ class RigidFlexibleGraph(Graph):
         .. PLOT::
             :width: 70%
 
-            from rigid_and_flexible_graphs import GraphGenerator
+            from flexrilog import GraphGenerator
             G = GraphGenerator.ThreePrismGraph()
             sphinx_plot(G.plot(pos={0: [0.3, 0.5], 1: [0, 2], 2: [1, 1.4], 3: [1, 0], 4: [0, 0], 5: [0.7, 1]}))
         """
@@ -847,12 +847,12 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return partition of NAC-colorings into isomorphism classes.
 
-        See :meth:`rigid_and_flexible_graphs.NAC_coloring.NACcoloring.is_isomorphic`
+        See :meth:`flexrilog.NAC_coloring.NACcoloring.is_isomorphic`
         for the definition of two NAC-colorings being isomorphic.
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
             sage: isomorphism_classes = G.NAC_colorings_isomorphism_classes()
             sage: len(isomorphism_classes)
@@ -896,7 +896,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
             sage: G.set_NAC_colorings_names()
             sage: G.NAC_colorings()
@@ -944,14 +944,14 @@ class RigidFlexibleGraph(Graph):
 
         Bipartite graphs have no triangles::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
             sage: G.triangles()
             []
 
         The 3-prism graph has two triangles::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.triangles()
             [[0, 3, 4], [1, 2, 5]]
@@ -983,14 +983,14 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.four_cycles()
             [(0, 3, 2, 5), (0, 4, 1, 5), (1, 2, 3, 4)]
 
         ::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: len(RigidFlexibleGraph(graphs.CompleteGraph(7)).four_cycles()) == binomial(7,4)*3
             True
 
@@ -1030,14 +1030,14 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.Q1Graph()
             sage: G.induced_K23s()
             [[1, 2, 7, 3, 4], [3, 4, 5, 1, 7], [3, 4, 6, 2, 7]]
 
         ::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: RigidFlexibleGraph(graphs.CompleteGraph(7)).induced_K23s()
             []
 
@@ -1077,7 +1077,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
             sage: G.unicolor_path(2,3)
             [2, 0, 1, 3]
@@ -1162,7 +1162,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: CDC = G.constant_distance_closure()
             sage: CDC.is_isomorphic(G)
@@ -1177,7 +1177,7 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: G = RigidFlexibleGraph(1256267)
             sage: CDC = G.constant_distance_closure()
             sage: len(CDC.edges())-len(G.edges())
@@ -1231,7 +1231,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.cdc_is_complete()
             False
@@ -1256,7 +1256,7 @@ class RigidFlexibleGraph(Graph):
         r"""
         Return if there is a NAC-coloring with injective grid coordinates.
 
-        See :meth:`rigid_and_flexible_graphs.NAC_coloring.NACcoloring.grid_coordinates`.
+        See :meth:`flexrilog.NAC_coloring.NACcoloring.grid_coordinates`.
 
         INPUT:
 
@@ -1267,14 +1267,14 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.has_injective_grid_construction(certificate=True)
             (True, NAC-coloring with red edges {{3, 4}, {2, 5}, {1, 2}, {1, 5}, {0, 4}, {0, 3}} and blue edges {{0, 5}, {2, 3}, {1, 4}})
 
         ::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
             sage: G.has_injective_grid_construction()
             False
@@ -1325,7 +1325,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.Q1Graph()
             sage: G.spatial_embeddings_four_directions(G.name2NAC_coloring('epsilon13'), G.name2NAC_coloring('epsilon24'))
             {1: (0, 0, 0),
@@ -1416,7 +1416,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.has_injective_spatial_embedding(certificate=True)
             (False, None)
@@ -1482,19 +1482,19 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: GraphGenerator.LamanGraphs(4)[0].is_movable()
             ('no', 'no NAC-coloring')
 
         ::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: GraphGenerator.MaxEmbeddingsLamanGraph(7).is_movable()
             ('no', 'CDC is complete')
 
         ::
 
-            sage: from rigid_and_flexible_graphs import RigidFlexibleGraph
+            sage: from flexrilog import RigidFlexibleGraph
             sage: RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3)).is_movable()
             ('yes', 'bipartite')
 
@@ -1560,7 +1560,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: L = {(0, 3): 2, (0, 4): 3, (0, 5): 5, (1, 2): 3, (1, 4): 5, (1, 5): 4, (2, 3): 5, (2, 5): 2, (3, 4): 4 }
             sage: G.system_of_equations(L, [4,3])  # random
@@ -1631,7 +1631,7 @@ class RigidFlexibleGraph(Graph):
 
             sage: import phcpy # random
             sage: # the previous import is just because of the message that phcpy prints when imported
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: GraphGenerator.ThreePrismGraph().mixed_volume() # optional - phcpy
             32
 
@@ -1684,7 +1684,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: [GraphGenerator.MaxEmbeddingsLamanGraph(i).num_realizations() for i in range(6,13)]   # optional jose
             [24, 56, 136, 344, 880, 2288, 6180]
 
@@ -1738,7 +1738,7 @@ class RigidFlexibleGraph(Graph):
 
             sage: import phcpy # random
             sage: # the previous import is just because of the message that phcpy prints when imported
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: L = {(1, 2): 3, (1, 5): 4, (0, 5): 5, (0, 4): 3, (2, 3): 5, (0, 3): 2, (3, 4): 4, (2, 5): 2, (1, 4): 5}
             sage: res_RR, res_CC = GraphGenerator.ThreePrismGraph().realizations(L,[4,3]); (len(res_RR), len(res_CC)) # optional - phcpy
             (10, 2)
@@ -1756,7 +1756,7 @@ class RigidFlexibleGraph(Graph):
 
         .. PLOT::
 
-            from rigid_and_flexible_graphs import GraphGenerator
+            from flexrilog import GraphGenerator
             G = GraphGenerator.ThreePrismGraph()
             L = {(1, 2): 3, (1, 5): 4, (0, 5): 5, (0, 4): 3, (2, 3): 5, (0, 3): 2, (3, 4): 4, (2, 5): 2, (1, 4): 5}
             res_RR, res_CC = G.realizations(L,[4,3])
@@ -1839,7 +1839,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: GraphGenerator.ThreePrismGraph().random_realization() # random
             {0: (1.2663140331566647, 6.798542831673373),
             ...
@@ -1859,7 +1859,7 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: from rigid_and_flexible_graphs import GraphGenerator
+            sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.realization2edge_lengths(G.random_realization()) # random
             {(0, 3): 0.5656854249492381,
@@ -1912,7 +1912,7 @@ __doc__ = __doc__.replace(
    :widths: 30, 70
    :delim: @
    
-   :meth:`~rigid_and_flexible_graphs.rigid_flexible_graph.RigidFlexibleGraph.plot` @ Return the plot of the graph.""")
+   :meth:`~flexrilog.rigid_flexible_graph.RigidFlexibleGraph.plot` @ Return the plot of the graph.""")
 
 
 

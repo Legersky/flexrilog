@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Session SYSTEM "Session-6.2.dtd">
+<!-- eric6 session file for project RigidFlexibleGraphs -->
+<!-- This file was generated automatically, do not edit. -->
+<!-- Saved: 2019-02-14, 17:47:27 -->
+<Session version="6.2">
+  <ViewManagerSplits count="1" orientation="2"/>
+  <Filenames>
+    <Filename cline="38" cindex="0" folds="" zoom="0" cloned="0" splitindex="0" editorindex="0">/home/jan/Research/LamanGraphs/GraphRigidityAndFlexibility/rigid_and_flexible_graphs/NAC_coloring.py</Filename>
+    <Filename cline="40" cindex="74" folds="" zoom="0" cloned="0" splitindex="0" editorindex="1">/home/jan/Research/LamanGraphs/GraphRigidityAndFlexibility/rigid_and_flexible_graphs/graph_motion.py</Filename>
+    <Filename cline="989" cindex="0" folds="" zoom="0" cloned="0" splitindex="0" editorindex="2">/home/jan/Research/LamanGraphs/GraphRigidityAndFlexibility/rigid_and_flexible_graphs/rigid_flexible_graph.py</Filename>
+  </Filenames>
+  <ActiveWindow cline="989" cindex="0">/home/jan/Research/LamanGraphs/GraphRigidityAndFlexibility/rigid_and_flexible_graphs/rigid_flexible_graph.py</ActiveWindow>
+  <Breakpoints/>
+  <Watchexpressions/>
+  <DebugInfo>
+    <VirtualEnv></VirtualEnv>
+    <CommandLine></CommandLine>
+    <WorkingDirectory></WorkingDirectory>
+    <Environment></Environment>
+    <ReportExceptions value="True"/>
+    <Exceptions/>
+    <IgnoredExceptions/>
+    <AutoClearShell value="True"/>
+    <TracePython value="False"/>
+    <AutoContinue value="True"/>
+    <CovexcPattern/>
+  </DebugInfo>
+  <Bookmarks/>
+  <ProjectBrowserStates>
+    <ProjectBrowserState name="sources">
+      <ExpandedItemName>/home/jan/Research/LamanGraphs/GraphRigidityAndFlexibility/rigid_and_flexible_graphs/rigid_flexible_graph.py</ExpandedItemName>
+      <ExpandedItemName>/home/jan/Research/LamanGraphs/GraphRigidityAndFlexibility/rigid_and_flexible_graphs/rigid_flexible_graph.py@@75</ExpandedItemName>
+    </ProjectBrowserState>
+    <ProjectBrowserState name="forms"/>
+    <ProjectBrowserState name="resources"/>
+    <ProjectBrowserState name="translations"/>
+    <ProjectBrowserState name="interfaces"/>
+    <ProjectBrowserState name="protocols"/>
+    <ProjectBrowserState name="others"/>
+  </ProjectBrowserStates>
+</Session>
