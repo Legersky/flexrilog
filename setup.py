@@ -14,14 +14,14 @@ def readfile(filename):
 # For the tests
 class SageTest(TestCommand):
     def run_tests(self):
-        errno = os.system("sage -t --force-lib rigid_and_flexible_graphs")
+        errno = os.system("sage -t --force-lib flexrilog")
         if errno != 0:
             sys.exit(1)
 
 setup(
-    name = "rigid_and_flexible_graphs",
+    name = "flexrilog",
     version = readfile("VERSION").strip(), # the VERSION file is shared with the documentation
-    description='A package for investigating rigidity and flexibility of graphs',
+    description='FlexRiLoG - A package for investigating Flexibility and Rigid Labelings of Graphs',
     long_description = readfile("README.rst"), # get the long description from the README
 #    url='https://github.com/legersky/',
     author='Jan Legerský',
@@ -39,9 +39,9 @@ setup(
       'Programming Language :: Python :: 2.7',
     ],
     keywords = "rigidity flexibility",
-    packages = ['rigid_and_flexible_graphs'],
+    packages = ['flexrilog'],
     cmdclass = {'test': SageTest}, # adding a special setup command for tests
     setup_requires   = ['sage-package'],
     install_requires = ['sage-package', 'sphinx'],
-    package_data={'rigid_and_flexible_graphs': ['lnumber.pyd']},
+    package_data={'flexrilog': ['lnumber.pyd']},
 )
