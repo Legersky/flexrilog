@@ -69,9 +69,9 @@ import exceptions
 
 from NAC_coloring import NACcoloring
 
-class RigidFlexibleGraph(Graph):
+class FlexRiGraph(Graph):
     r"""
-    The class RigidFlexibleGraph is inherited from
+    The class FlexRiGraph is inherited from
     `sage.graphs.graph.Graph <http://doc.sagemath.org/html/en/reference/graphs/sage/graphs/graph.html>`_.
     It is a simple undirected connected graph with at least one edge.
     It adds functionality for rigidity and flexibility of the graph.
@@ -81,11 +81,11 @@ class RigidFlexibleGraph(Graph):
 
     - ``data``: provides the information about edges. There are three possibilities:
 
-      * ``RigidFlexibleGraph(list_of_edges)`` -- return the graph with the edges given by ``list_of_edges``.
-      * ``RigidFlexibleGraph(number)`` -- build a graph whose adjacence matrix is given as follows:
+      * ``FlexRiGraph(list_of_edges)`` -- return the graph with the edges given by ``list_of_edges``.
+      * ``FlexRiGraph(number)`` -- build a graph whose adjacence matrix is given as follows:
         the binary expansion of the integer ``number`` is written row by row into the upper triangle,
         excluding the diagonal, and symmetrically also into the lower triangle.
-      * ``RigidFlexibleGraph(graph)`` -- return the graph with the same edges, positions and name as ``graph``.
+      * ``FlexRiGraph(graph)`` -- return the graph with the same edges, positions and name as ``graph``.
 
     - ``name`` --  gives the graph a name
     - ``pos`` -- a positioning dictionary. For example, to
@@ -96,23 +96,23 @@ class RigidFlexibleGraph(Graph):
 
         The single edge graph::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(1); G
-            RigidFlexibleGraph with the vertices [0, 1] and edges [(0, 1)]
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(1); G
+            FlexRiGraph with the vertices [0, 1] and edges [(0, 1)]
 
         Graphs without edges are not allowed::
 
-            sage: G = RigidFlexibleGraph([]); G
+            sage: G = FlexRiGraph([]); G
             Traceback (most recent call last):
             ...
             ValueError: The graph must have at least one edge.
 
         A named graph given by integer represenation with specified positions::
 
-            sage: G = RigidFlexibleGraph(7916, name='3-prism',
+            sage: G = FlexRiGraph(7916, name='3-prism',
             ....:       pos={0: [0.6, 0.4], 1: [0, 1.4], 2: [1, 1.4],
             ....:            3: [1, 0], 4: [0, 0], 5: [0.6, 1]}); G
-            3-prism: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4, 5] and edges [(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]
+            3-prism: FlexRiGraph with the vertices [0, 1, 2, 3, 4, 5] and edges [(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]
             sage: from flexrilog import GraphGenerator
             sage: G == GraphGenerator.ThreePrismGraph()
             True
@@ -128,14 +128,14 @@ class RigidFlexibleGraph(Graph):
 
         The 3-cycle graph given by the list of edges::
 
-            sage: G = RigidFlexibleGraph([[0,1],[1,2],[0,2]], name='3-cycle'); G
-            3-cycle: RigidFlexibleGraph with the vertices [0, 1, 2] and edges [(0, 1), (0, 2), (1, 2)]
+            sage: G = FlexRiGraph([[0,1],[1,2],[0,2]], name='3-cycle'); G
+            3-cycle: FlexRiGraph with the vertices [0, 1, 2] and edges [(0, 1), (0, 2), (1, 2)]
 
         An instance of `sage.graphs.graph.Graph <http://doc.sagemath.org/html/en/reference/graphs/sage/graphs/graph.html>`_
         can be used::
 
-            sage: L = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3)); L
-            Complete bipartite graph: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4)]
+            sage: L = FlexRiGraph(graphs.CompleteBipartiteGraph(2,3)); L
+            Complete bipartite graph: FlexRiGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4)]
 
     """
 
@@ -175,10 +175,10 @@ class RigidFlexibleGraph(Graph):
         else:
             pref = ''
         if len(self.edges(labels=False)) < 10:
-            return (pref + 'RigidFlexibleGraph with the vertices '+str(self.vertices()) +
+            return (pref + 'FlexRiGraph with the vertices '+str(self.vertices()) +
                     ' and edges '+str(self.edges(labels=False)) + '')
         else:
-            return (pref + 'RigidFlexibleGraph with ' +str(len(self.vertices())) +
+            return (pref + 'FlexRiGraph with ' +str(len(self.vertices())) +
                     ' vertices and ' + str(len(self.edges(labels=False))) + ' edges')
 
 
@@ -245,9 +245,9 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLES::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(graphs.CycleGraph(4)); G
-            Cycle graph: RigidFlexibleGraph with the vertices [0, 1, 2, 3] and edges [(0, 1), (0, 3), (1, 2), (2, 3)]
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(graphs.CycleGraph(4)); G
+            Cycle graph: FlexRiGraph with the vertices [0, 1, 2, 3] and edges [(0, 1), (0, 3), (1, 2), (2, 3)]
             sage: G.graph2int(canonical=False)
             45
             sage: G.adjacency_matrix()
@@ -259,8 +259,8 @@ class RigidFlexibleGraph(Graph):
             45
             sage: G.graph2int()
             30
-            sage: H = RigidFlexibleGraph(30); H
-            RigidFlexibleGraph with the vertices [0, 1, 2, 3] and edges [(0, 2), (0, 3), (1, 2), (1, 3)]
+            sage: H = FlexRiGraph(30); H
+            FlexRiGraph with the vertices [0, 1, 2, 3] and edges [(0, 2), (0, 3), (1, 2), (1, 3)]
             sage: H.graph2int()
             30
         """
@@ -312,8 +312,8 @@ class RigidFlexibleGraph(Graph):
 
         4-cycle is not Laman::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph([[0,1],[1,2],[2,3],[0,3]])
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph([[0,1],[1,2],[2,3],[0,3]])
             sage: G.is_Laman(algorithm='definition', certificate=True)
             (False, Graph on 4 vertices)
             sage: G.is_Laman(algorithm='Henneberg', certificate=True)
@@ -321,7 +321,7 @@ class RigidFlexibleGraph(Graph):
 
         The complete graph $K_4$ is not Laman::
 
-            sage: G = RigidFlexibleGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
+            sage: G = FlexRiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
             sage: G.is_Laman(algorithm='definition', certificate=True)
             (False, Graph on 4 vertices)
             sage: G.is_Laman(algorithm='Henneberg', certificate=True)
@@ -434,27 +434,27 @@ class RigidFlexibleGraph(Graph):
 
         A Henneberg sequence for 3-prism::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(7916); G
-            RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4, 5] and edges [(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(7916); G
+            FlexRiGraph with the vertices [0, 1, 2, 3, 4, 5] and edges [(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]
             sage: print G.Henneberg_sequence()
             [('II', 0, (3, 5)), ('I', 4), ('I', 1), ('I', 2)]
 
         4-cycle is not Laman::
 
-            sage: G = RigidFlexibleGraph([[0,1],[1,2],[2,3],[0,3]])
+            sage: G = FlexRiGraph([[0,1],[1,2],[2,3],[0,3]])
             sage: G.Henneberg_sequence()==None
             True
 
         The complete graph $K_4$ is not Laman::
 
-            sage: G = RigidFlexibleGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
+            sage: G = FlexRiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
             sage: G.Henneberg_sequence()==None
             True
 
         All Henneberg sequence of $K_4$ with one edge removed::
 
-            sage: G = RigidFlexibleGraph([[0,1],[1,2],[2,3],[0,3],[0,2]])
+            sage: G = FlexRiGraph([[0,1],[1,2],[2,3],[0,3],[0,2]])
             sage: G.Henneberg_sequence()
             [('I', 1), ('I', 0)]
             sage: G.Henneberg_sequence(onlyOne=False)
@@ -552,10 +552,10 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph([(1,6),(2,6),(0,6),(0, 3), (0, 4),
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph([(1,6),(2,6),(0,6),(0, 3), (0, 4),
             ....: (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]); G
-            RigidFlexibleGraph with 7 vertices and 12 edges
+            FlexRiGraph with 7 vertices and 12 edges
             sage: G.triangle_connected_components()
             [[[0, 3], [0, 4], [3, 4]], [[1, 2], [1, 5], [1, 6], [2, 5], [2, 6]], [[0, 5]], [[0, 6]], [[1, 4]], [[2, 3]]]
 
@@ -661,20 +661,20 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: K = RigidFlexibleGraph(graphs.CompleteGraph(4))
+            sage: from flexrilog import FlexRiGraph
+            sage: K = FlexRiGraph(graphs.CompleteGraph(4))
             sage: K.NAC_colorings()
             []
 
         ::
 
-            sage: K = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: K = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: len(K.NAC_colorings())
             15
 
         The NAC-colorings are cached::
 
-            sage: K = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: K = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: %time len(K.NAC_colorings()) # doctest: +SKIP
             CPU times: user 418 ms, sys: 22.4 ms, total: 440 ms
             Wall time: 411 ms
@@ -726,8 +726,8 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: K = RigidFlexibleGraph(graphs.CompleteGraph(4))
+            sage: from flexrilog import FlexRiGraph
+            sage: K = FlexRiGraph(graphs.CompleteGraph(4))
             sage: K.has_NAC_coloring()
             False
             sage: K.has_NAC_coloring(certificate=True)
@@ -735,7 +735,7 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage: K = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: K = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: K.has_NAC_coloring(certificate=True)
             (True, NAC-coloring with red edges {{0, 5}, {1, 3}, {1, 5}, {1, 4}, {0, 4}, {0, 3}} and blue edges {{2, 4}, {2, 3}, {2, 5}})
         """
@@ -852,8 +852,8 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(graphs.CompleteBipartiteGraph(2,3))
             sage: isomorphism_classes = G.NAC_colorings_isomorphism_classes()
             sage: len(isomorphism_classes)
             3
@@ -896,8 +896,8 @@ class RigidFlexibleGraph(Graph):
 
         EXAMPLE::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(graphs.CompleteBipartiteGraph(2,3))
             sage: G.set_NAC_colorings_names()
             sage: G.NAC_colorings()
             [alpha: NAC-coloring with red edges {{0, 4}, {0, 2}, {0, 3}} and blue edges {{1, 3}, {1, 2}, {1, 4}},
@@ -944,8 +944,8 @@ class RigidFlexibleGraph(Graph):
 
         Bipartite graphs have no triangles::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(2,3))
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(graphs.CompleteBipartiteGraph(2,3))
             sage: G.triangles()
             []
 
@@ -958,7 +958,7 @@ class RigidFlexibleGraph(Graph):
 
         The complete graph on 5 vertices::
 
-            sage: len(RigidFlexibleGraph(graphs.CompleteGraph(5)).triangles()) == binomial(5,3)
+            sage: len(FlexRiGraph(graphs.CompleteGraph(5)).triangles()) == binomial(5,3)
             True
         """
         res=[]
@@ -990,13 +990,13 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: len(RigidFlexibleGraph(graphs.CompleteGraph(7)).four_cycles()) == binomial(7,4)*3
+            sage: from flexrilog import FlexRiGraph
+            sage: len(FlexRiGraph(graphs.CompleteGraph(7)).four_cycles()) == binomial(7,4)*3
             True
 
         ::
 
-            sage: RigidFlexibleGraph(graphs.CycleGraph(7)).four_cycles()
+            sage: FlexRiGraph(graphs.CycleGraph(7)).four_cycles()
             []
         """
         res = []
@@ -1037,13 +1037,13 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: RigidFlexibleGraph(graphs.CompleteGraph(7)).induced_K23s()
+            sage: from flexrilog import FlexRiGraph
+            sage: FlexRiGraph(graphs.CompleteGraph(7)).induced_K23s()
             []
 
         ::
 
-            sage: len(RigidFlexibleGraph(graphs.CompleteBipartiteGraph(4,6)).induced_K23s()) == binomial(4,3)*binomial(6,2) + binomial(4,2)*binomial(6,3)
+            sage: len(FlexRiGraph(graphs.CompleteBipartiteGraph(4,6)).induced_K23s()) == binomial(4,3)*binomial(6,2) + binomial(4,2)*binomial(6,3)
             True
         """
         res = []
@@ -1177,8 +1177,8 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(1256267)
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(1256267)
             sage: CDC = G.constant_distance_closure()
             sage: len(CDC.edges())-len(G.edges())
             1
@@ -1494,8 +1494,8 @@ class RigidFlexibleGraph(Graph):
 
         ::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3)).is_movable()
+            sage: from flexrilog import FlexRiGraph
+            sage: FlexRiGraph(graphs.CompleteBipartiteGraph(3,3)).is_movable()
             ('yes', 'bipartite')
 
         ::
@@ -1899,11 +1899,11 @@ class RigidFlexibleGraph(Graph):
         print( '\\end{tikzpicture}')
 
 _additional_categories = {
-    RigidFlexibleGraph.plot         : "Plotting",
+    FlexRiGraph.plot         : "Plotting",
     }
 
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS}", (gen_thematic_rest_table_index(RigidFlexibleGraph, _additional_categories)
+    "{INDEX_OF_METHODS}", (gen_thematic_rest_table_index(FlexRiGraph, _additional_categories)
    )).replace('**Plotting**', """
 **Plotting**
  
@@ -1912,7 +1912,7 @@ __doc__ = __doc__.replace(
    :widths: 30, 70
    :delim: @
    
-   :meth:`~flexrilog.rigid_flexible_graph.RigidFlexibleGraph.plot` @ Return the plot of the graph.""")
+   :meth:`~flexrilog.rigid_flexible_graph.FlexRiGraph.plot` @ Return the plot of the graph.""")
 
 
 

@@ -46,13 +46,13 @@ _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(
 _sage_const_0 = Integer(0); _sage_const_6 = Integer(6); _sage_const_5 = Integer(5);
 _sage_const_4 = Integer(4); _sage_const_13 = Integer(13); _sage_const_12 = Integer(12)
 #from sage.rings.rational import Rational
-from flexible_rigid_graph import RigidFlexibleGraph
+from flexible_rigid_graph import FlexRiGraph
 import exceptions
 
 class GraphMotion(SageObject):
     def __init__(self, graph):
-        if not (isinstance(graph, RigidFlexibleGraph) or 'RigidFlexibleGraph' in str(type(graph))):
-            raise exceptions.TypeError('The graph must be of the type RigidFlexibleGraph.')
+        if not (isinstance(graph, FlexRiGraph) or 'FlexRiGraph' in str(type(graph))):
+            raise exceptions.TypeError('The graph must be of the type FlexRiGraph.')
         self._graph = graph
 
         self._same_lengths = None
@@ -93,7 +93,7 @@ class GraphMotion(SageObject):
                                          )/(t**_sage_const_4  + _sage_const_5 *t**_sage_const_2  + _sage_const_4 ),
                                          _sage_const_6 *(t**_sage_const_3  - _sage_const_2 *t)/(t**_sage_const_4  + _sage_const_5 *t**_sage_const_2  + _sage_const_4 )))
                 }
-            G = RigidFlexibleGraph([[0, 1], [1, 2], [2, 3], [0, 3]])
+            G = FlexRiGraph([[0, 1], [1, 2], [2, 3], [0, 3]])
             return GraphMotion.ParametricMotion(G, C, 'rational', sampling_type='tan', check=False)
         elif par_type == 'symbolic':
             t = var('t')
@@ -106,7 +106,7 @@ class GraphMotion(SageObject):
                                          )/(t**_sage_const_4  + _sage_const_5 *t**_sage_const_2  + _sage_const_4 ),
                                          _sage_const_6 *(t**_sage_const_3  - _sage_const_2 *t)/(t**_sage_const_4  + _sage_const_5 *t**_sage_const_2  + _sage_const_4 )))
                 }
-            G = RigidFlexibleGraph([[0, 1], [1, 2], [2, 3], [0, 3]])
+            G = FlexRiGraph([[0, 1], [1, 2], [2, 3], [0, 3]])
             return ParametricGraphMotion.ParametricMotion(G, C, 'symbolic', sampling_type='tan', check=False)
         else:
             raise exceptions.ValueError('Deltoid with par_type ' + str(par_type) + ' is not supported.')
@@ -813,10 +813,10 @@ class ParametricGraphMotion(GraphMotion):
 
         ::
 
-            sage: from flexrilog import RigidFlexibleGraph
+            sage: from flexrilog import FlexRiGraph
             sage: t = var('t')
             sage: edges = [(1, 4), (1, 5), (1, 6), (2, 4), (2, 5), (2, 6), (3, 5), (3, 6), (3, 4)]
-            sage: M = GraphMotion.ParametricMotion(RigidFlexibleGraph(edges),
+            sage: M = GraphMotion.ParametricMotion(FlexRiGraph(edges),
             ....:     {1: vector([sin(t),0]), 2: vector([sqrt(1+sin(t)^2),0]), 3: vector([-sqrt(2+sin(t)^2),0]),
             ....:     4: vector([0,cos(t)]), 5: vector([0,sqrt(1+cos(t)*cos(t))]), 6: vector([0,-sqrt(2+cos(t)^2)])},
             ....:     'symbolic')

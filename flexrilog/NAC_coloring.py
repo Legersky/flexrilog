@@ -54,7 +54,7 @@ class NACcoloring(SageObject):
 
     INPUT:
 
-    - ``G`` -- a graph of type :meth:`RigidFlexibleGraph`
+    - ``G`` -- a graph of type :meth:`FlexRiGraph`
       to which the NAC-coloring belongs.
     - ``coloring`` -- a dictionary assigning to every edge of ``G`` either ``"red"`` or ``"blue"``,
       or a list consisting of two lists giving a partition of the edges of ``G``
@@ -67,7 +67,7 @@ class NACcoloring(SageObject):
         sage: from flexrilog import NACcoloring
         sage: from flexrilog import GraphGenerator
         sage: G = GraphGenerator.SmallestFlexibleLamanGraph(); G
-        SmallestFlexibleLamanGraph: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
+        SmallestFlexibleLamanGraph: FlexRiGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
         sage: delta = NACcoloring(G,[[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)], [(2, 4), (3, 4)]]); delta
         NAC-coloring with red edges {{1, 3}, {1, 2}, {0, 2}, {0, 3}, {0, 1}} and blue edges {{2, 4}, {3, 4}}
 
@@ -97,11 +97,11 @@ class NACcoloring(SageObject):
 
     """
     def __init__(self, G, coloring, name=None, check=True):
-        from flexible_rigid_graph import RigidFlexibleGraph
-        if type(G) == RigidFlexibleGraph or 'RigidFlexibleGraph' in str(type(G)):
+        from flexible_rigid_graph import FlexRiGraph
+        if type(G) == FlexRiGraph or 'FlexRiGraph' in str(type(G)):
             self._graph = G
         else:
-            raise exceptions.TypeError('The graph G must be RigidFlexibleGraph.')
+            raise exceptions.TypeError('The graph G must be FlexRiGraph.')
         if type(coloring) in [list, Set] and len(coloring) == 2:
             self._red_edges = Set([Set(e) for e in coloring[0]])
             self._blue_edges = Set([Set(e) for e in coloring[1]])
@@ -177,7 +177,7 @@ class NACcoloring(SageObject):
 
             sage: from flexrilog import NACcoloring, GraphGenerator
             sage: G = GraphGenerator.SmallestFlexibleLamanGraph(); G
-            SmallestFlexibleLamanGraph: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
+            SmallestFlexibleLamanGraph: FlexRiGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
             sage: delta = NACcoloring(G,[[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)], [(2, 4), (3, 4)]], check=False)
             sage: delta.is_NAC_coloring()
             True
@@ -224,8 +224,8 @@ class NACcoloring(SageObject):
 
         EXAMPLES::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: delta = G.NAC_colorings()[0]
             sage: delta.color(0,3)
             'red'
@@ -264,8 +264,8 @@ class NACcoloring(SageObject):
 
         EXAMPLES::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: delta = G.NAC_colorings()[0]
             sage: delta.is_red(0,3)
             True
@@ -298,8 +298,8 @@ class NACcoloring(SageObject):
 
         EXAMPLES::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: delta = G.NAC_colorings()[0]
             sage: delta.is_blue(2,4)
             True
@@ -327,16 +327,16 @@ class NACcoloring(SageObject):
 
         EXAMPLES::
 
-            sage: from flexrilog import RigidFlexibleGraph
-            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: delta = G.NAC_colorings()[0]
             sage: delta.plot()
             Graphics object consisting of 16 graphics primitives
 
         .. PLOT::
 
-            from flexrilog import RigidFlexibleGraph
-            G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            from flexrilog import FlexRiGraph
+            G = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sphinx_plot(G.NAC_colorings()[0])
 
         ::
@@ -439,8 +439,8 @@ class NACcoloring(SageObject):
 
         EXAMPLES::
 
-            sage: from flexrilog import RigidFlexibleGraph, NACcoloring
-            sage: G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            sage: from flexrilog import FlexRiGraph, NACcoloring
+            sage: G = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: colorings = G.NAC_colorings()
             sage: col1, col2, col3 = colorings[4], colorings[5], colorings[7]
             sage: col1
@@ -462,16 +462,16 @@ class NACcoloring(SageObject):
 
         .. PLOT::
 
-            from flexrilog import RigidFlexibleGraph, NACcoloring
-            G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            from flexrilog import FlexRiGraph, NACcoloring
+            G = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sphinx_plot(G.NAC_colorings()[4])
 
         ``col2``:
 
         .. PLOT::
 
-            from flexrilog import RigidFlexibleGraph, NACcoloring
-            G = RigidFlexibleGraph(graphs.CompleteBipartiteGraph(3,3))
+            from flexrilog import FlexRiGraph, NACcoloring
+            G = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sphinx_plot(G.NAC_colorings()[5])
         """
         if check and self._graph != other_coloring._graph:
@@ -521,7 +521,7 @@ class NACcoloring(SageObject):
 
             sage: from flexrilog import NACcoloring, GraphGenerator
             sage: G = GraphGenerator.SmallestFlexibleLamanGraph(); G
-            SmallestFlexibleLamanGraph: RigidFlexibleGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
+            SmallestFlexibleLamanGraph: FlexRiGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
             sage: delta1 = NACcoloring(G,[[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)], [(2, 4), (3, 4)]])
             sage: delta2 = NACcoloring(G,[[(2, 4), (3, 4)],[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)]])
             sage: delta1.is_equal(delta2)
