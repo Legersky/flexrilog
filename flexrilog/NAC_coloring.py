@@ -97,7 +97,7 @@ class NACcoloring(SageObject):
 
     """
     def __init__(self, G, coloring, name=None, check=True):
-        from rigid_flexible_graph import RigidFlexibleGraph
+        from flexible_rigid_graph import RigidFlexibleGraph
         if type(G) == RigidFlexibleGraph or 'RigidFlexibleGraph' in str(type(G)):
             self._graph = G
         else:
