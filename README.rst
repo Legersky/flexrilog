@@ -15,7 +15,7 @@ You can try it out online without installation:
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://mybinder.org/v2/gh/Legersky/flexrilog/master?filepath=examples%2FFlexRiLoG_demo.ipynb
 
-
+See also the webpage about movable graphs: https://jan.legersky.cz/project/movablegraphs/
 
 Installation
 -----------------
