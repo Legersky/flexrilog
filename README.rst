@@ -4,6 +4,9 @@ FlexRiLoG - Flexible and Rigid Labelings of Graphs
 
 
 This is a SageMath package providing functionality for investigating flexible and rigid labelings of graphs.
+It implements the concepts described in the doctoral thesis *Flexible and Rigid Labelings of Graphs* by Jan Legerský.
+
+.. start-include
 
 For the definitions of a flexible and rigid labeling and other implemented concepts,
 see the Jupyter notebook ``examples/FlexRiLoG_demo.ipynb``.
@@ -12,9 +15,7 @@ You can try it out online without installation:
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://mybinder.org/v2/gh/Legersky/flexrilog/master?filepath=examples%2FFlexRiLoG_demo.ipynb
 
-This package implements the concepts described in the doctoral thesis *Flexible and Rigid Labelings of Graphs* by Jan Legerský.
 
-.. start-include
 
 Installation
 -----------------
