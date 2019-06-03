@@ -36,8 +36,8 @@ AUTHORS:
 
 -  Jan Legerský (2019-01-15): initial version
 
-Classes
--------
+FlexRiGraph
+-----------
 """
 
 #Copyright (C) 2018 Jan Legerský

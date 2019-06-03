@@ -21,7 +21,7 @@ class SageTest(TestCommand):
 setup(
     name = "flexrilog",
     version = readfile("VERSION").strip(), # the VERSION file is shared with the documentation
-    description='FlexRiLoG - A package for investigating Flexibility and Rigid Labelings of Graphs',
+    description='FlexRiLoG - A package for investigating Flexible and Rigid Labelings of Graphs',
     long_description = readfile("README.rst"), # get the long description from the README
 #    url='https://github.com/legersky/',
     author='Jan Legerský',

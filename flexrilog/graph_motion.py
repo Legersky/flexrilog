@@ -63,10 +63,23 @@ class GraphMotion(SageObject):
 
     @classmethod
     def GridConstruction(cls, graph,  NAC_coloring,  zigzag=False,  check=True):
+        r"""
+        Return the motion obtained by grid construction for given NAC-coloring.
+        """
         return ParametricGraphMotion(graph, 'grid',  [NAC_coloring],  zigzag, check)
 
     @classmethod
     def ParametricMotion(cls, graph, parametrization, par_type, active_NACs=None, sampling_type=None, interval=None, check=True):
+        r"""
+        Return parametric motion of a graph with a given parametrization.
+
+        INPUT:
+        
+        - ``graph`` -- an instance of FlexRiGraph
+        - ``parametrization`` -- a dictionary with a key being a vertex of the graph 
+          and its value being the position given as a vector.
+        - ``par_type`` -- type of the parametrization: ``rational`` or ``symbolic``
+        """
         return ParametricGraphMotion(graph, 'parametrization', active_NACs,
                                      { 'parametrization' : parametrization,
                                      'par_type' : par_type,
@@ -76,10 +89,7 @@ class GraphMotion(SageObject):
     @classmethod
     def Deltoid(cls, par_type='rational'):
         r"""
-
-        TODO:
-
-        Active NACs
+        Return a deltoid motion.
         """
         if par_type == 'rational':
             FF = FunctionField(QQ, 't')
@@ -112,9 +122,22 @@ class GraphMotion(SageObject):
             raise exceptions.ValueError('Deltoid with par_type ' + str(par_type) + ' is not supported.')
 
     @classmethod
-    def SpatialEmbeddingConstruction(cls, graph,  active_NACs, check=True, deltoid_motion=None, vertex_at_origin=None, subs_dict={}):
+    def SpatialEmbeddingConstruction(cls, graph,  active_NACs,
+                                     check=True, four_cycle_motion=None,
+                                     vertex_at_origin=None, subs_dict={}):
+        r"""
+        Return a motion given by spatial embedding construction.
+
+        INPUT:
+        
+        - ``graph`` -- an instance of FlexRiGraph
+        - ``active_NACs`` -- a pair of NAC-colorings used to construct a spatial embedding,
+          see :meth:`flexrilog.flexible_rigid_graph.FlexRiGraph.spatial_embeddings_four_directions`.
+        - ``four_cycle_motion`` -- a motion of a 4-cycle used to construct the motion of the whole graph.
+          If ``None`` (default), then :meth:`Deltoid` is used. 
+        """
         data = {
-                'deltoid_motion' : deltoid_motion,
+                'deltoid_motion' : four_cycle_motion,
                 'vertex_at_origin' : vertex_at_origin,
                 'subs_dict' : subs_dict
                 }
@@ -257,6 +280,13 @@ class GraphMotion(SageObject):
 
 
     def height_function(self, vertex_edge_collisions, extra_layers=0, edge_edge_collisions=[]):
+        r"""
+        Return a height function of edges if possible for given vertex-edge collisions.
+
+        WARNING:
+        
+        Costly, since it runs through all edge-colorings.
+        """
         def e2s(e):
             return Set(e)
         for v in vertex_edge_collisions:
@@ -496,6 +526,9 @@ class ParametricGraphMotion(GraphMotion):
         self._same_lengths = tmp.values()
 
     def edge_lengths(self):
+        r"""
+        Return the dictionary of edge lengths.
+        """
         res = {}
         for u, v in self._graph.edges(labels=False):
             s = self._parametrization[u] - self._parametrization[v]
@@ -581,6 +614,9 @@ class ParametricGraphMotion(GraphMotion):
 
 
     def fix_edge(self, edge, check=True):
+        r"""
+        Change the fixed edge in the motion.
+        """
         u,v = edge
         if check and not self._graph.has_edge(u, v):
             raise exceptions.ValueError('The parameter ``edge`` must be an edge of the graph.')
@@ -909,6 +945,9 @@ class ParametricGraphMotion(GraphMotion):
 
 
     def merge_animations(self, motions, total_time=12, fps=25, **kwargs):
+        r"""
+        Return an animation by concatenating a list of motions.
+        """
         realizations = []
         for M in motions:
             realizations += M.sample_motion(floor(total_time*fps/len(motions)))

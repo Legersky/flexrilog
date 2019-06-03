@@ -17,8 +17,8 @@ AUTHORS:
 
 -  Jan Legerský (2019-01-15): initial version
 
-Class
--------
+NACcoloring
+-----------
 """
 
 #Copyright (C) 2018 Jan Legerský
@@ -127,6 +127,9 @@ class NACcoloring(SageObject):
         return res
 
     def name(self):
+        r"""
+        Return the name of the NAC-coloring.
+        """
         return self._name if self._name != None else ''
 
     def _rich_repr_(self, display_manager, **kwds):
@@ -698,6 +701,9 @@ class NACcoloring(SageObject):
         return False
 
     def print_tikz(self):
+        r"""
+        Print TikZ code for the graph colored with the NAC-coloring.
+        """
         self._graph.print_tikz([self.blue_edges(), self.red_edges()], ['redge', 'bedge'])
         
     def NAC2int(self):

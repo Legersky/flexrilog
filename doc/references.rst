@@ -33,3 +33,7 @@ References
               "Graphs with Flexible Labelings allowing Injective Realizations".
               arXiv (2018).
               :arxiv:`1811.06709`.
+              
+.. [Leg2019] \J. Legerský,
+              "Flexible and Rigid Labelings of Graphs".
+              Doctoral thesis.

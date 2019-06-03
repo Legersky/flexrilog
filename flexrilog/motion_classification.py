@@ -2,11 +2,6 @@
 r"""
 This is implementation of classification motions of a graph.
 
-TODO:
-
-- setdefault, defaultdict
-- for ... else:
-
 Methods
 -------
 
@@ -17,10 +12,12 @@ AUTHORS:
 
 -  Jan Legerský (2019-02-18): initial version
 
-Classes
--------
+MotionClassifier
+----------------
 """
 
+
+from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
 #Copyright (C) 2018 Jan Legerský
 #
 #This program is free software: you can redistribute it and/or modify
@@ -53,9 +50,10 @@ from collections import Counter
 from IPython.core.display import display
 
 class MotionClassifier(SageObject):
+    r"""
+    This class implements the functionality for determining possible motions of a graph.
+    """
     def __init__(self, graph, four_cycles=[], separator=''):
-        r"""
-        """
         if not (isinstance(graph, FlexRiGraph) or 'FlexRiGraph' in str(type(graph))):
             raise exceptions.TypeError('The graph must be of the type FlexRiGraph.')
         self._graph = graph
@@ -132,6 +130,7 @@ class MotionClassifier(SageObject):
                 delta.name(): [cycle for cycle in self._four_cycle_graph if delta.cycle_has_orthogonal_diagonals(cycle)]
                 for delta in self._graph.NAC_colorings()}
 
+    @doc_index("Constraints on edge lengths")
     def four_cycles_ordered(self):
         r"""
         Heuristic order of 4-cycles.
@@ -170,15 +169,24 @@ class MotionClassifier(SageObject):
         else:
             return str(e[1]) + '_' + str(e[0])
 
+    
     @staticmethod
+    @doc_index("Other")
     def cycle_edges(cycle, sets=False):
+        r"""
+        Return edges of a 4-cycle.
+        """
         if sets:
             return Set([Set(list(e)) for e in zip(cycle, list(cycle[1:])+[cycle[0]])])
         else:
             return [list(e) for e in zip(cycle, list(cycle[1:])+[cycle[0]])]
 
     @staticmethod
+    @doc_index("Other")
     def four_cycle_normal_form(cycle, motion_type):
+        r"""
+        Return a 4-cycle with a motion type in the normal form.
+        """
         i = cycle.index(min(cycle))
         oe =  ['o', 'e']
         if i % 2 == 1 and motion_type in oe:
@@ -190,7 +198,11 @@ class MotionClassifier(SageObject):
             return (tmp_c[0], tmp_c[3], tmp_c[2], tmp_c[1]), motion_type
 
     @staticmethod
+    @doc_index("Other")
     def normalized_motion_types(motion_types):
+        r"""
+        Return motion types in the normal form.
+        """
         res = {}
         for c, t in motion_types.iteritems():
             norm_c, norm_t = MotionClassifier.four_cycle_normal_form(c, t)
@@ -212,36 +224,45 @@ class MotionClassifier(SageObject):
     def _lam(self, e):
         return self._ringLC_gens['lambda'+self._edge2str(e)]
     
+    @doc_index("Constraints on edge lengths")
     def lam(self, u,v):
         r"""
         Return the variable for edge length in the ring of edge lengths.
         """
         return self._ring_lambdas_gens['lambda'+self._edge2str([u,v])]
 
+    @doc_index("Motion types consistent with 4-cycles")
     def mu(self, delta):
+        r"""
+        Return the variable for a given NAC-coloring.
+        """
         if type(delta)==str:
             return self._ring_ramification_gens[delta]
         else:
             return self._ring_ramification_gens[delta.name()]
 
+    @doc_index("System of equations for coordinates")
     def x(self, v):
         r"""
         Return the variable for x coordinate of a vertex. 
         """
         return self._ring_coordinates_gens['x'+str(v)]
 
+    @doc_index("System of equations for coordinates")
     def y(self, v):
         r"""
         Return the variable for y coordinate of a vertex. 
         """
         return self._ring_coordinates_gens['y'+str(v)]
 
+    @doc_index("System of equations for coordinates")
     def l(self, u,v):
         r"""
         Return the variable for edge length in the ring with coordinates.
         """
         return self._ring_coordinates_gens['lambda'+self._edge2str([u,v])]
 
+    @doc_index("Constraints on edge lengths")
     def equations_from_leading_coefs(self, delta, extra_eqs=[], check=True):
         r"""
         Return equations for edge lengths from leading coefficients system.
@@ -359,15 +380,16 @@ class MotionClassifier(SageObject):
                 k += self._set_two_edge_same_lengths(H, c[1], c[2], c[2], c[3], k)
                 k += self._set_two_edge_same_lengths(H, c[0], c[1], c[0], c[3], k)
 
+    @doc_index("Constraints on edge lengths")
     def motion_types2same_edge_lenghts(self, motion_types):
         r"""
-        TODO:
-        make it static method
+        Return the dictionary of same edge lengths enforced by given motion types.
         """
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
         self._set_same_lengths(H, motion_types)
         return H
 
+    @doc_index("Motion types consistent with 4-cycles")
     def NAC_coloring_restrictions(self):
         r"""
         Return types of restrictions of NAC-colorings to 4-cycles.
@@ -398,6 +420,7 @@ class MotionClassifier(SageObject):
                     res[cycle]['O'].append(delta.name())
         return res
 
+    @doc_index("Motion types consistent with 4-cycles")
     def ramification_formula(self, cycle, motion_type):
         r"""
         Return ramification formula for a given 4-cycle and motion type.
@@ -432,7 +455,11 @@ class MotionClassifier(SageObject):
             return eqs_zeros
 
     @staticmethod
+    @doc_index("Other")
     def motion_types2NAC_types(m):
+        r"""
+        Return NAC-coloring types for a given motion type.
+        """
         if m=='g':
             return ['L','R','O']
         if m=='a':
@@ -445,7 +472,11 @@ class MotionClassifier(SageObject):
             return ['L','O']
 
     @staticmethod
+    @doc_index("Other")
     def NAC_types2motion_type(t):
+        r"""
+        Return the motion type for given types of NAC-colorings.
+        """
         if Set(t)==Set(['L','R','O']):
             return 'g'
         if Set(t)==Set(['L','R']):
@@ -457,7 +488,11 @@ class MotionClassifier(SageObject):
         if Set(t)==Set(['L','O']):
             return 'o'
     
+    @doc_index("Other")
     def active_NACs2motion_types(self, active):
+        r"""
+        Return the motion types of 4-cycles for a given set of active NAC-colorings. 
+        """
         motion_types = {cycle:[] for cycle in self._four_cycles}
         for delta in active:
             if type(delta)!=str:
@@ -483,7 +518,11 @@ class MotionClassifier(SageObject):
         else:
             return True
 
+    @doc_index("Motion types consistent with 4-cycles")
     def consequences_of_nonnegative_solution_assumption(self, eqs):
+        r"""
+        Return equations implied by the assumption of the existence of nonnegative solutions.
+        """
         n_zeros_prev = -1
         zeros = []
         gb = eqs
@@ -513,7 +552,11 @@ class MotionClassifier(SageObject):
 #                        zeros[zero_var] = 0
 #        return [zeros.keys(), gb]
 
+    @doc_index("Motion types consistent with 4-cycles")
     def consistent_motion_types(self):#, cycles=[]):
+        r"""
+        Return the list of motion types consistent with 4-cycles.
+        """
 #         if cycles==[]:
         cycles = self.four_cycles_ordered()
 
@@ -607,10 +650,18 @@ class MotionClassifier(SageObject):
 
         return [t for t, _ in types_prev]
 
+    @doc_index("Other")
     def active_NAC_coloring_names(self, motion_types):
+        r"""
+        Return the names of active NAC-colorings for given motion types.
+        """
         return [delta.name() for delta in self.motion_types2active_NACs(motion_types)]
         
+    @doc_index("Motion types consistent with 4-cycles")
     def motion_types2active_NACs(self, motion_types):
+        r"""
+        Return the active NAC-colorings for given motion types, if uniquely determined.
+        """
         zeros, eqs = self.consequences_of_nonnegative_solution_assumption(
             flatten([self.ramification_formula(c, motion_types[c]) for c in motion_types]))
 
@@ -620,7 +671,11 @@ class MotionClassifier(SageObject):
             raise NotImplementedError('There might be more solutions (dim '+str(
                 self._ring_ramification.ideal(eqs).dimension()) + ')')
 
+    @doc_index("Classification")
     def motion_types_equivalent_classes(self,  motion_types_list):
+        r"""
+        Split a list of motion types into isomorphism classes.
+        """
         aut_group = self._graph.automorphism_group()
         classes = [
             [( motion_types_list[0],
@@ -654,9 +709,11 @@ class MotionClassifier(SageObject):
                 classes.append([(next_motion, self.normalized_motion_types(next_motion), next_sign)])
         return [[t[0] for t in cls] for cls in classes]
 
-
+    @doc_index("Classification")
     def check_orthogonal_diagonals(self, motion_types,  active_NACs, extra_cycles_orthog_diag=[]):
         r"""
+        Check the necessary conditions for orthogonal diagonals.
+
         TODO:
         
         return orthogonality_graph
@@ -721,6 +778,7 @@ class MotionClassifier(SageObject):
 
         return True
 
+    @doc_index("Classification")
     def possible_motion_types_and_active_NACs(self,
                                               comments = {},
                                               show_table=True,
@@ -728,6 +786,9 @@ class MotionClassifier(SageObject):
                                               tab_rows=False,
                                               keep_orth_failed=False,
                                               eqs=False):
+        r"""
+        Wraps the function for constistent motion types, conditions on orthogonality of diagonals and splitting into equivalence classes.
+        """
         types = self.consistent_motion_types()
         classes = self.motion_types_equivalent_classes(types)
         valid_classes = []
@@ -794,10 +855,15 @@ class MotionClassifier(SageObject):
             return valid_classes, rows
         return valid_classes
         
+
+    @doc_index("Constraints on edge lengths")
     def motion_types2equations(self, motion_types,
                                            active_NACs=None,
                                            groebner_basis=True,
                                            extra_eqs=[]):
+        r"""
+        Return equations enforced by edge lengths and singleton active NAC-colorings.
+        """
         if active_NACs==None:
             active_NACs = self.motion_types2active_NACs(motion_types)
         
@@ -811,11 +877,19 @@ class MotionClassifier(SageObject):
         else:
             return eqs
     
+    @doc_index("Classification")
     def degenerate_triangle_equation(self, u, v, w):
+        r"""
+        Return the equation for a degenerate triangle.
+        """
         return self.lam(u,v) - self.lam(u,w) - self.lam(w,v)
         
 
+    @doc_index("Constraints on edge lengths")
     def motion_types2same_lengths_equations(self, motion_types):
+        r"""
+        Return the equations for edge lengths enforced by motion types.
+        """
         eqs = []
         for c, motion in motion_types.iteritems():
             if motion=='a' or motion=='p':
@@ -829,6 +903,8 @@ class MotionClassifier(SageObject):
                 eqs.append(self.lam(c[0], c[1]) - self.lam(c[0], c[3]))
         return [eq for eq in ideal(eqs).groebner_basis()]
 
+
+    @doc_index("Constraints on edge lengths")
     def graph_with_same_edge_lengths(self, motion_types, plot=True):
         r"""
         Return a graph with edge labels corresponding to same edge lengths.
@@ -851,6 +927,7 @@ class MotionClassifier(SageObject):
         else:
             return G_labeled
 
+    @doc_index("Constraints on edge lengths")
     def singletons_table(self, active_NACs=None):
         r"""
         Return table whether (active) NAC-colorings are singletons.
@@ -870,8 +947,12 @@ class MotionClassifier(SageObject):
         T = table(rows)
         T.options()['header_row'] = True
         return T
-
+    
+    @doc_index("System of equations for coordinates")
     def edge_equations_ideal(self, fixed_edge, eqs_lamdas=[], extra_eqs=[], show_input=False):
+        r"""
+        Return the ideal of equations for coordinates of vertices and given edge constraints.
+        """
         equations = []
         for u,v in self._graph.edges(labels=False):
             equations.append((self.x(u)-self.x(v))**_sage_const_2 + (self.y(u)-self.y(v))**_sage_const_2 - self.l(u,v)**_sage_const_2)
@@ -888,13 +969,25 @@ class MotionClassifier(SageObject):
                 show(eq)
         return ideal(equations)
     
+    @doc_index("Classification")
     def edge_lengths_dimension(self, eqs_lambdas):
+        r"""
+        Return the dimension of the variaty of edge lengths.
+        """
         return ideal(eqs_lambdas + [self.aux_var]).dimension()
     
+    @doc_index("Classification")
     def edge_lengts_dict2eqs(self, edge_lengths):
+        r"""
+        Return equations with asigned edge lengths.
+        """
         return [self.lam(e[0],e[1]) - QQ(edge_lengths[e]) for e in edge_lengths ]
 
+    @doc_index("Classification")
     def edge_lengths_satisfy_eqs(self, eqs, edge_lengths, print_values=False):
+        r"""
+        Check if a given dictionary of edge lengths satisfy given equations.
+        """
         I = ideal(self.edge_lengts_dict2eqs(edge_lengths))
         if print_values:
             print([(eq.reduce(I)) for eq in eqs])
@@ -902,9 +995,13 @@ class MotionClassifier(SageObject):
 
     
     @staticmethod
+    @doc_index("Classification")
     def show_factored_eqs(eqs, only_print=False, numbers=False,
                           variables=False, print_latex=False,
                           print_eqs=True):
+        r"""
+        Show given equations factored.
+        """
         for i, eq in enumerate(eqs):
             factors = factor(eq)
             if numbers:
@@ -920,6 +1017,7 @@ class MotionClassifier(SageObject):
                     show(factors)
     
     @staticmethod
+    @doc_index("Classification")
     def is_subcase(eqs_a, eqs_b):
         r"""
         Return if `eqs_a` is a subcase of `eqs_b`, i.e., the ideal of `eqs_a` contains the ideal of `eqs_b`.
@@ -930,12 +1028,16 @@ class MotionClassifier(SageObject):
                 return False
         return True
     
+    @doc_index("Other")
     def motion_types2tikz(self,
                           motion_types,
                           color_names=[]
                           , vertex_style='lnodesmall',
                           none_gray=False,
                           ):
+        r"""
+        Return TikZ code for the graph with edges colored according to the lengths enforced by motion types.
+        """
         H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
         self._set_same_lengths(H, motion_types)
         edge_partition = [[e for e in H if H[e]==el] for el in Set(H.values()) if el!=None]
@@ -953,4 +1055,4 @@ class MotionClassifier(SageObject):
                                vertex_style=vertex_style)
     
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS}", gen_rest_table_index(MotionClassifier))
+    "{INDEX_OF_METHODS}", gen_thematic_rest_table_index(MotionClassifier))
