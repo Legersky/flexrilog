@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 r"""
-This is implementation of classification motions of a graph.
+This module implements the functionality for determining possible motions of a graph.
 
 Methods
 -------
@@ -671,7 +671,7 @@ class MotionClassifier(SageObject):
             raise NotImplementedError('There might be more solutions (dim '+str(
                 self._ring_ramification.ideal(eqs).dimension()) + ')')
 
-    @doc_index("Classification")
+    @doc_index("General methods")
     def motion_types_equivalent_classes(self,  motion_types_list):
         r"""
         Split a list of motion types into isomorphism classes.
@@ -709,7 +709,7 @@ class MotionClassifier(SageObject):
                 classes.append([(next_motion, self.normalized_motion_types(next_motion), next_sign)])
         return [[t[0] for t in cls] for cls in classes]
 
-    @doc_index("Classification")
+    @doc_index("General methods")
     def check_orthogonal_diagonals(self, motion_types,  active_NACs, extra_cycles_orthog_diag=[]):
         r"""
         Check the necessary conditions for orthogonal diagonals.
@@ -778,7 +778,7 @@ class MotionClassifier(SageObject):
 
         return True
 
-    @doc_index("Classification")
+    @doc_index("General methods")
     def possible_motion_types_and_active_NACs(self,
                                               comments = {},
                                               show_table=True,
@@ -877,7 +877,7 @@ class MotionClassifier(SageObject):
         else:
             return eqs
     
-    @doc_index("Classification")
+    @doc_index("General methods")
     def degenerate_triangle_equation(self, u, v, w):
         r"""
         Return the equation for a degenerate triangle.
@@ -969,21 +969,21 @@ class MotionClassifier(SageObject):
                 show(eq)
         return ideal(equations)
     
-    @doc_index("Classification")
+    @doc_index("General methods")
     def edge_lengths_dimension(self, eqs_lambdas):
         r"""
         Return the dimension of the variaty of edge lengths.
         """
         return ideal(eqs_lambdas + [self.aux_var]).dimension()
     
-    @doc_index("Classification")
+    @doc_index("Other")
     def edge_lengts_dict2eqs(self, edge_lengths):
         r"""
         Return equations with asigned edge lengths.
         """
         return [self.lam(e[0],e[1]) - QQ(edge_lengths[e]) for e in edge_lengths ]
 
-    @doc_index("Classification")
+    @doc_index("General methods")
     def edge_lengths_satisfy_eqs(self, eqs, edge_lengths, print_values=False):
         r"""
         Check if a given dictionary of edge lengths satisfy given equations.
@@ -995,7 +995,7 @@ class MotionClassifier(SageObject):
 
     
     @staticmethod
-    @doc_index("Classification")
+    @doc_index("Other")
     def show_factored_eqs(eqs, only_print=False, numbers=False,
                           variables=False, print_latex=False,
                           print_eqs=True):
@@ -1017,7 +1017,7 @@ class MotionClassifier(SageObject):
                     show(factors)
     
     @staticmethod
-    @doc_index("Classification")
+    @doc_index("General methods")
     def is_subcase(eqs_a, eqs_b):
         r"""
         Return if `eqs_a` is a subcase of `eqs_b`, i.e., the ideal of `eqs_a` contains the ideal of `eqs_b`.
