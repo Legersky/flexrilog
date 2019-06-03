@@ -11,6 +11,9 @@ all: install test
 install:
 	$(SAGE) -pip install --upgrade --no-index -v .
 
+install-user:
+	$(SAGE) -pip install --upgrade --user --no-index -v .
+	
 uninstall:
 	$(SAGE) -pip uninstall $(PACKAGE)
 
@@ -43,4 +46,4 @@ clean: clean-doc
 clean-doc:
 	cd doc && $(SAGE) -sh -c "make clean"
 
-.PHONY: all install develop test ptest test-long test-all coverage clean clean-doc doc doc-pdf
+.PHONY: all install install-user develop test ptest test-long test-all coverage clean clean-doc doc doc-pdf
