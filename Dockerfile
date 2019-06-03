@@ -8,4 +8,6 @@ RUN sage -pip install jupyterlab
 # Copy the contents of the repo in ${HOME}
 COPY --chown=sage:sage . ${HOME}
 
+RUN apt-get update && apt-get install make
+
 RUN make install
