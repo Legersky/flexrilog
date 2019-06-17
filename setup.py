@@ -42,6 +42,6 @@ setup(
     packages = ['flexrilog'],
     cmdclass = {'test': SageTest}, # adding a special setup command for tests
     setup_requires   = ['sage-package'],
-    install_requires = ['sage-package', 'sphinx'],
-    package_data={'flexrilog': ['lnumber.pyd']},
+    install_requires = ['sage-package', 'sphinx', 'lnumber'],
+#     package_data={'flexrilog': ['lnumber.pyd']},
 )

@@ -787,7 +787,7 @@ class MotionClassifier(SageObject):
                                               keep_orth_failed=False,
                                               eqs=False):
         r"""
-        Wraps the function for constistent motion types, conditions on orthogonality of diagonals and splitting into equivalence classes.
+        Wraps the function for consistent motion types, conditions on orthogonality of diagonals and splitting into equivalence classes.
         """
         types = self.consistent_motion_types()
         classes = self.motion_types_equivalent_classes(types)

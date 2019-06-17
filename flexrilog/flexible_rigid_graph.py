@@ -1680,7 +1680,7 @@ class FlexRiGraph(Graph):
         r"""
         Return the number of complex realizations if the graph is Laman.
 
-        The method uses the code by Jose Capco, it must be compiled separately.
+        The method uses the package `lnumber <https://pypi.org/project/lnumber/>_ by Jose Capco.
 
         EXAMPLE::
 
@@ -1696,11 +1696,13 @@ class FlexRiGraph(Graph):
         if check and not self.is_Laman():
             raise exceptions.ValueError('The graph is not Laman')
 
-        from os import path as os_path
-        from ctypes import cdll, c_size_t
-        dir_path = os_path.dirname(os_path.realpath(__file__))
-        lib = cdll.LoadLibrary(os_path.join(dir_path, "lnumber.pyd"))
-        return lib.laman_number(str(self.graph2int()).encode("utf-8"), c_size_t(self.num_verts()))
+#         from os import path as os_path
+#         from ctypes import cdll, c_size_t
+#         dir_path = os_path.dirname(os_path.realpath(__file__))
+#         lib = cdll.LoadLibrary(os_path.join(dir_path, "lnumber.pyd"))
+#         return lib.laman_number(str(self.graph2int()).encode("utf-8"), c_size_t(self.num_verts()))
+        from lnumber import lnumber
+        return lnumber(self.graph2int(), self.num_verts())
 
 
     @doc_index("Rigidity")
