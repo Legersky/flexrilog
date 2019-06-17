@@ -654,7 +654,7 @@ class GraphGenerator():
         r"""
         Return the Laman graphs with ``n`` vertices.
 
-        See [CGGKLS2018]_.
+        See [CGGKLS2018b]_.
 
         INPUT:
 
