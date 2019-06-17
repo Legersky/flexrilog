@@ -14,3 +14,9 @@
 *.e4?
 *.egg*
 .ipynb_checkpoints
+.metadata*
+aux/*
+.settings*
+dist/*
+.project
+.pydevproject
