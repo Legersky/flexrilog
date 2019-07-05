@@ -8,7 +8,7 @@ It implements the concepts described in the papers
 *Graphs with Flexible Labelings* (doi:`10.1007/s00454-018-0026-9 <https://dx.doi.org/10.1007/s00454-018-0026-9>`_)
 and *Graphs with Flexible Labelings allowing Injective Realizations*
 (arXiv:`1811.06709 <https://arxiv.org/abs/1811.06709>`_) by Georg Grasegger, Jan Legerský and Josef Schicho,
-and in the doctoral thesis *Flexible and Rigid Labelings of Graphs* by Jan Legerský.
+and in the doctoral thesis *Flexible and Rigid Labelings of Graphs* (download `here <https://jan.legersky.cz/publication/phd-thesis/>`_) by Jan Legerský.
 
 .. start-include
 

@@ -33,6 +33,7 @@ References
 .. [Leg2019] \J. Legerský,
               "Flexible and Rigid Labelings of Graphs".
               Doctoral thesis.
+              https://jan.legersky.cz/publication/phd-thesis/.
 
 .. [Lam1970] \G. Laman,
              "On graphs and the rigidity of plane skeletal structures".
