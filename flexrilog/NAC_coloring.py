@@ -714,7 +714,7 @@ class NACcoloring(SageObject):
         the edges lexicographically and setting 1 for red edges,
         0 for blue edges, or the other way around if the first edge is blue.
         
-        EXAMPLE:
+        EXAMPLE::
         
             sage: from flexrilog import GraphGenerator
             sage: delta = GraphGenerator.Q1Graph().NAC_colorings()[0]
