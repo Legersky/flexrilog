@@ -683,7 +683,10 @@ class FlexRiGraph(Graph):
             CPU times: user 36 µs, sys: 3 µs, total: 39 µs
             Wall time: 55.1 µs
             15
+        
+        TODO:
 
+            Implement as an iterator?
         """
         if self._NACs_computed != 'yes':
             self._find_NAC_colorings()
@@ -1186,6 +1189,8 @@ class FlexRiGraph(Graph):
         TODO:
 
         An interesting example with less NAC-colorings.
+        
+        Speed up using triangle-components?
         """
         res = deepcopy(self)
         res._name = 'CDC of ' + res.name()

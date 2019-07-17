@@ -94,7 +94,9 @@ class NACcoloring(SageObject):
         ...
         RuntimeError: The edges of the NAC-coloring do not match the edges of the graph.
     
-
+    TODO:
+    
+        blue/red graph
     """
     def __init__(self, G, coloring, name=None, check=True):
         from flexible_rigid_graph import FlexRiGraph
