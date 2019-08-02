@@ -674,7 +674,7 @@ class ParametricGraphMotion(GraphMotion):
 
         TODO:
 
-        description
+        description, make radius as parameter
         """
         A = {}
         for v in self._graph.vertices():

@@ -53,7 +53,7 @@ class MotionClassifier(SageObject):
     r"""
     This class implements the functionality for determining possible motions of a graph.
     """
-    def __init__(self, graph, four_cycles=[], separator=''):
+    def __init__(self, graph, four_cycles=[], separator='', edges_ordered=[]):
         if not (isinstance(graph, FlexRiGraph) or 'FlexRiGraph' in str(type(graph))):
             raise exceptions.TypeError('The graph must be of the type FlexRiGraph.')
         self._graph = graph
@@ -73,8 +73,15 @@ class MotionClassifier(SageObject):
         ws_latex = []
         zs_latex = []
         lambdas_latex = []
+        
+        if edges_ordered==[]:
+            edges_ordered = self._graph.edges(labels=False)
+        else:
+            if (Set([self._edge2str(e) for e in edges_ordered]) !=
+                Set([self._edge2str(e) for e in self._graph.edges(labels=False)])):
+                raise ValueError('The provided ordered edges do not match the edges of the graph.')
 
-        for e in self._graph.edges(labels=False):
+        for e in edges_ordered:
             ws.append('w' + self._edge2str(e))
             zs.append('z' + self._edge2str(e))
             lambdas.append('lambda' + self._edge2str(e))
