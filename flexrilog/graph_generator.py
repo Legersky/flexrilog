@@ -318,7 +318,7 @@ class GraphGenerator():
         return G
     
     @staticmethod
-    def Q2Graph():
+    def Q2Graph(old_labeling=False):
         r"""
         Return the graph $Q_2$.
 
@@ -335,11 +335,44 @@ class GraphGenerator():
             G = GraphGenerator.Q2Graph()
             sphinx_plot(G)
         """
-        G = FlexRiGraph([(0, 4), (0, 5), (0, 6), (1, 2), (1, 3), (1, 6), (2, 5),
+        if old_labeling:
+            G = FlexRiGraph([(0, 4), (0, 5), (0, 6), (1, 2), (1, 3), (1, 6), (2, 5),
                                  (2, 7), (3, 4), (3, 7), (4, 7), (5, 7), (6, 7)],
                                 pos={0: (-1, 0), 1: (1, 0), 2: (0.5, -0.866025), 3: (0.5, 0.866025),
                                       4: (-0.5, 0.866025), 5: (-0.5, -0.866025), 6: (0, 0.3), 7: (0, -0.3)},
                                 name='Q_2')
+        else:
+            G = FlexRiGraph([(1, 3), (3, 4), (2, 4), (2, 7), (6, 7), (1, 6), (3, 5),
+                             (4, 5), (5, 6), (5, 7), (5, 8), (1, 8), (2, 8)], 
+                             pos={1: (-1, 0), 2: (1, 0), 4: (0.5, -0.866025), 7: (0.5, 0.866025),
+                                  6: (-0.5, 0.866025), 3: (-0.5, -0.866025), 8: (0, 0.3), 5: (0, -0.3)},
+                             name='Q_2')
+            for col in G.NAC_colorings():
+                num = col.NAC2int()
+                if num == 15487:
+                    col.set_name('alpha2')
+                elif num == 15229:
+                    col.set_name('beta')
+                elif num == 14589:
+                    col.set_name('gamma2')
+                elif num == 14466:
+                    col.set_name('gamma1')
+                elif num == 15106:
+                    col.set_name('delta')
+                elif num == 15360:
+                    col.set_name('alpha1')
+                elif num == 14066:
+                    col.set_name('zeta34')
+                elif num == 13682:
+                    col.set_name('epsilon27')
+                elif num == 12912:
+                    col.set_name('zeta67')
+                elif num == 12784:
+                    col.set_name('epsilon24')
+                elif num == 12687:
+                    col.set_name('epsilon13')
+                elif num == 13581:
+                    col.set_name('epsilon16')
         return G
 
     
