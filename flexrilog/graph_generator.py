@@ -13,6 +13,11 @@ Graphs
 AUTHORS:
 
 -  Jan Legerský (2019-01-15): initial version
+
+TODO:
+
+- L2, ..., L6
+- lists of L_i, Q_i, S_i graphs
 """
 
 #Copyright (C) 2018 Jan Legerský
