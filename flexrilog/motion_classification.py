@@ -792,7 +792,7 @@ class MotionClassifier(SageObject):
                                               one_representative=True,
                                               tab_rows=False,
                                               keep_orth_failed=False,
-                                              eqs=False):
+                                              equations=False):
         r"""
         Wraps the function for consistent motion types, conditions on orthogonality of diagonals and splitting into equivalence classes.
         """
@@ -805,7 +805,7 @@ class MotionClassifier(SageObject):
             header = [['index', '#', 'motion types'] + motions + ['active NACs', 'comment']]
         else:
             header = [['index', '#', 'elem.', 'motion types'] + motions + ['active NACs', 'comment']]
-        if eqs:
+        if equations:
             header[0].append('equations')
         rows = []
         for i, cls in enumerate(classes):
@@ -835,7 +835,7 @@ class MotionClassifier(SageObject):
                     row.append([eq for eq in eqs if not eq in zeros])
                     row.append(str(comments.get(i,'')) + str(e))
                     
-                if eqs:
+                if equations:
                     zeros, eqs = self.consequences_of_nonnegative_solution_assumption(
                         flatten([self.ramification_formula(c, t[c]) for c in t]))
                     row.append([eq for eq in eqs if not eq in zeros])
@@ -908,7 +908,7 @@ class MotionClassifier(SageObject):
             elif motion=='e':
                 eqs.append(self.lam(c[1], c[2]) - self.lam(c[2], c[3]))
                 eqs.append(self.lam(c[0], c[1]) - self.lam(c[0], c[3]))
-        return [eq for eq in ideal(eqs).groebner_basis()]
+        return [eq for eq in ideal(eqs).groebner_basis()] if eqs else []
 
 
     @doc_index("Constraints on edge lengths")
