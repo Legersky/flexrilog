@@ -137,6 +137,9 @@ class FlexRiGraph(Graph):
             sage: L = FlexRiGraph(graphs.CompleteBipartiteGraph(2,3)); L
             Complete bipartite graph: FlexRiGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4)]
 
+    TODO:
+    
+        Other inputs: Graph, adjacency matrix
     """
 
     def __init__(self, data, pos=None, name=None, check=True):
