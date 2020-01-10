@@ -204,8 +204,7 @@ class NACcoloring(SageObject):
 
         if len(self._red_edges) == 0 or len(self._blue_edges) == 0:
             return False
-        for edges in [self._red_edges, self._blue_edges]:
-            one_color_subgraph = Graph([list(e) for e in edges])
+        for one_color_subgraph in [self.red_subgraph(), self.blue_subgraph()]:
             for component in one_color_subgraph.connected_components():
                 if (len(Graph(self._graph).subgraph(component).edges(labels=False))
                     - len(one_color_subgraph.subgraph(component).edges(labels=False))):
@@ -325,6 +324,22 @@ class NACcoloring(SageObject):
                 raise exceptions.ValueError('There is no edge ' + str([u[0],u[1]]))
             return Set([u[0],u[1]]) in self._blue_edges
 
+
+    def blue_subgraph(self):
+        return Graph([self._graph.vertices(),[list(e) for e in self._blue_edges]], format='vertices_and_edges')
+
+    
+    def blue_components(self):
+        return self.blue_subgraph().connected_components()
+
+
+    def red_subgraph(self):
+        return Graph([self._graph.vertices(),[list(e) for e in self._red_edges]], format='vertices_and_edges')
+
+
+    def red_components(self):
+        return self.red_subgraph().connected_components()
+    
 
     def plot(self, grid_pos=False, zigzag=False):
         r"""
@@ -573,15 +588,9 @@ class NACcoloring(SageObject):
 
         See [GLS2018]_ for the description of the grid construction.
         """
-        red_subgraph = Graph(self.red_edges(), format='list_of_edges')
-        red_components = red_subgraph.connected_components()
-        red_components += [[v] for v in Set(self._graph.vertices()).difference(Set(flatten(red_components)))]
-        blue_subgraph = Graph(self.blue_edges(), format='list_of_edges')
-        blue_components = blue_subgraph.connected_components()
-        blue_components += [[v] for v in Set(self._graph.vertices()).difference(Set(flatten(blue_components)))]
         pos = {}
-        for (i,red) in enumerate(red_components):
-            for (j,blue) in enumerate(blue_components):
+        for (i,red) in enumerate(self.red_components()):
+            for (j,blue) in enumerate(self.blue_components()):
                 for v in blue:
                     if v in red:
                         pos[v] = (i,j)
