@@ -171,6 +171,7 @@ class FlexRiGraph(Graph):
 
         self._triangleComponents = None
         self._NACs_computed = 'no'
+        self._NAC_isomorphism_classes = None
 
     def _repr_(self):
         if self.name():
@@ -870,6 +871,8 @@ class FlexRiGraph(Graph):
             NAC-coloring with red edges {{1, 3}, {1, 2}, {0, 2}, {0, 3}} and blue edges {{0, 4}, {1, 4}}
             NAC-coloring with red edges {{1, 4}, {0, 2}, {0, 3}} and blue edges {{1, 3}, {1, 2}, {0, 4}}
         """
+        if self._NAC_isomorphism_classes:
+            return self._NAC_isomorphism_classes
         NACs = self.NAC_colorings()
         if NACs:
             isomorphism_classes=[[NACs[0]]]
@@ -883,6 +886,7 @@ class FlexRiGraph(Graph):
                         break
                 if not isomorphic_to_prev:
                     isomorphism_classes.append([NAC_col])
+            self._NAC_isomorphism_classes = isomorphism_classes
             return isomorphism_classes
         else:
             return []
