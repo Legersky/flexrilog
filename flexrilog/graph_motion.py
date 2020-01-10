@@ -62,11 +62,16 @@ class GraphMotion(SageObject):
         return 'An abstract motion of the graph ' + str(self._graph)
 
     @classmethod
-    def GridConstruction(cls, graph,  NAC_coloring,  zigzag=False,  check=True):
+    def GridConstruction(cls, graph,  NAC_coloring,  zigzag=False,  check=True, red_components_ordered=[], blue_components_ordered=[]):
         r"""
         Return the motion obtained by grid construction for given NAC-coloring.
         """
-        return ParametricGraphMotion(graph, 'grid',  [NAC_coloring],  zigzag, check)
+        return ParametricGraphMotion(graph, 'grid',  [NAC_coloring],
+                                     {
+                                         'zigzag':zigzag,
+                                         'red':red_components_ordered,
+                                         'blue':blue_components_ordered
+                                     }, check)
 
     @classmethod
     def ParametricMotion(cls, graph, parametrization, par_type, active_NACs=None, sampling_type=None, interval=None, check=True):
@@ -401,13 +406,14 @@ class ParametricGraphMotion(GraphMotion):
     def _repr_(self):
         return 'Parametric motion with ' + self._par_type + ' parametrization: ' + str(self.parametrization())
 
-    def _grid2motion(self, NAC_coloring, zigzag, check):
+    def _grid2motion(self, NAC_coloring, data, check):
         self._par_type = 'symbolic'
         alpha = var('alpha')
         self._field = parent(alpha)
         self._parameter = alpha
         self._active_NACs = [NAC_coloring]
-        grid_coor = NAC_coloring.grid_coordinates()
+        zigzag = data['zigzag']
+        grid_coor = NAC_coloring.grid_coordinates(ordered_red=data['red'], ordered_blue=data['blue'])
         self._same_lengths = []
         for i, edges in enumerate([NAC_coloring.blue_edges(), NAC_coloring.red_edges()]):
             partition = [[list(edges[0])]]

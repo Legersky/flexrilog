@@ -582,15 +582,31 @@ class NACcoloring(SageObject):
         return edges.issubset(self._red_edges) or edges.issubset(self._blue_edges)
 
 
-    def grid_coordinates(self):
+    def grid_coordinates(self, ordered_red=[], ordered_blue=[]):
         r"""
         Return coordinates for the grid construction.
+        
+        The optional parameters `ordered_red`, `ordered_blue` can be used to specify the order of components to be taken.
 
         See [GLS2018]_ for the description of the grid construction.
+        
+        TODO:
+        
+        test
         """
         pos = {}
-        for (i,red) in enumerate(self.red_components()):
-            for (j,blue) in enumerate(self.blue_components()):
+        red_comps = self.red_components()
+        blue_comps = self.blue_components()
+        if ordered_red:
+            if type(ordered_red)!=list or len(ordered_red)!=len(red_comps) or Set(flatten(ordered_red))!=Set(self._graph.vertices()):
+                raise ValueError('`ordered_red` must be a list of all red components, not ' + str(ordered_red))
+            red_comps = ordered_red
+        if ordered_blue:
+            if type(ordered_blue)!=list or len(ordered_blue)!=len(blue_comps) or Set(flatten(ordered_blue))!=Set(self._graph.vertices()):
+                raise ValueError('`ordered_blue` must be a list of all blue components, not ' + str(ordered_blue))
+            blue_comps = ordered_blue
+        for (i,red) in enumerate(red_comps):
+            for (j,blue) in enumerate(blue_comps):
                 for v in blue:
                     if v in red:
                         pos[v] = (i,j)
