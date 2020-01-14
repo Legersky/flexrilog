@@ -29,10 +29,17 @@ see :wikipedia:`Wikipedia <Laman_graph>`.
 Methods
 -------
 
+**FlexRiGraph**
 
 {INDEX_OF_METHODS_FLEXRIGRAPH}
 
-{INDEX_OF_METHODS_SYMMETRICFLEXRIGRAPH}
+**SymmetricFlexRiGraph**
+
+{INDEX_OF_METHODS_SYMMETRIC_FLEXRIGRAPH}
+
+**CnSymmetricFlexRiGraph**
+
+{INDEX_OF_METHODS_CN_SYMMETRIC_FLEXRIGRAPH}
 
 AUTHORS:
 
@@ -1911,60 +1918,16 @@ class FlexRiGraph(Graph):
                        ' '.join(['('+str(e[0])+')edge('+str(e[1])+')' for e in self.edges()]) + ';')
         print( '\\end{tikzpicture}')
 
-    @doc_index("Symmetry")
-    def Cn_symmetries_gens(self, n):
-        '''
-        Return the list of generators of Cn symmetries of the graph.
-        
-        An element $\omega$ of order `n` of the automorphism of the graph
-        generates a $\mathcal{C}_n$-symmetry of the graph if
-        
-        - each partially invariant is invariant
-        - the set of invariant vertices is independent.
-        '''
-        def is_cyclic_subgroup(subgroup):
-            '''
-            Return if a group is cyclic together with a generator and order.
-            '''
-            if subgroup.is_cyclic():
-                order = subgroup.order()
-                for gen in subgroup.gens():
-                    if gen.order() == order:
-                        return (True, gen, order)
-                for gen in subgroup:
-                    if gen.order() == order:
-                        return (True, gen, order)
-            return (False, None, None)
-    
-        def cyclic_subgroups(group, order):
-            '''
-            Return all cyclic subgroups of `group` with given `order`.
-            '''
-            res_sbgrps = []
-            for sbgrp in group.subgroups():
-                cyclic, gen, n = is_cyclic_subgroup(sbgrp)
-                if cyclic and n == order:
-                    res_sbgrps.append(gen)
-            return res_sbgrps
-        
-        res = []
-        for sigma in cyclic_subgroups(self.automorphism_group(), n):
-            partially_inv = [v for v in self.vertices() if len(sigma.orbit(v))<n]
-            if [v for v in partially_inv if len(sigma.orbit(v))>1]:
-                continue
-            if Graph(self).is_independent_set(partially_inv):
-                res.append(sigma)
-        return res
     
     
 class SymmetricFlexRiGraph(FlexRiGraph):
     r"""
-    The class SymmetricFlexRiGraph is inherited from :ref:FlexRiGraph.
+    The class SymmetricFlexRiGraph is inherited from :class:`FlexRiGraph`.
     It represents a graph with a given symmetry.
 
     INPUT:
 
-    - ``data``: provides the information about edges, see :ref:FlexRiGraph.
+    - ``data``: provides the information about edges, see :class:`FlexRiGraph`..
 
     - ``symmetry`` -- `sage.graphs.graph.Graph <http://doc.sagemath.org/html/en/reference/groups/sage/groups/perm_gps/permgroup.html>`_
       that is a subgroup of the automorphism group of the graph or the list of its generators 
@@ -1994,13 +1957,107 @@ class SymmetricFlexRiGraph(FlexRiGraph):
         return super(SymmetricFlexRiGraph, self)._repr_() + '\nwith the symmetry ' + str(self._sym_group)
 
 
+class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
+    r"""
+    The class CnSymmetricFlexRiGraph is inherited from :class:`SymmetricFlexRiGraph`.
+    It represents a graph with a given $\mathcal{C}_n$ symmetry,
+    namely, a cyclic subgroup of order `n` of the automorphism group of the graph
+    such that
+    
+    - each partially invariant is invariant
+    - the set of invariant vertices is independent.
+    
+    INPUT:
 
+    - ``data``: provides the information about edges, see :class:`FlexRiGraph`..
+
+    - ``symmetry`` -- `sage.graphs.graph.Graph <http://doc.sagemath.org/html/en/reference/groups/sage/groups/perm_gps/permgroup.html>`_
+      that is a subgroup of the automorphism group of the graph or the list of its generator.
+      The properties above must hold.
+
+    TODO:
+    
+        examples
+    """
+    def __init__(self, data, symmetry, pos=None, name=None, check=True):
+        super(CnSymmetricFlexRiGraph, self).__init__(data, symmetry, pos, name, check)
+        is_cyclic, gen, order = CnSymmetricFlexRiGraph.is_cyclic_subgroup(self._sym_group)
+        if not is_cyclic:
+            raise ValueError(str(self._sym_group) + ' is not a cyclic subgroup of the automorphism group of the graph.')
+        if not CnSymmetricFlexRiGraph.is_Cn_symmetry(self, gen, order):
+            raise ValueError(str(self._sym_group) + ' is not a Cn-symmetry of the graph.')
+        self._sym_gens = [gen]
+        self._order = order
+        
+        
+            
+            
+    @staticmethod
+    def is_Cn_symmetry(graph, sigma, n):
+        """
+        Return whether `sigma` generates a $\mathcal{C}_n$-symmetry of the `graph`.
+        """
+        partially_inv = [v for v in graph.vertices() if len(sigma.orbit(v))<n]
+        if [v for v in partially_inv if len(sigma.orbit(v))>1]:
+            return False
+        if Graph(graph).is_independent_set(partially_inv):
+            return True
+        
+    @staticmethod
+    def Cn_symmetries_gens(graph, n):
+        '''
+        Return the list of generators of Cn symmetries of the graph.
+        
+        An element $\omega$ of order `n` of the automorphism group of the graph
+        generates a $\mathcal{C}_n$-symmetry of the graph if
+        
+        - each partially invariant is invariant
+        - the set of invariant vertices is independent.
+        '''
+        
+        res = []
+        for sigma in CnSymmetricFlexRiGraph.cyclic_subgroups(graph.automorphism_group(), n):
+            if CnSymmetricFlexRiGraph.is_Cn_symmetry(graph, sigma, n):
+                res.append(sigma)
+        return res
+
+
+    @staticmethod
+    def is_cyclic_subgroup(subgroup):
+        '''
+        Return if a group is cyclic, a generator and order.
+        '''
+        if subgroup.is_cyclic():
+            order = subgroup.order()
+            for gen in subgroup.gens():
+                if gen.order() == order:
+                    return (True, gen, order)
+            for gen in subgroup:
+                if gen.order() == order:
+                    return (True, gen, order)
+        return (False, None, None)
+
+    @staticmethod
+    def cyclic_subgroups(group, order):
+        '''
+        Return all cyclic subgroups of `group` with given `order`.
+        '''
+        res_sbgrps = []
+        for sbgrp in group.subgroups():
+            cyclic, gen, n = CnSymmetricFlexRiGraph.is_cyclic_subgroup(sbgrp)
+            if cyclic and n == order:
+                res_sbgrps.append(gen)
+        return res_sbgrps
+
+   
+   
+   
 _additional_categories = {
     FlexRiGraph.plot         : "Plotting",
     }
 
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS}", (gen_thematic_rest_table_index(FlexRiGraph, _additional_categories)
+    "{INDEX_OF_METHODS_FLEXRIGRAPH}", (gen_thematic_rest_table_index(FlexRiGraph, _additional_categories)
    )).replace('**Plotting**', """
 **Plotting**
  
@@ -2012,9 +2069,11 @@ __doc__ = __doc__.replace(
    :meth:`~flexrilog.flexible_rigid_graph.FlexRiGraph.plot` @ Return the plot of the graph.""")
 
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS_SYMMETRICFLEXRIGRAPH}", gen_thematic_rest_table_index(SymmetricFlexRiGraph))
+    "{INDEX_OF_METHODS_SYMMETRIC_FLEXRIGRAPH}", gen_thematic_rest_table_index(SymmetricFlexRiGraph))
 
 
+__doc__ = __doc__.replace(
+    "{INDEX_OF_METHODS_CN_SYMMETRIC_FLEXRIGRAPH}", gen_thematic_rest_table_index(CnSymmetricFlexRiGraph))
 
 
 
