@@ -791,6 +791,8 @@ class CnSymmetricNACcoloring(NACcoloring):
         blue_subgraph = self.blue_subgraph()
         self._partially_invariant_components = {}
         self._noninvariant_components = {}
+        self._partially_invariant_orbits = {}
+        self._noninvariant_orbits = {}
         for one_color_subgraph,  col in [[red_subgraph, 'red'],
                                          [blue_subgraph, 'blue']]:
             invariant_comps = []
@@ -804,20 +806,17 @@ class CnSymmetricNACcoloring(NACcoloring):
                 else:
                     noninv_comps.append(orbit)
                     
-            self._partially_invariant_components[col] = invariant_comps
-            self._noninvariant_components[col] = noninv_comps
-   
+            self._partially_invariant_orbits[col] = invariant_comps
+            self._noninvariant_orbits[col] = noninv_comps
+            self._partially_invariant_components[col] = [list(comp) for orbit in invariant_comps for comp in orbit]
+            self._noninvariant_components[col] = [list(comp) for orbit in noninv_comps for comp in orbit]
     
     def is_Cn_symmetric(self):
         if not self.is_equal(self.isomorphic_NAC_coloring(self.omega), moduloConjugation=False):
             return False
-        if len(self.blue_subgraph().subgraph(flatten([
-                list(comp) for orbit in self._partially_invariant_components['red'] for comp in orbit
-                ])).edges())>0:
+        if len(self.blue_subgraph().subgraph(flatten(self._partially_invariant_components['red'])).edges())>0:
             return False
-        if len(self.red_subgraph().subgraph(flatten([
-                list(comp) for orbit in self._partially_invariant_components['blue'] for comp in orbit
-                ])).edges())>0:
+        if len(self.red_subgraph().subgraph(flatten(self._partially_invariant_components['blue'])).edges())>0:
             return False
         return True
 
