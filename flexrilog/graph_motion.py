@@ -39,7 +39,7 @@ Classes
 from sage.all import deepcopy, Set, Graph, find_root, ceil#, sqrt, matrix, copy
 from sage.all import SageObject,  parent, Subsets #, rainbow, latex, flatten
 from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan, log
-from sage.all import FunctionField, QQ,  sqrt,  function
+from sage.all import FunctionField, QQ,  sqrt,  function, mod
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.rings.integer import Integer
 _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(1);
@@ -72,6 +72,46 @@ class GraphMotion(SageObject):
                                          'red':red_components_ordered,
                                          'blue':blue_components_ordered
                                      }, check)
+
+    
+    @classmethod
+    def CnSymmetricGridConstruction(cls, G, delta):
+        def Cn_symmetric_k_points(n,k, alpha=Integer(1) ):   
+            n = Integer(n)
+            k = Integer(k) 
+            if not mod(k,n) in [Integer(0) ,Integer(1) ]:
+                raise ValueError('Only possible if k mod n in {{0,1}}, here {} mod {} = {}.'.format(k,n,mod(k,n)))
+            res = {
+                    i : vector([RR(cos(RR(Integer(2) *pi*i)/n)),RR(sin(RR(Integer(2) *pi*i)/n))]) for i in range(Integer(0) ,n)
+                }
+            N = k
+            if mod(k,n)==Integer(1) :
+                res[N-Integer(1) ] = vector([Integer(0) ,Integer(0) ])
+                N = N-Integer(1) 
+            for i in range(n,N):
+                r = (i-i%n)/n +Integer(1) 
+                res[i] = r*res[i%n]
+            for i in res:
+                res[i] = alpha*vector([res[i][Integer(0) ], res[i][Integer(1) ]])
+            return [res[i] for i in sorted(res.keys())]
+    
+        n = delta.n
+        a = Cn_symmetric_k_points(n, len(delta._noninvariant_components['red']))
+        print len(delta._noninvariant_components['red'])
+        a += [vector([Integer(0) ,Integer(0) ]) for _ in range(len(delta._partially_invariant_components['red']))]
+        b = Cn_symmetric_k_points(n, len(delta._noninvariant_components['blue']))
+        b += [vector([Integer(0) ,Integer(0) ]) for _ in range(len(delta._partially_invariant_components['blue']))]
+        ab = [b, a]
+        M = GraphMotion.GridConstruction(G, delta,
+             check=False, zigzag=ab,
+             red_components_ordered=delta._noninvariant_components['red']+delta._partially_invariant_components['red'],
+             blue_components_ordered=delta._noninvariant_components['blue']+delta._partially_invariant_components['blue'])
+    
+        for comp in delta._partially_invariant_components['red']+delta._partially_invariant_components['blue']:
+            if len(comp)>Integer(1) :
+                M.fix_edge(Graph(G).subgraph(comp).edges(labels=False)[Integer(0) ])
+                break
+        return M
 
     @classmethod
     def ParametricMotion(cls, graph, parametrization, par_type, active_NACs=None, sampling_type=None, interval=None, check=True):
