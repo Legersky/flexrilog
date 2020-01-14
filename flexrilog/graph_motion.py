@@ -97,7 +97,6 @@ class GraphMotion(SageObject):
     
         n = delta.n
         a = Cn_symmetric_k_points(n, len(delta._noninvariant_components['red']))
-        print len(delta._noninvariant_components['red'])
         a += [vector([Integer(0) ,Integer(0) ]) for _ in range(len(delta._partially_invariant_components['red']))]
         b = Cn_symmetric_k_points(n, len(delta._noninvariant_components['blue']))
         b += [vector([Integer(0) ,Integer(0) ]) for _ in range(len(delta._partially_invariant_components['blue']))]
