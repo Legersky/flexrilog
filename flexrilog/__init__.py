@@ -16,7 +16,7 @@
 
 import sage.all
 from graph_motion import GraphMotion, ParametricGraphMotion
-from flexible_rigid_graph import FlexRiGraph
+from flexible_rigid_graph import FlexRiGraph, SymmetricFlexRiGraph
 from graph_generator import GraphGenerator
 from NAC_coloring import NACcoloring
 from motion_classification import MotionClassifier

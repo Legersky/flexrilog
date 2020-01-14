@@ -30,7 +30,9 @@ Methods
 -------
 
 
-{INDEX_OF_METHODS}
+{INDEX_OF_METHODS_FLEXRIGRAPH}
+
+{INDEX_OF_METHODS_SYMMETRICFLEXRIGRAPH}
 
 AUTHORS:
 
@@ -59,6 +61,7 @@ FlexRiGraph
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
 from sage.all import Subsets, rainbow, show, binomial, RealField
 from sage.all import var, solve, RR, vector, norm, CC
+from sage.all import PermutationGroup, PermutationGroup_generic
 import random
 
 from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
@@ -107,7 +110,7 @@ class FlexRiGraph(Graph):
             ...
             ValueError: The graph must have at least one edge.
 
-        A named graph given by integer represenation with specified positions::
+        A named graph given by integer representation with specified positions::
 
             sage: G = FlexRiGraph(7916, name='3-prism',
             ....:       pos={0: [0.6, 0.4], 1: [0, 1.4], 2: [1, 1.4],
@@ -139,7 +142,7 @@ class FlexRiGraph(Graph):
 
     TODO:
     
-        Other inputs: Graph, adjacency matrix
+        Other inputs: adjacency matrix
     """
 
     def __init__(self, data, pos=None, name=None, check=True):
@@ -147,7 +150,7 @@ class FlexRiGraph(Graph):
             edges = self._int2graph_edges(data)
         elif type(data)==list:
             edges = data
-        elif type(data)==Graph:
+        elif isinstance(data, Graph):
             edges = data.edges()
             pos = data.get_pos()
             if data.name():
@@ -178,11 +181,12 @@ class FlexRiGraph(Graph):
             pref = self.name() +': '
         else:
             pref = ''
+        pref += self.__class__.__name__
         if len(self.edges(labels=False)) < 10:
-            return (pref + 'FlexRiGraph with the vertices '+str(self.vertices()) +
+            return (pref + ' with the vertices '+str(self.vertices()) +
                     ' and edges '+str(self.edges(labels=False)) + '')
         else:
-            return (pref + 'FlexRiGraph with ' +str(len(self.vertices())) +
+            return (pref + ' with ' +str(len(self.vertices())) +
                     ' vertices and ' + str(len(self.edges(labels=False))) + ' edges')
 
 
@@ -204,9 +208,9 @@ class FlexRiGraph(Graph):
 
     def _int2graph_edges(self,N):
         r"""
-        Return edges of the graph with integer represenation ``N``.
+        Return edges of the graph with integer representation ``N``.
 
-        The integer represenation works as follows:
+        The integer representation works as follows:
         the binary expansion of ``N`` equals the sequence
         obtained by concatenation of the rows of the upper triangle of the adjacency matrix,
         excluding the diagonal.
@@ -234,7 +238,7 @@ class FlexRiGraph(Graph):
         r"""
         Return the integer representation of the graph.
 
-        The graph has integer represenation `N`
+        The graph has integer representation `N`
         if the binary expansion of ``N`` equals the sequence
         obtained by concatenation of the rows of the upper triangle of the adjacency matrix,
         excluding the diagonal.
@@ -1907,6 +1911,90 @@ class FlexRiGraph(Graph):
                        ' '.join(['('+str(e[0])+')edge('+str(e[1])+')' for e in self.edges()]) + ';')
         print( '\\end{tikzpicture}')
 
+    @doc_index("Symmetry")
+    def Cn_symmetries_gens(self, n):
+        '''
+        Return the list of generators of Cn symmetries of the graph.
+        
+        An element $\omega$ of order `n` of the automorphism of the graph
+        generates a $\mathcal{C}_n$-symmetry of the graph if
+        
+        - each partially invariant is invariant
+        - the set of invariant vertices is independent.
+        '''
+        def is_cyclic_subgroup(subgroup):
+            '''
+            Return if a group is cyclic together with a generator and order.
+            '''
+            if subgroup.is_cyclic():
+                order = subgroup.order()
+                for gen in subgroup.gens():
+                    if gen.order() == order:
+                        return (True, gen, order)
+                for gen in subgroup:
+                    if gen.order() == order:
+                        return (True, gen, order)
+            return (False, None, None)
+    
+        def cyclic_subgroups(group, order):
+            '''
+            Return all cyclic subgroups of `group` with given `order`.
+            '''
+            res_sbgrps = []
+            for sbgrp in group.subgroups():
+                cyclic, gen, n = is_cyclic_subgroup(sbgrp)
+                if cyclic and n == order:
+                    res_sbgrps.append(gen)
+            return res_sbgrps
+        
+        res = []
+        for sigma in cyclic_subgroups(self.automorphism_group(), n):
+            partially_inv = [v for v in self.vertices() if len(sigma.orbit(v))<n]
+            if [v for v in partially_inv if len(sigma.orbit(v))>1]:
+                continue
+            if Graph(self).is_independent_set(partially_inv):
+                res.append(sigma)
+        return res
+    
+    
+class SymmetricFlexRiGraph(FlexRiGraph):
+    r"""
+    The class SymmetricFlexRiGraph is inherited from :ref:FlexRiGraph.
+    It represents a graph with a given symmetry.
+
+    INPUT:
+
+    - ``data``: provides the information about edges, see :ref:FlexRiGraph.
+
+    - ``symmetry`` -- `sage.graphs.graph.Graph <http://doc.sagemath.org/html/en/reference/groups/sage/groups/perm_gps/permgroup.html>`_
+      that is a subgroup of the automorphism group of the graph or the list of its generators 
+
+    TODO:
+    
+        examples
+    """
+
+    def __init__(self, data, symmetry, pos=None, name=None, check=True):
+        super(SymmetricFlexRiGraph, self).__init__(data, pos, name, check)
+        if isinstance(symmetry, PermutationGroup_generic):
+            self._sym_group = symmetry
+            self._sym_gens = self._sym_group.gens()
+        elif isinstance(symmetry, list):
+            self._sym_gens = symmetry
+            self._sym_group = PermutationGroup(symmetry, domain=self.vertices())
+        
+        for gen in self._sym_gens:
+            for u,v in self.edges(labels=False):
+                if not self.has_edge(gen(u), gen(v)):
+                    raise ValueError('`symmetry must be a subgroup of the automorphism group of the graph or the list of its generators, not '
+                                     + str(self._sym_group))                    
+
+
+    def _repr_(self):
+        return super(SymmetricFlexRiGraph, self)._repr_() + '\nwith the symmetry ' + str(self._sym_group)
+
+
+
 _additional_categories = {
     FlexRiGraph.plot         : "Plotting",
     }
@@ -1923,7 +2011,8 @@ __doc__ = __doc__.replace(
    
    :meth:`~flexrilog.flexible_rigid_graph.FlexRiGraph.plot` @ Return the plot of the graph.""")
 
-
+__doc__ = __doc__.replace(
+    "{INDEX_OF_METHODS_SYMMETRICFLEXRIGRAPH}", gen_thematic_rest_table_index(SymmetricFlexRiGraph))
 
 
 
