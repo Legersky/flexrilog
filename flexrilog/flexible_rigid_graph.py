@@ -69,6 +69,7 @@ from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
 from sage.all import Subsets, rainbow, show, binomial, RealField
 from sage.all import var, solve, RR, vector, norm, CC
 from sage.all import PermutationGroup, PermutationGroup_generic
+from sage.all import pi, cos, sin
 import random
 
 from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
@@ -621,6 +622,10 @@ class FlexRiGraph(Graph):
             else:
                 triangleComponents[l].append([u,v])
         return triangleComponents
+    
+    @doc_index("NAC-colorings")
+    def _edges_with_same_color(self):
+        return self.triangle_connected_components()
 
     @doc_index("NAC-colorings")
     def _find_NAC_colorings(self, onlyOne=False, names=False):
@@ -630,7 +635,7 @@ class FlexRiGraph(Graph):
         The method finds NAC-colorings of the graph and store them in ``self._NAC_colorings``.
         The flag ``self._NACs_computed`` is changed to ``'yes'`` or ``'onlyOne'``.
         """
-        triangle_comps = self.triangle_connected_components()
+        triangle_comps = self._edges_with_same_color()
         n = len(triangle_comps)
         form_len = '0'+str(n-1)+'b'
         self._NAC_colorings = []
@@ -1961,13 +1966,20 @@ class SymmetricFlexRiGraph(FlexRiGraph):
 
 class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     r"""
-    The class CnSymmetricFlexRiGraph is inherited from :class:`SymmetricFlexRiGraph`.
+    This class is inherited from :class:`SymmetricFlexRiGraph`.
     It represents a graph with a given $\mathcal{C}_n$ symmetry,
     namely, a cyclic subgroup of order `n` of the automorphism group of the graph
     such that
     
     - each partially invariant is invariant
     - the set of invariant vertices is independent.
+    
+    WARNING:
+    
+    Only $\mathcal{C}_n$-symmetric NAC-colorings are considered in an instance of :class:`CnSymmetricFlexRiGraph`
+    for parent methods! 
+    For example, :meth:`FlexRiGraph.NAC_colorings()` returns the list of all  $\mathcal{C}_n$-symmetric NAC-colorings
+    of the graph.
     
     INPUT:
 
@@ -1989,11 +2001,87 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         if not CnSymmetricFlexRiGraph.is_Cn_symmetry(self, gen, order):
             raise ValueError(str(self._sym_group) + ' is not a Cn-symmetry of the graph.')
         self._sym_gens = [gen]
-        self._order = order
+        self.omega = gen
+        self.n = order
+        self._edge_orbits = None
+        self._vertex_orbits = None
+        self._invariant_vertices = None
         
+        if pos==None:
+            pos = {
+                orbit[0]:self._pos[orbit[0]] for orbit in self.vertex_orbits()
+                }
+        self.set_symmetric_positions(pos)
+         
+    def vertex_orbits(self):
+        """
+        Return the orbits of vertices.
+        """
+        if self._vertex_orbits:
+            return self._vertex_orbits
         
+        self._vertex_orbits = []
+        verts = {v:0 for v in self.vertices()}
+        for v in self.invariant_vertices():
+            verts.pop(v)
+        while verts:
+            v, _ = verts.popitem()
+            orbit = [v]
+            for _ in range(1,self.n):
+                w = self.omega(orbit[-1])
+                orbit.append(w)
+                verts.pop(w)
+            self._vertex_orbits.append(orbit)
+                
+        self._vertex_orbits += self.invariant_vertices()
+
+        return self._vertex_orbits
+    
+           
+    def edge_orbits(self):
+        """
+        Return the orbits of edges.
+        """
+        if self._edge_orbits:
+            return self._edge_orbits
+        orbits = []
+        for u,v in self.edges(labels=False):
+            orbit = [Set([u,v])]
+            for _ in range(1,self.n):
+                orbit.append(Set([self.omega(orbit[-1][0]), self.omega(orbit[-1][1])]))
+            orbits.append(Set(orbit))
+        self._edge_orbits = [[[u,v] for u, v in orbit] for orbit in Set(orbits)]
+        return self._edge_orbits
+    
+        
+    def invariant_vertices(self):
+        """
+        Return the invariant vertices.
+        """
+        if self._invariant_vertices:
+            return self._invariant_vertices
+        self._invariant_vertices = [v for v in self.vertices() if len(self.omega.orbit(v))<self.n]
+        return self._invariant_vertices
             
-            
+    
+    def set_symmetric_positions(self, pos):
+        """
+        Given a dictionary of positions of one vertex from some orbits, the other vertices in the orbits are set symmetrically.
+        """
+        new_pos = {}
+        for w in pos:
+            for orbit in self.vertex_orbits():
+                if w in orbit:
+                    i = orbit.index(w)
+                    for j, v in enumerate(orbit[i:]+orbit[:i]):
+                        alpha = RR(2*pi*j/self.n)
+                        new_pos[v] = matrix([[cos(alpha), -sin(alpha)],
+                                             [sin(alpha), cos(alpha)]])* vector(pos[w])
+                    break
+        self.set_pos(new_pos)
+                
+    
+    
     @staticmethod
     def is_Cn_symmetry(graph, sigma, n):
         """
@@ -2023,6 +2111,14 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                 res.append(sigma)
         return res
 
+    def _edges_with_same_color(self):
+        V = [tuple(sorted(e)) for e in self.edges(labels=False)]
+        E = []
+        for tr_comp in self.triangle_connected_components():
+            E += [[tuple(sorted(e)), tuple(sorted(f))] for e, f in zip(tr_comp[:-1], tr_comp[1:])]
+        for orbit in self.edge_orbits():
+            E += [[tuple(sorted(e)), tuple(sorted(f))] for e, f in zip(orbit[:-1], orbit[1:])]
+        return [[[u,v] for u, v in comp] for comp in Graph([V, E], format='vertices_and_edges').connected_components()]
 
     @staticmethod
     def is_cyclic_subgroup(subgroup):
