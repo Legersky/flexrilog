@@ -221,6 +221,8 @@ class FlexRiGraph(Graph):
         the binary expansion of ``N`` equals the sequence
         obtained by concatenation of the rows of the upper triangle of the adjacency matrix,
         excluding the diagonal.
+        
+        TODO: change to static?
         """
         L=Integer(N).binary()
         n=ceil((1+sqrt(1+8*len(L)))/Integer(2))
@@ -955,7 +957,7 @@ class FlexRiGraph(Graph):
     @doc_index('Subgraphs')
     def triangles(self):
         r"""
-        Return all triangle in the graph.
+        Return all triangles in the graph.
 
         OUTPUT:
 
