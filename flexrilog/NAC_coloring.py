@@ -54,7 +54,7 @@ class NACcoloring(SageObject):
 
     INPUT:
 
-    - ``G`` -- a graph of type :meth:`FlexRiGraph`
+    - ``G`` -- a graph of type :class:`FlexRiGraph`
       to which the NAC-coloring belongs.
     - ``coloring`` -- a dictionary assigning to every edge of ``G`` either ``"red"`` or ``"blue"``,
       or a list consisting of two lists giving a partition of the edges of ``G``
