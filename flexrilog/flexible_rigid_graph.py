@@ -2006,6 +2006,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         self._edge_orbits = None
         self._vertex_orbits = None
         self._invariant_vertices = None
+        self._NACs_computed = 'no'
         
         if pos==None:
             pos = {
@@ -2016,6 +2017,8 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     def vertex_orbits(self):
         """
         Return the orbits of vertices.
+        
+        TODO: simplify implementation?
         """
         if self._vertex_orbits:
             return self._vertex_orbits
@@ -2080,6 +2083,24 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                     break
         self.set_pos(new_pos)
                 
+    @doc_index("NAC-colorings")
+    def _find_NAC_colorings(self, onlyOne=False, names=False):
+        from NAC_coloring import CnSymmetricNACcoloring
+        FlexRiGraph._find_NAC_colorings(self, onlyOne=onlyOne, names=names)
+        symmetric_NACs = []
+        for delta in self._NAC_colorings:
+            delta_sym = CnSymmetricNACcoloring(self, delta, check=False)
+            if delta_sym.is_Cn_symmetric():
+                symmetric_NACs.append(delta_sym)
+        self._NAC_colorings = symmetric_NACs
+    
+    
+    @doc_index("NAC-colorings")   
+    def NAC_colorings(self):
+        if self._NACs_computed != 'yes':
+            self._find_NAC_colorings()
+        return self._NAC_colorings
+
     
     
     @staticmethod

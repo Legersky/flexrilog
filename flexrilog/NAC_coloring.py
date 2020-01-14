@@ -40,6 +40,8 @@ from sage.all import Graph, Set#, show
 from sage.all import SageObject, latex, flatten
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.misc.latex import latex_variable_name
+from sage.all import PermutationGroup
+from sage.all import copy
 
 import exceptions
 
@@ -100,7 +102,7 @@ class NACcoloring(SageObject):
     """
     def __init__(self, G, coloring, name=None, check=True):
         from flexible_rigid_graph import FlexRiGraph
-        if type(G) == FlexRiGraph or 'FlexRiGraph' in str(type(G)):
+        if type(G) == FlexRiGraph or 'FlexRiGraph' in str(type(G)) or isinstance(G, FlexRiGraph):
             self._graph = G
         else:
             raise exceptions.TypeError('The graph G must be FlexRiGraph.')
@@ -110,8 +112,11 @@ class NACcoloring(SageObject):
         elif type(coloring) == dict:
             self._red_edges = Set([Set(e) for e in coloring if coloring[e] == 'red'])
             self._blue_edges = Set([Set(e) for e in coloring if coloring[e] == 'blue'])
+        elif type(coloring)==NACcoloring or isinstance(coloring, NACcoloring) or 'NACcoloring' in str(type(coloring)):
+            self._red_edges = copy(coloring._red_edges)
+            self._blue_edges = copy(coloring._blue_edges)
         else:
-            raise exceptions.TypeError('The coloring must be a dict or list consisting of two lists.')
+            raise exceptions.TypeError('The coloring must be a dict, list consisting of two lists or an instance of NACcoloring.')
         self._check_edges()
         self._name = name
         if check and not self.is_NAC_coloring():
@@ -756,6 +761,67 @@ class NACcoloring(SageObject):
         for u,v in self._graph.edges(labels=False):
             s += '1' if self.color(u,v)==first_color else '0'
         return int(s,2)
+
+
+
+
+class CnSymmetricNACcoloring(NACcoloring):
+    r"""
+    The class for a $\mathcal{C}_n$-symmetric NAC-coloring of a $\mathcal{C}_n$-symmetric graph.
+
+    We define a NAC-coloring $\delta$ to be a $\mathcal{C}_n$-symmetric if
+    
+    - $\delta(\omega e)$ = $\delta(e)$ for all $e \in E_G$, where $\omega$ generates $\mathcal{C}_n$, and 
+    - no two distinct blue, resp. red, partially invariant components are connected by an edge.
+    """
+    def __init__(self, G, coloring, name=None, check=True):
+        from flexible_rigid_graph import CnSymmetricFlexRiGraph
+        if not isinstance(G, CnSymmetricFlexRiGraph):
+            raise ValueError('The graph G must be an instance of CnSymmetricFlexRiGraph.')
+        super(CnSymmetricNACcoloring, self).__init__(G, coloring, name, check)
+        self.n = self._graph.n
+        self.omega = self._graph.omega
+        self._find_components_orbits()
+        if check and not self.is_Cn_symmetric():
+            raise exceptions.ValueError('The coloring is not a Cn-symmetric NAC-coloring.')
+        
+    
+    def _find_components_orbits(self):
+        red_subgraph = self.red_subgraph()
+        blue_subgraph = self.blue_subgraph()
+        self._partially_invariant_components = {}
+        self._noninvariant_components = {}
+        for one_color_subgraph,  col in [[red_subgraph, 'red'],
+                                         [blue_subgraph, 'blue']]:
+            invariant_comps = []
+            noninv_comps = []
+            comps_as_sets = [Set(component) for component in one_color_subgraph.connected_components()]
+            comps_perm = PermutationGroup([[Set([self.omega(v) for v in component]) for component in comps_as_sets]],
+                                         domain=comps_as_sets)
+            for orbit in comps_perm.orbits():
+                if len(orbit)<self.n:
+                    invariant_comps.append(orbit)
+                else:
+                    noninv_comps.append(orbit)
+                    
+            self._partially_invariant_components[col] = invariant_comps
+            self._noninvariant_components[col] = noninv_comps
+   
+    
+    def is_Cn_symmetric(self):
+        if not self.is_equal(self.isomorphic_NAC_coloring(self.omega), moduloConjugation=False):
+            return False
+        if len(self.blue_subgraph().subgraph(flatten([
+                list(comp) for orbit in self._partially_invariant_components['red'] for comp in orbit
+                ])).edges())>0:
+            return False
+        if len(self.red_subgraph().subgraph(flatten([
+                list(comp) for orbit in self._partially_invariant_components['blue'] for comp in orbit
+                ])).edges())>0:
+            return False
+        return True
+
+
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", (gen_rest_table_index(NACcoloring)))
