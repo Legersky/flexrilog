@@ -211,7 +211,7 @@ class MotionClassifier(SageObject):
         Return motion types in the normal form.
         """
         res = {}
-        for c, t in motion_types.iteritems():
+        for c, t in motion_types.items():
             norm_c, norm_t = MotionClassifier.four_cycle_normal_form(c, t)
             res[norm_c] = norm_t
         return res
@@ -687,18 +687,18 @@ class MotionClassifier(SageObject):
         classes = [
             [( motion_types_list[0],
               self.normalized_motion_types( motion_types_list[0]),
-              Counter([('d' if t in ['e','o'] else t) for c, t in  motion_types_list[0].iteritems()]))]
+              Counter([('d' if t in ['e','o'] else t) for c, t in  motion_types_list[0].items()]))]
         ]
         for next_motion in  motion_types_list[1:]:
             added = False
-            next_sign = Counter([('d' if t in ['e','o'] else t) for c, t in next_motion.iteritems()])
+            next_sign = Counter([('d' if t in ['e','o'] else t) for c, t in next_motion.items()])
             for cls in classes:
                 repr_motion_types = cls[0][1]
                 if cls[0][2]!=next_sign:
                     continue
                 for sigma in aut_group:
                     next_motion_image = self.normalized_motion_types({tuple(sigma(v) for v in c): t
-                                                        for c,t in next_motion.iteritems()})
+                                                        for c,t in next_motion.items()})
                     for c in repr_motion_types:
                         if repr_motion_types[c]!=next_motion_image[c]:
                             break
@@ -726,7 +726,7 @@ class MotionClassifier(SageObject):
         return orthogonality_graph
         """
         perp_by_NAC = [cycle for delta in active_NACs for cycle in self._orthogonal_diagonals[delta]]
-        deltoids = [cycle for cycle, t in motion_types.iteritems() if t in ['e','o']]
+        deltoids = [cycle for cycle, t in motion_types.items() if t in ['e','o']]
 
         orthogonalLines = []
         for perpCycle in perp_by_NAC + deltoids + extra_cycles_orthog_diag:
@@ -816,7 +816,7 @@ class MotionClassifier(SageObject):
                 if not one_representative:
                     row.append(j)
                 row.append(' '.join([t[c] for c in self.four_cycles_ordered()]))
-                row += [Counter([('d' if s in ['e','o'] else s) for c, s in t.iteritems()])[m] for m in motions]
+                row += [Counter([('d' if s in ['e','o'] else s) for c, s in t.items()])[m] for m in motions]
                 try:
                     active = self.active_NAC_coloring_names(t)
                     row.append([self.mu(name) for name in sorted(active)])
@@ -898,7 +898,7 @@ class MotionClassifier(SageObject):
         Return the equations for edge lengths enforced by motion types.
         """
         eqs = []
-        for c, motion in motion_types.iteritems():
+        for c, motion in motion_types.items():
             if motion=='a' or motion=='p':
                 eqs.append(self.lam(c[0], c[1]) - self.lam(c[2], c[3]))
                 eqs.append(self.lam(c[1], c[2]) - self.lam(c[0], c[3]))
