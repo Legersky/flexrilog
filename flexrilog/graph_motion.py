@@ -348,8 +348,6 @@ class GraphMotion(SageObject):
         from sage.graphs.graph_coloring import all_graph_colorings
         optimal = False
         chrom_number = collision_graph.chromatic_number()
-#        show(collision_graph.plot(edge_labels=True))
-#        print chrom_number
         for j in range(0, extra_layers + 1):
             i = 1
             res = []
@@ -847,10 +845,10 @@ class ParametricGraphMotion(GraphMotion):
         if compile_animation:
             name = filename
             import subprocess
-            print subprocess.call(['mkdir', name + '_img'])
-            print subprocess.call(['povray', name+'.ini'])
-            print subprocess.call(['ffmpeg', '-y', '-framerate', '24', '-i',
-                             name+'_img/'+name+'%0' + str(len(str(frames))) +'d.png', '-vb', '2M', name+'.mp4'])
+            print(subprocess.call(['mkdir', name + '_img']))
+            print(subprocess.call(['povray', name+'.ini']))
+            print(subprocess.call(['ffmpeg', '-y', '-framerate', '24', '-i',
+                             name+'_img/'+name+'%0' + str(len(str(frames))) +'d.png', '-vb', '2M', name+'.mp4']))
             from IPython.display import HTML
             return HTML('<video width="100%" controls> <source src="'+name+'.mp4" type="video/mp4"></video>')
 

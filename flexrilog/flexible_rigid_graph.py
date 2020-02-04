@@ -455,7 +455,7 @@ class FlexRiGraph(Graph):
             sage: from flexrilog import FlexRiGraph
             sage: G = FlexRiGraph(7916); G
             FlexRiGraph with the vertices [0, 1, 2, 3, 4, 5] and edges [(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]
-            sage: print G.Henneberg_sequence()
+            sage: print(G.Henneberg_sequence())
             [('II', 0, (3, 5)), ('I', 4), ('I', 1), ('I', 2)]
 
         4-cycle is not Laman::
