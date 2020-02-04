@@ -615,7 +615,7 @@ class FlexRiGraph(Graph):
             if res=='trcomp':
                 n_tr += 1
 
-        triangleComponents = [[] for _ in xrange(0,n_tr)]
+        triangleComponents = [[] for _ in range(0,n_tr)]
         for u,v,l in G.edges():
             if l == 'c':
                 triangleComponents.append([[u,v]])
