@@ -47,6 +47,14 @@ AUTHORS:
 
 FlexRiGraph
 -----------
+
+TODO:
+
+    - missing documentation of methods
+    - PyPI repository
+    - missing doctests in methods
+    - check functionality with SageMath 9.0
+    - tutorial notebooks
 """
 
 #Copyright (C) 2018 Jan Legerský
