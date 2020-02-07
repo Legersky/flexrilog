@@ -53,6 +53,7 @@ TODO:
     - missing documentation of methods
     - PyPI repository
     - missing doctests in methods
+    - update from 7.5 to 8.9 (failing tests) and then 9.0
     - check functionality with SageMath 9.0
     - tutorial notebooks
 """
