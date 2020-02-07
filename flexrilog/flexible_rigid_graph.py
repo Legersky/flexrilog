@@ -87,7 +87,6 @@ from sage.rings.integer import Integer
 
 import exceptions
 
-
 from NAC_coloring import NACcoloring
 
 class FlexRiGraph(Graph):
@@ -206,7 +205,6 @@ class FlexRiGraph(Graph):
         else:
             return (pref + ' with ' +str(len(self.vertices())) +
                     ' vertices and ' + str(len(self.edges(labels=False))) + ' edges')
-
 
     def __copy__(self):
         cls = self.__class__
