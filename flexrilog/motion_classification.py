@@ -44,7 +44,7 @@ _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(
 #_sage_const_0 = Integer(0); _sage_const_6 = Integer(6); _sage_const_5 = Integer(5);
 #_sage_const_4 = Integer(4); _sage_const_13 = Integer(13); _sage_const_12 = Integer(12)
 #from sage.rings.rational import Rational
-from flexible_rigid_graph import FlexRiGraph
+from .flexible_rigid_graph import FlexRiGraph
 import exceptions
 from collections import Counter
 from IPython.core.display import display

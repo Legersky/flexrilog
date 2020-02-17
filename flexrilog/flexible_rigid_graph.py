@@ -87,7 +87,7 @@ from sage.rings.integer import Integer
 
 import exceptions
 
-from NAC_coloring import NACcoloring
+from .NAC_coloring import NACcoloring
 
 class FlexRiGraph(Graph):
     r"""
@@ -2093,7 +2093,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                 
     @doc_index("NAC-colorings")
     def _find_NAC_colorings(self, onlyOne=False, names=False):
-        from NAC_coloring import CnSymmetricNACcoloring
+        from .NAC_coloring import CnSymmetricNACcoloring
         FlexRiGraph._find_NAC_colorings(self, onlyOne=onlyOne, names=names)
         symmetric_NACs = []
         for delta in self._NAC_colorings:

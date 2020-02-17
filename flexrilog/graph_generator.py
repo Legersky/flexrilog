@@ -35,7 +35,7 @@ TODO:
 #You should have received a copy of the GNU General Public License
 
 from sage.rings.integer import Integer
-from flexible_rigid_graph import FlexRiGraph
+from .flexible_rigid_graph import FlexRiGraph
 import exceptions
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.all import flatten, Set,  Graph
