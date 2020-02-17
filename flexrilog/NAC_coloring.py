@@ -457,7 +457,7 @@ class NACcoloring(SageObject):
         - ``other_coloring`` -- a NAC-colorings that is checked to be isomorphic with this NAC-coloring.
         - ``check`` -- if ``True`` (default), then it is checked whether the NAC-colorings belong
           to the same graph.
-        - ``certificate`` -- if ``False`` (default), then onlt boolean is returned.
+        - ``certificate`` -- if ``False`` (default), then only boolean is returned.
           Otherwise, ``(True, sigma)`` resp. ``(false, None)`` is returned,
           where ``sigma`` is the graph automorphism mapping the NAC-coloring to the ``other_coloring``.
 
@@ -476,7 +476,7 @@ class NACcoloring(SageObject):
             sage: col1.is_isomorphic(col2)
             True
             sage: _, sigma = col1.is_isomorphic(col2, certificate=True); sigma
-            (1,2)
+            (0,2,1)
             sage: col1.isomorphic_NAC_coloring(sigma).is_equal(col2)
             True
             sage: col1.is_isomorphic(col3)
@@ -511,12 +511,11 @@ class NACcoloring(SageObject):
                 return (False, None)
 
         for sigma in aut_group:
-            if Set([self._red_edges, self._blue_edges]) == Set(other_coloring.isomorphic_NAC_coloring(sigma,onlySets=True)): # faster
-            #if self.is_equal(other_coloring.isomorphic_NAC_coloring(sigma)):
+            if Set([self._red_edges, self._blue_edges]) == Set(other_coloring.isomorphic_NAC_coloring(sigma,onlySets=True)):
                 if not certificate:
                     return True
                 else:
-                    return (True, sigma)
+                    return (True, sigma.inverse())
         if not certificate:
             return False
         else:
