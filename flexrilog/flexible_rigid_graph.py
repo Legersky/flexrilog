@@ -599,7 +599,7 @@ class FlexRiGraph(Graph):
         G = Graph(self.edges(labels=False))
 
         def addToTrComp(u0,u1,n_tr):
-            if G.edge_label(u0,u1)==None:
+            if G.edge_label(u0,u1)==-2:
                 G.set_edge_label(u0,u1,n_tr)
                 common_neighbours=Set(
                     G.neighbors(u0)).intersection(Set(G.neighbors(u1)))
@@ -609,15 +609,15 @@ class FlexRiGraph(Graph):
                         addToTrComp(u,u1,n_tr)
                     return 'trcomp'
                 else:
-                    G.set_edge_label(u0,u1,'c')
+                    G.set_edge_label(u0,u1,-1)
                     return 'connectingEdge'
 
         for e in G.edges():
-            G.set_edge_label(e[0],e[1],None)
+            G.set_edge_label(e[0],e[1],-2)
 
         n_tr = 0
         e = G.edges()[0]
-        while e[2]==None:
+        while e[2]==-2:
             res = addToTrComp(e[0],e[1],n_tr)
             e = G.edges(key=lambda x: x[2])[0]
             if res=='trcomp':
@@ -625,7 +625,7 @@ class FlexRiGraph(Graph):
 
         triangleComponents = [[] for _ in range(0,n_tr)]
         for u,v,l in G.edges():
-            if l == 'c':
+            if l == -1:
                 triangleComponents.append([[u,v]])
             else:
                 triangleComponents[l].append([u,v])
