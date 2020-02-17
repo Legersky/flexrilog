@@ -257,7 +257,7 @@ class GraphMotion(SageObject):
             import hashlib
             import time
             from random import random
-            hash_object = hashlib.md5(str(time.time()).encode()+str(random()))
+            hash_object = hashlib.md5(str(time.time()+random()).encode())
             rnd_str = '_' + str(hash_object.hexdigest())[:6] + '_'
         elif type(rnd_str) != str:
             rnd_str = ''
