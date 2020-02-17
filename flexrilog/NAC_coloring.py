@@ -416,7 +416,7 @@ class NACcoloring(SageObject):
         if self.name():
             args_kwd['title'] = '$'+latex_variable_name(self.name())+'$'
         if grid_pos:
-            from graph_motion import GraphMotion
+            from .graph_motion import GraphMotion
             args_kwd['pos'] = GraphMotion.GridConstruction(self._graph, self, zigzag).realization(0, numeric=True)
 #            grid_coor = self.grid_coordinates()
 #            if zigzag:
