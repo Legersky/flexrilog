@@ -82,6 +82,7 @@ from sage.all import var, solve, RR, vector, norm, CC
 from sage.all import PermutationGroup, PermutationGroup_generic
 from sage.all import pi, cos, sin
 import random
+from itertools import chain
 
 from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
 from sage.rings.integer import Integer
@@ -1406,7 +1407,7 @@ class FlexRiGraph(Graph):
 
         equations += [x[vertex_at_origin],y[vertex_at_origin],z[vertex_at_origin]]
 
-        for solution in solve(equations, x.values()+y.values()+z.values(), solution_dict=True):
+        for solution in solve(equations, list(chain(x.values(), y.values(), z.values())), solution_dict=True):
             is_injective = True
             for u,v in Subsets(self.vertices(),2):
                 if ((solution[x[u]]-solution[x[v]]).is_zero() and
