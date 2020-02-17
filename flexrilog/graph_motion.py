@@ -1026,8 +1026,6 @@ class ParametricGraphMotion(GraphMotion):
 
 
 
-__doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS_GRAPH_MOTION}", gen_rest_table_index(GraphMotion))
-
-__doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS_PARAMETRIC_GRAPH_MOTION}", gen_rest_table_index(ParametricGraphMotion))
+#__doc__ = __doc__.replace(
+    #"{INDEX_OF_METHODS_GRAPH_MOTION}", gen_rest_table_index(GraphMotion)).replace(
+    #"{INDEX_OF_METHODS_PARAMETRIC_GRAPH_MOTION}", gen_rest_table_index(ParametricGraphMotion))
