@@ -45,7 +45,6 @@ _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(
 #_sage_const_4 = Integer(4); _sage_const_13 = Integer(13); _sage_const_12 = Integer(12)
 #from sage.rings.rational import Rational
 from .flexible_rigid_graph import FlexRiGraph
-import exceptions
 from collections import Counter
 from IPython.core.display import display
 
@@ -55,7 +54,7 @@ class MotionClassifier(SageObject):
     """
     def __init__(self, graph, four_cycles=[], separator='', edges_ordered=[]):
         if not (isinstance(graph, FlexRiGraph) or 'FlexRiGraph' in str(type(graph))):
-            raise exceptions.TypeError('The graph must be of the type FlexRiGraph.')
+            raise TypeError('The graph must be of the type FlexRiGraph.')
         self._graph = graph
 
         if four_cycles == []:
@@ -300,7 +299,7 @@ class MotionClassifier(SageObject):
 
         if check:
             if not delta.is_singleton():
-                raise exceptions.ValueError('The NAC-coloring must be a singleton.')
+                raise ValueError('The NAC-coloring must be a singleton.')
         eqs_lengths=[]
         for e in self._graph.edges():
             eqs_lengths.append(self._z(e)*self._w(e) - self._lam(e)**_sage_const_2)
@@ -748,7 +747,7 @@ class MotionClassifier(SageObject):
                                 for e1 in Subsets(comp_1,2):
                                     orthogonalityGraph.add_edge([Set(e0), Set(e1)])
                 else:
-                    raise exceptions.RuntimeError('A component of the orthogonality graph is not bipartite!')
+                    raise RuntimeError('A component of the orthogonality graph is not bipartite!')
 
         self._orthogonality_graph = orthogonalityGraph
         check_again = False

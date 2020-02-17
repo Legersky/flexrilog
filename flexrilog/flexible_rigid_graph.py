@@ -85,7 +85,6 @@ import random
 from sage.misc.rest_index_of_methods import doc_index, gen_thematic_rest_table_index
 from sage.rings.integer import Integer
 
-import exceptions
 
 from .NAC_coloring import NACcoloring
 
@@ -173,7 +172,7 @@ class FlexRiGraph(Graph):
             if data.name():
                 name = data.name()
         else:
-            raise exceptions.TypeError('The input must be an integer or a list of edges.')
+            raise TypeError('The input must be an integer or a list of edges.')
 
         if pos==None:
             tmp_g=Graph(data=[[e[0],e[1]] for e in edges], format='list_of_edges')
@@ -185,9 +184,9 @@ class FlexRiGraph(Graph):
 
         if check:
             if not self.is_connected():
-                raise exceptions.ValueError('The graph must be connected.')
+                raise ValueError('The graph must be connected.')
             if len(self.edges())==0:
-                raise exceptions.ValueError('The graph must have at least one edge.')
+                raise ValueError('The graph must have at least one edge.')
 
         self._triangleComponents = None
         self._NACs_computed = 'no'
@@ -391,7 +390,7 @@ class FlexRiGraph(Graph):
             else:
                 return s!=None
         else:
-            raise exceptions.ValueError('The algorithm ' + str(algorithm)
+            raise ValueError('The algorithm ' + str(algorithm)
                                         + ' is not supported')
 
 
@@ -845,7 +844,7 @@ class FlexRiGraph(Graph):
             sphinx_plot(G.plot(pos={0: [0.3, 0.5], 1: [0, 2], 2: [1, 1.4], 3: [1, 0], 4: [0, 0], 5: [0.7, 1]}))
         """
         if show_triangle_components and NAC_coloring:
-            raise exceptions.ValueError('NAC-coloring and triangle components cannot be displayed at the same time.')
+            raise ValueError('NAC-coloring and triangle components cannot be displayed at the same time.')
         if show_triangle_components:
             triangle_comps = self.triangle_connected_components()
             colors = rainbow(len(triangle_comps))
@@ -950,7 +949,7 @@ class FlexRiGraph(Graph):
                                'chi', 'psi', 'omega']
         isomorphism_classes = self.NAC_colorings_isomorphism_classes()
         if len(isomorphism_classes)> len(letters):
-            raise exceptions.RuntimeError('There are not enough letters for all isomorphism classes of NAC-colorings')
+            raise RuntimeError('There are not enough letters for all isomorphism classes of NAC-colorings')
         for k, cls in enumerate(isomorphism_classes):
             for i, col in enumerate(cls):
                 new_name = letters[k]
@@ -1401,7 +1400,7 @@ class FlexRiGraph(Graph):
                 equations.append(z[u]-z[v])
 
         if not self.has_vertex(vertex_at_origin):
-            raise exceptions.ValueError('The vertex ' + str(vertex_at_origin) + ' is not a vertex of the graph.')
+            raise ValueError('The vertex ' + str(vertex_at_origin) + ' is not a vertex of the graph.')
 
         equations += [x[vertex_at_origin],y[vertex_at_origin],z[vertex_at_origin]]
 
@@ -1687,7 +1686,7 @@ class FlexRiGraph(Graph):
         """
         from phcpy import solver
         if check and not self.is_Laman():
-            raise exceptions.ValueError('The graph is not Laman')
+            raise ValueError('The graph is not Laman')
 
         L = self.realization2edge_lengths(self.random_realization())
 
@@ -1695,7 +1694,7 @@ class FlexRiGraph(Graph):
             eqs, tr_fix = self.system_of_equations(L, fixed_edge)
             eqs_str = [str(eq)+';' for eq in eqs]
             if not solver.is_square(eqs_str):
-                raise exceptions.RuntimeError('The system of equations is not square.')
+                raise RuntimeError('The system of equations is not square.')
             multiple = 2 if tr_fix!=None else 1
             return solver.mixed_volume(eqs_str)*multiple
         else:
@@ -1704,7 +1703,7 @@ class FlexRiGraph(Graph):
                 eqs, tr_fix = self.system_of_equations(L, fixed_edge)
                 eqs_str = [str(eq)+';' for eq in eqs]
                 if not solver.is_square(eqs_str):
-                    raise exceptions.RuntimeError('The system of equations is not square.')
+                    raise RuntimeError('The system of equations is not square.')
                 multiple = 2 if tr_fix!=None else 1
                 MVs.append([fixed_edge, solver.mixed_volume(eqs_str)*multiple])
             if full_list:
@@ -1727,7 +1726,7 @@ class FlexRiGraph(Graph):
             [24, 56, 136, 344, 880, 2288, 6180]
         """
         if check and not self.is_Laman():
-            raise exceptions.ValueError('The graph is not Laman')
+            raise ValueError('The graph is not Laman')
 
         from lnumber import lnumber
         return lnumber(self.graph2int(), self.num_verts())
@@ -1808,7 +1807,7 @@ class FlexRiGraph(Graph):
                 return edge_lengths[(v,u)]
 
         if check and not self.is_Laman():
-            raise exceptions.ValueError('The graph is not Laman')
+            raise ValueError('The graph is not Laman')
 
         if fixed_edge == None:
             MVs = self.mixed_volume(check=False, full_list=True)
@@ -1819,7 +1818,7 @@ class FlexRiGraph(Graph):
         eqs_str = [str(eq)+';' for eq in eqs]
 
         if not solver.is_square(eqs_str):
-            raise exceptions.RuntimeError('The system of equations is not square.')
+            raise RuntimeError('The system of equations is not square.')
 
         sols = solver.solve(eqs_str, verbose=False, tasks=num_tasks, precision=prec)
 

@@ -36,7 +36,6 @@ TODO:
 
 from sage.rings.integer import Integer
 from .flexible_rigid_graph import FlexRiGraph
-import exceptions
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.all import flatten, Set,  Graph
 
@@ -259,7 +258,7 @@ class GraphGenerator():
         elif n > 6 and n < 13:
             G =  FlexRiGraph(Integer(graph_repr[n]), pos=positions[n], name='MaxEmbeddingsLamanGraph_' + str(n) + 'vert')
         else:
-            raise exceptions.ValueError('Only graphs with 6-12 vertices are supported.')
+            raise ValueError('Only graphs with 6-12 vertices are supported.')
         if not labeled_from_one:
             return G
         else:

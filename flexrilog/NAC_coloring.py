@@ -43,7 +43,6 @@ from sage.misc.latex import latex_variable_name
 from sage.all import PermutationGroup
 from sage.all import copy
 
-import exceptions
 
 class NACcoloring(SageObject):
     r"""
@@ -105,7 +104,7 @@ class NACcoloring(SageObject):
         if type(G) == FlexRiGraph or 'FlexRiGraph' in str(type(G)) or isinstance(G, FlexRiGraph):
             self._graph = G
         else:
-            raise exceptions.TypeError('The graph G must be FlexRiGraph.')
+            raise TypeError('The graph G must be FlexRiGraph.')
         if type(coloring) in [list, Set] and len(coloring) == 2:
             self._red_edges = Set([Set(e) for e in coloring[0]])
             self._blue_edges = Set([Set(e) for e in coloring[1]])
@@ -116,11 +115,11 @@ class NACcoloring(SageObject):
             self._red_edges = copy(coloring._red_edges)
             self._blue_edges = copy(coloring._blue_edges)
         else:
-            raise exceptions.TypeError('The coloring must be a dict, list consisting of two lists or an instance of NACcoloring.')
+            raise TypeError('The coloring must be a dict, list consisting of two lists or an instance of NACcoloring.')
         self._check_edges()
         self._name = name
         if check and not self.is_NAC_coloring():
-            raise exceptions.ValueError('The coloring is not a NAC-coloring.')
+            raise ValueError('The coloring is not a NAC-coloring.')
 
     def _repr_(self):
         res = (self._name + ': ') if self._name != None else ''
@@ -175,7 +174,7 @@ class NACcoloring(SageObject):
         """
         if (Set([Set(e) for e in self._graph.edges(labels=False)])
             != self._blue_edges.union(self._red_edges)):
-            raise exceptions.RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
+            raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
 
     def is_NAC_coloring(self):
         r"""
@@ -248,11 +247,11 @@ class NACcoloring(SageObject):
         """
         if not v is None:
             if not self._graph.has_edge(u,v):
-                raise exceptions.ValueError('There is no edge ' + str([u,v]))
+                raise ValueError('There is no edge ' + str([u,v]))
             return 'red' if Set([u,v]) in self._red_edges else 'blue'
         else:
             if not self._graph.has_edge(u[0],u[1]):
-                raise exceptions.ValueError('There is no edge ' + str([u[0],u[1]]))
+                raise ValueError('There is no edge ' + str([u[0],u[1]]))
             return 'red' if Set([u[0],u[1]]) in self._red_edges else 'blue'
 
 
@@ -288,11 +287,11 @@ class NACcoloring(SageObject):
         """
         if not v is None:
             if not self._graph.has_edge(u,v):
-                raise exceptions.ValueError('There is no edge ' + str([u,v]))
+                raise ValueError('There is no edge ' + str([u,v]))
             return Set([u,v]) in self._red_edges
         else:
             if not self._graph.has_edge(u[0],u[1]):
-                raise exceptions.ValueError('There is no edge ' + str([u[0],u[1]]))
+                raise ValueError('There is no edge ' + str([u[0],u[1]]))
             return Set([u[0],u[1]]) in self._red_edges
 
 
@@ -322,11 +321,11 @@ class NACcoloring(SageObject):
         """
         if v:
             if not self._graph.has_edge(u,v):
-                raise exceptions.ValueError('There is no edge ' + str([u,v]))
+                raise ValueError('There is no edge ' + str([u,v]))
             return Set([u,v]) in self._blue_edges
         else:
             if not self._graph.has_edge(u[0],u[1]):
-                raise exceptions.ValueError('There is no edge ' + str([u[0],u[1]]))
+                raise ValueError('There is no edge ' + str([u[0],u[1]]))
             return Set([u[0],u[1]]) in self._blue_edges
 
 
@@ -500,7 +499,7 @@ class NACcoloring(SageObject):
             sphinx_plot(G.NAC_colorings()[5])
         """
         if check and self._graph != other_coloring._graph:
-            raise exceptions.RuntimeError('The NAC-colorings must belong to the same graph.')
+            raise RuntimeError('The NAC-colorings must belong to the same graph.')
 
         if aut_group==None:
             aut_group = self._graph.automorphism_group()
@@ -720,7 +719,7 @@ class NACcoloring(SageObject):
              ['epsilon12', [(3, 4, 5, 6)]]]
         """
         if len(cycle)!= 4:
-            raise exceptions.ValueError('The cycle must be a 4-cycle.')
+            raise ValueError('The cycle must be a 4-cycle.')
         if self.path_is_unicolor(list(cycle) + [cycle[0]]):
             if self.is_red(cycle[0], cycle[1]):
                 subgraph = Graph([self._graph.vertices(), [list(e) for e in self.blue_edges()]],  format='vertices_and_edges')
@@ -783,7 +782,7 @@ class CnSymmetricNACcoloring(NACcoloring):
         self.omega = self._graph.omega
         self._find_components_orbits()
         if check and not self.is_Cn_symmetric():
-            raise exceptions.ValueError('The coloring is not a Cn-symmetric NAC-coloring.')
+            raise ValueError('The coloring is not a Cn-symmetric NAC-coloring.')
         
     
     def _find_components_orbits(self):

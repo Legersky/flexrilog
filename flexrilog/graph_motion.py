@@ -47,12 +47,11 @@ _sage_const_0 = Integer(0); _sage_const_6 = Integer(6); _sage_const_5 = Integer(
 _sage_const_4 = Integer(4); _sage_const_13 = Integer(13); _sage_const_12 = Integer(12)
 #from sage.rings.rational import Rational
 from .flexible_rigid_graph import FlexRiGraph
-import exceptions
 
 class GraphMotion(SageObject):
     def __init__(self, graph):
         if not (isinstance(graph, FlexRiGraph) or 'FlexRiGraph' in str(type(graph))):
-            raise exceptions.TypeError('The graph must be of the type FlexRiGraph.')
+            raise TypeError('The graph must be of the type FlexRiGraph.')
         self._graph = graph
 
         self._same_lengths = None
@@ -163,7 +162,7 @@ class GraphMotion(SageObject):
             G = FlexRiGraph([[0, 1], [1, 2], [2, 3], [0, 3]])
             return ParametricGraphMotion.ParametricMotion(G, C, 'symbolic', sampling_type='tan', check=False)
         else:
-            raise exceptions.ValueError('Deltoid with par_type ' + str(par_type) + ' is not supported.')
+            raise ValueError('Deltoid with par_type ' + str(par_type) + ' is not supported.')
 
     @classmethod
     def SpatialEmbeddingConstruction(cls, graph,  active_NACs,
@@ -438,7 +437,7 @@ class ParametricGraphMotion(GraphMotion):
         elif input_format == 'spatial_embedding':
             self._spatial_embedding2motion(active_NACs, data, check)
         else:
-            raise exceptions.ValueError('The input format ' + str(input_format) + ' is not supported.')
+            raise ValueError('The input format ' + str(input_format) + ' is not supported.')
 
     def _repr_(self):
         return 'Parametric motion with ' + self._par_type + ' parametrization: ' + str(self.parametrization())
@@ -467,7 +466,7 @@ class ParametricGraphMotion(GraphMotion):
             self._same_lengths += partition
 
         if check and len(Set(grid_coor.values())) != self._graph.num_verts():
-            raise exceptions.ValueError('The NAC-coloring does not yield a proper flexible labeling.')
+            raise ValueError('The NAC-coloring does not yield a proper flexible labeling.')
         if zigzag:
             if type(zigzag) == list and len(zigzag) == 2:
                 a = [vector(c) for c in zigzag[0]]
@@ -499,7 +498,7 @@ class ParametricGraphMotion(GraphMotion):
         if data['par_type'] == 'symbolic':
             self._par_type = 'symbolic'
             if len(element.variables()) != 1:
-                raise exceptions.ValueError('The parametrization has to have one parameter (' + str(len(element.variables())) + ' found).')
+                raise ValueError('The parametrization has to have one parameter (' + str(len(element.variables())) + ' found).')
             self._parameter = element.variables()[0]
         if data['par_type'] == 'rational':
             self._par_type = 'rational'
@@ -530,7 +529,7 @@ class ParametricGraphMotion(GraphMotion):
         uvf = [C[i+1]-C[i] for i in range(0,3)]
         embedding = self._graph.spatial_embeddings_four_directions(active_NACs[0], active_NACs[1], vertex_at_origin=data['vertex_at_origin'])
         if embedding is None:
-            raise exceptions.RuntimeError('There is no injective spatial embeddings.')
+            raise RuntimeError('There is no injective spatial embeddings.')
         vrs = []
         for v in embedding:
             vrs += list(embedding[v][0].variables())
@@ -557,11 +556,11 @@ class ParametricGraphMotion(GraphMotion):
             s = self._parametrization[u] - self._parametrization[v]
             l = s.inner_product(s)
             if self._par_type == 'rational' and not l in self._field.constant_field():
-                raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
+                raise ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
             if self._par_type == 'symbolic':
                 l = l.simplify_full()
                 if not l.simplify_full().is_constant():
-                    raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
+                    raise ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
             if tmp.has_key(l):
                 tmp[l].append([u, v])
             else:
@@ -578,12 +577,12 @@ class ParametricGraphMotion(GraphMotion):
             l = s.inner_product(s)
             if self._par_type == 'rational':
                 if not l in self._field.constant_field():
-                    raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
+                    raise ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
                 l = self._field.constant_field()(l)
             elif self._par_type == 'symbolic':
                 l = l.simplify_full()
                 if not l.simplify_full().is_constant():
-                    raise exceptions.ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
+                    raise ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
             res[(u, v)] = sqrt(l)
         return res
 
@@ -624,7 +623,7 @@ class ParametricGraphMotion(GraphMotion):
                     res[v] = vector([h(xi) for xi in self._parametrization[v]])
             return res
         else:
-            raise exceptions.NotImplementedError('')
+            raise NotImplementedError('')
 
 
     def sample_motion(self, N, numeric=True, start_margin=0, end_margin=0):
@@ -644,7 +643,7 @@ class ParametricGraphMotion(GraphMotion):
                 return [self.realization(tan(RR(a + (i/Integer(N)) * (b-a))),  numeric=True) 
                         for i in range(start_margin, N+1-end_margin)]
             else:
-                raise exceptions.NotImplementedError('Sampling ' + str(self._sampling_type) + ' is not supported.')
+                raise NotImplementedError('Sampling ' + str(self._sampling_type) + ' is not supported.')
         else:
             if self._sampling_type == 'uniform':
                 return [self.realization(a + (i/Integer(N)) * (b-a)) 
@@ -653,7 +652,7 @@ class ParametricGraphMotion(GraphMotion):
                 return [self.realization(tan(a + (i/Integer(N)) * (b-a))) 
                         for i in range(start_margin, N+1-end_margin)]
             else:
-                raise exceptions.NotImplementedError('Sampling ' + str(self._sampling_type) + ' is not supported.')
+                raise NotImplementedError('Sampling ' + str(self._sampling_type) + ' is not supported.')
 
 
     def fix_edge(self, edge, check=True):
@@ -662,7 +661,7 @@ class ParametricGraphMotion(GraphMotion):
         """
         u,v = edge
         if check and not self._graph.has_edge(u, v):
-            raise exceptions.ValueError('The parameter ``edge`` must be an edge of the graph.')
+            raise ValueError('The parameter ``edge`` must be an edge of the graph.')
         res = {}
         direction = self._parametrization[v] - self._parametrization[u]
         l = sqrt(direction.inner_product(direction))
@@ -774,7 +773,7 @@ class ParametricGraphMotion(GraphMotion):
             elif self._sampling_type == 'tan':
                 samp = 'tan('
             else:
-                raise exceptions.NotImplementedError('Type '+str(self._sampling_type) + 'not implemented.')
+                raise NotImplementedError('Type '+str(self._sampling_type) + 'not implemented.')
             f.writelines('\n'.join(['#version 3.7;',
                 '#include "math.inc"',
                 ' ',
