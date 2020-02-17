@@ -441,13 +441,13 @@ class ParametricGraphMotion(GraphMotion):
         self._field = None
 
         if (type(data)!=dict or
-                not data.has_key('sampling_type')
+                not 'sampling_type' in data
                 or data['sampling_type']==None):
             self._sampling_type = 'uniform'
         else:
             self._sampling_type = data['sampling_type']
         if (type(data)!=dict or
-                not data.has_key('interval')
+                not 'interval' in data
                 or type(data['interval'])!=list
                 or len(data['interval']) < 2):
             if self._sampling_type == 'tan':
@@ -562,7 +562,7 @@ class ParametricGraphMotion(GraphMotion):
             vrs += list(embedding[v][1].variables())
         subs_dict = {}
         for vrbl in Set(vrs):
-            if data['subs_dict'].has_key(str(vrbl)):
+            if str(vrbl) in data['subs_dict']:
                 subs_dict[vrbl] = data['subs_dict'][str(vrbl)]
             else:
                 subs_dict[vrbl] = Integer(1)
@@ -587,7 +587,7 @@ class ParametricGraphMotion(GraphMotion):
                 l = l.simplify_full()
                 if not l.simplify_full().is_constant():
                     raise ValueError('The edge ' + str((u, v)) + ' does not have constant length.')
-            if tmp.has_key(l):
+            if l in tmp:
                 tmp[l].append([u, v])
             else:
                 tmp[l] = [[u, v]]

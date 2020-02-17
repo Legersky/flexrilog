@@ -1609,7 +1609,7 @@ class FlexRiGraph(Graph):
             -x2^2 - y2^2 + s2, -x5^2 - y5^2 + s5], 0]
         """
         def edge_length(u,v):
-            if edge_lengths.has_key((u,v)):
+            if (u,v) in edge_lengths:
                 return RR(edge_lengths[(u,v)])
             else:
                 return RR(edge_lengths[(v,u)])
@@ -1804,7 +1804,7 @@ class FlexRiGraph(Graph):
         from phcpy.solutions import strsol2dict, is_real
 
         def edge_length(u,v):
-            if edge_lengths.has_key((u,v)):
+            if (u,v) in edge_lengths:
                 return edge_lengths[(u,v)]
             else:
                 return edge_lengths[(v,u)]
