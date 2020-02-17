@@ -154,7 +154,7 @@ class FlexRiGraph(Graph):
         can be used::
 
             sage: L = FlexRiGraph(graphs.CompleteBipartiteGraph(2,3)); L
-            Complete bipartite graph: FlexRiGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4)]
+            Complete bipartite graph of order 2+3: FlexRiGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4)]
 
     TODO:
     
