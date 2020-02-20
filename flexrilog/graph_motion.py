@@ -74,31 +74,36 @@ class GraphMotion(SageObject):
 
     
     @classmethod
-    def CnSymmetricGridConstruction(cls, G, delta):
-        def Cn_symmetric_k_points(n,k, alpha=Integer(1) ):   
-            n = Integer(n)
-            k = Integer(k) 
-            if not mod(k,n) in [Integer(0) ,Integer(1) ]:
-                raise ValueError('Only possible if k mod n in {{0,1}}, here {} mod {} = {}.'.format(k,n,mod(k,n)))
-            res = {
-                    i : vector([RR(cos(RR(Integer(2) *pi*i)/n)),RR(sin(RR(Integer(2) *pi*i)/n))]) for i in range(Integer(0) ,n)
-                }
-            N = k
-            if mod(k,n)==Integer(1) :
-                res[N-Integer(1) ] = vector([Integer(0) ,Integer(0) ])
-                N = N-Integer(1) 
-            for i in range(n,N):
-                r = (i-i%n)/n +Integer(1) 
-                res[i] = r*res[i%n]
-            for i in res:
-                res[i] = alpha*vector([res[i][Integer(0) ], res[i][Integer(1) ]])
-            return [res[i] for i in sorted(res.keys())]
+    def CnSymmetricGridConstruction(cls, G, delta, a_base=[], b_base=[]):
+        def Cn_symmetric_points(n, points):
+            res=[]
+            for p in points:
+                res += [matrix(
+                    [[RR(cos(RR(Integer(2)*pi*i)/n)), RR(sin(RR(Integer(2) *pi*i)/n))],
+                     [RR(-sin(RR(Integer(2)*pi*i)/n)), RR(cos(RR(Integer(2) *pi*i)/n))]]
+                    ) * vector(p) for i in range(n)]
+            return res
     
         n = delta.n
-        a = Cn_symmetric_k_points(n, len(delta._noninvariant_components['red']))
+        
+        if a_base==[]:
+            a_base = [vector([i, 0]) for i in range(1,len(delta._noninvariant_components['red'])/Integer(n)+1)]
+        else:
+            n_red = len(delta._noninvariant_components['red'])
+            if n*len(a_base)<n_red:
+                raise ValueError('There must be {} points in `a_base`, since there are {} red noninvariant components.'.format(n_red/Integer(n), n_red))
+        a = Cn_symmetric_points(n, a_base)
         a += [vector([Integer(0) ,Integer(0) ]) for _ in range(len(delta._partially_invariant_components['red']))]
-        b = Cn_symmetric_k_points(n, len(delta._noninvariant_components['blue']))
+        
+        if b_base==[]:
+            b_base = [vector([i, 0]) for i in range(1,len(delta._noninvariant_components['blue'])/Integer(n)+1)]
+        else:
+            n_blue = len(delta._noninvariant_components['blue'])
+            if n*len(b_base)<n_blue:
+                raise ValueError('There must be {} points in `b_base`, since there are {} blue noninvariant components.'.format(n_blue/Integer(n), n_blue))
+        b = Cn_symmetric_points(n, b_base)
         b += [vector([Integer(0) ,Integer(0) ]) for _ in range(len(delta._partially_invariant_components['blue']))]
+        
         ab = [b, a]
         M = GraphMotion.GridConstruction(G, delta,
              check=False, zigzag=ab,
@@ -219,10 +224,11 @@ class GraphMotion(SageObject):
 
 
     def animation_SVG(self, realizations, fileName='', edge_partition=True, first=None, totalTime=12, width=500,
-                           repetitions='indefinite', radius=15, return_IPythonSVG=True,
+                           repetitions='indefinite', radius='default', return_IPythonSVG=True,
                            flipY=True,
                            rel_margin=0.1, colors=[],
-                           rnd_str=True):
+                           rnd_str=True,
+                           vertex_labels=True):
         r"""
         Save an SVG animation.
 
@@ -279,6 +285,13 @@ class GraphMotion(SageObject):
                 edge_partition = [self._graph.edges(labels=False)]
                 if len(colors) == len(default_colors):
                     colors = ['LightGray']
+                    
+        if radius=='default':
+            if vertex_labels:
+                radius = 15
+            else:
+                radius = 8
+
 
         lines = []
         lines.append('<svg width="'+str(width)+'" height="'+str(width)
@@ -290,8 +303,9 @@ class GraphMotion(SageObject):
             lines.append('<marker id="vertex'+rnd_str+str(v)+'" viewBox="0 0 {1} {1}" refX="{0}" refY="{0}"\n'.format(radius, 2*radius))
             lines.append(' markerWidth="{0}" markerHeight="{0}">\n'.format(floor(radius/3)))
             lines.append('  <circle cx="{0}" cy="{0}" r="{0}" fill="grey" />\n'.format(radius))
-            lines.append('<text x="{0:0.0f}" y="{1:0.0f}" font-size="{1}" '.format(float(radius), float(1.5*radius))
-                    +'text-anchor="middle" fill="white">'+str(v)+'</text>\n')
+            if vertex_labels:
+                lines.append('<text x="{0:0.0f}" y="{1:0.0f}" font-size="{1}" '.format(float(radius), float(1.5*radius))
+                        +'text-anchor="middle" fill="white">'+str(v)+'</text>\n')
             lines.append('</marker>\n')
             lines.append('</defs>\n')
 
@@ -691,10 +705,11 @@ class ParametricGraphMotion(GraphMotion):
 
 
     def animation_SVG(self, fileName='', edge_partition=True, first=None, totalTime=12, width=500,
-                           repetitions='indefinite', radius=15, return_IPythonSVG=True, fps=25,
+                           repetitions='indefinite', radius='default', return_IPythonSVG=True, fps=25,
                            flipY=True,
                            rel_margin=0.1, colors=[],
-                           rnd_str=True):
+                           rnd_str=True,
+                           vertex_labels=True):
         r"""
         Save an SVG animation.
 
@@ -717,7 +732,8 @@ class ParametricGraphMotion(GraphMotion):
                            repetitions=repetitions, radius=radius, return_IPythonSVG=return_IPythonSVG,
                            flipY=flipY,
                            rel_margin=rel_margin, colors=colors,
-                           rnd_str=rnd_str)
+                           rnd_str=rnd_str,
+                           vertex_labels=vertex_labels)
 
 
     def generate_POVray(self, filename, height_function, antialias=True, frames=200, width=1024, height=768, labels=False,
