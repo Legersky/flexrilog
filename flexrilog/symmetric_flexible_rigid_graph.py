@@ -82,8 +82,8 @@ class SymmetricFlexRiGraph(FlexRiGraph):
         examples
     """
 
-    def __init__(self, data, symmetry, pos=None, name=None, check=True):
-        super(SymmetricFlexRiGraph, self).__init__(data, pos, name, check)
+    def __init__(self, data, symmetry, pos=None, name=None, check=True, verbosity=0):
+        super(SymmetricFlexRiGraph, self).__init__(data, pos, name, check, verbosity)
         if isinstance(symmetry, PermutationGroup_generic):
             self._sym_group = symmetry
             self._sym_gens = self._sym_group.gens()
@@ -133,8 +133,8 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         - check input as list of edges
         - input only generator
     """
-    def __init__(self, data, symmetry, pos=None, name=None, check=True):
-        super(CnSymmetricFlexRiGraph, self).__init__(data, symmetry, pos, name, check)
+    def __init__(self, data, symmetry, pos=None, name=None, check=True, verbosity=0):
+        super(CnSymmetricFlexRiGraph, self).__init__(data, symmetry, pos, name, check, verbosity)
         is_cyclic, gen, order = CnSymmetricFlexRiGraph.is_cyclic_subgroup(self._sym_group)
         if not is_cyclic:
             raise ValueError(str(self._sym_group) + ' is not a cyclic subgroup of the automorphism group of the graph.')

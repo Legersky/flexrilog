@@ -153,7 +153,7 @@ class FlexRiGraph(Graph):
         Other inputs: adjacency matrix
     """
 
-    def __init__(self, data, pos=None, name=None, check=True):
+    def __init__(self, data, pos=None, name=None, check=True, verbosity=0):
         if type(data)==Integer:
             edges = self._int2graph_edges(data)
         elif type(data)==list:
@@ -183,6 +183,7 @@ class FlexRiGraph(Graph):
         self._triangleComponents = None
         self._NACs_computed = 'no'
         self._NAC_isomorphism_classes = None
+        self._verbosity = verbosity
 
     def _repr_(self):
         if self.name():
@@ -212,7 +213,24 @@ class FlexRiGraph(Graph):
             setattr(result, k, deepcopy(v, memo))
         return result
 
-
+    def _report(self, text, verbosity_level=1):
+        r"""
+        Print ``text`` depending on current verbosity level.
+        
+        TEST::
+        
+            sage: from flexrilog import FlexRiGraph
+            sage: G = FlexRiGraph([(0,1)], verbosity=1)
+            sage: G._report('The graph has {} edge.'.format(len(G.edges())))
+            The graph has 1 edge.
+        """
+        if verbosity_level<=self._verbosity:
+            print(text)
+    
+    def _set_verbosity(self, verbosity):
+        self._verbosity = verbosity
+        
+        
     def _int2graph_edges(self,N):
         r"""
         Return edges of the graph with integer representation ``N``.
@@ -770,7 +788,9 @@ class FlexRiGraph(Graph):
             (True, NAC-coloring with red edges [[0, 3], [0, 4], [0, 5], [1, 3], [1, 4], [1, 5]] and blue edges [[2, 3], [2, 4], [2, 5]])
         """
         if self._NACs_computed == 'no':
+            self._report('Going to compute one NAC-coloring', 1)
             self._find_NAC_colorings(onlyOne=True)
+            
         if certificate:
             return (self._NAC_colorings!=[], self._NAC_colorings[0] if self._NAC_colorings!=[] else None)
         else:
@@ -1940,7 +1960,6 @@ class FlexRiGraph(Graph):
                        ' '.join(['('+str(e[0])+')edge('+str(e[1])+')' for e in self.edges()]) + ';')
         print( '\\end{tikzpicture}')
 
- 
    
 _additional_categories = {
     FlexRiGraph.plot         : "Plotting",
