@@ -42,5 +42,21 @@ or
 
 For some functions, the package `phcpy <http://homepages.math.uic.edu/~jan/phcpy_doc_html/welcome.html>`_ must be installed.
 
+Demos
+-----
 
+The basic functinality of ``FlexRiLoG`` is presented in the Jupyter notebook ``examples/FlexRiLoG_demo.ipynb``:
+
+.. image:: https://mybinder.org/badge_logo.svg
+ :target: https://mybinder.org/v2/gh/Legersky/flexrilog/master?filepath=examples%2FFlexRiLoG_demo.ipynb
+
+Rotationally symmetric motions of frameworks
+============================================
+
+The file ``examples/Rotationally_symmetric_frameworks_SoCGmedia.ipynb`` illustrates using the package for constructing
+*n*-fold rotationally symmetric motions of graphs.
+It is available on Binder as well:
+
+.. image:: https://mybinder.org/badge_logo.svg
+ :target: https://mybinder.org/v2/gh/Legersky/flexrilog/da560e62570353494ddac4bf4e5a3a91a348a3b9?filepath=examples%2FRotationally_symmetric_frameworks_SoCGmedia.ipynb
  
