@@ -864,7 +864,7 @@ class FlexRiGraph(Graph):
         Show all NAC-colorings of the graph.
         """
         for col in self.NAC_colorings():
-            show(col)
+            show(col.plot())
 
     @doc_index("NAC-colorings")
     def are_NAC_colorings_named(self):

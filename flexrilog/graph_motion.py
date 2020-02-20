@@ -46,7 +46,7 @@ _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(
 _sage_const_0 = Integer(0); _sage_const_6 = Integer(6); _sage_const_5 = Integer(5);
 _sage_const_4 = Integer(4); _sage_const_13 = Integer(13); _sage_const_12 = Integer(12)
 #from sage.rings.rational import Rational
-from .flexible_rigid_graph import FlexRiGraph
+from .flexible_rigid_graph import FlexRiGraph, NACcoloring
 
 class GraphMotion(SageObject):
     def __init__(self, graph):
@@ -263,6 +263,18 @@ class GraphMotion(SageObject):
         colors = colors + default_colors
         if edge_partition==True and self._same_lengths:
             edge_partition = self._same_lengths
+        elif edge_partition=='NAC':
+            colors = ['Red', 'Blue']
+            edge_partition = [
+                self._active_NACs[0].red_edges(),
+                self._active_NACs[0].blue_edges()
+                ]
+        elif isinstance(edge_partition, NACcoloring):
+            colors = ['Red', 'NavyBlue']
+            edge_partition = [
+                edge_partition.red_edges(),
+                edge_partition.blue_edges()
+                ]    
         elif type(edge_partition)!=list or len(edge_partition)==0:
                 edge_partition = [self._graph.edges(labels=False)]
                 if len(colors) == len(default_colors):
