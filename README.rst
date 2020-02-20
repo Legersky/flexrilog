@@ -58,5 +58,5 @@ The file ``examples/Rotationally_symmetric_frameworks_SoCGmedia.ipynb`` illustra
 It is available on Binder as well:
 
 .. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/Legersky/flexrilog/da560e62570353494ddac4bf4e5a3a91a348a3b9?filepath=examples%2FRotationally_symmetric_frameworks_SoCGmedia.ipynb
+ :target: https://mybinder.org/v2/gh/Legersky/flexrilog/ae653cddb19d68555f49629146ab19d035438451?filepath=examples%2FRotationally_symmetric_frameworks_SoCGmedia.ipynb
  
