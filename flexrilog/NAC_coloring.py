@@ -122,6 +122,11 @@ class NACcoloring(SageObject):
             raise ValueError('The coloring is not a NAC-coloring.')
 
     def _repr_(self):
+        """
+        TODO:
+        
+            sort the edges in the output
+        """
         res = (self._name + ': ') if self._name != None else ''
         res += 'NAC-coloring with '
         if len(self._blue_edges) + len(self._red_edges) < 10:
