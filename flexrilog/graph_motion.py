@@ -276,7 +276,7 @@ class GraphMotion(SageObject):
                 self._active_NACs[0].blue_edges()
                 ]
         elif isinstance(edge_partition, NACcoloring):
-            colors = ['Red', 'NavyBlue']
+            colors = ['Red', 'Blue']
             edge_partition = [
                 edge_partition.red_edges(),
                 edge_partition.blue_edges()
