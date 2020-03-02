@@ -171,7 +171,7 @@ class NACcoloring(SageObject):
             l_name = latex_variable_name(self._name) + ': \\left('
         else:
             l_name = '\\left('
-        return l_name +latex(self._red_edges)+'\\mapsto red; '+latex(self._blue_edges)+'\\mapsto blue\\right)'
+        return l_name +latex(self._red_edges)+r'\\mapsto red; '+latex(self._blue_edges)+r'\\mapsto blue\\right)'
 
     def _check_edges(self):
         r"""

@@ -1015,7 +1015,7 @@ class MotionClassifier(SageObject):
             if variables:
                 print(latex(eq.variables()))
             if print_latex:
-                print(latex(factors) + '=0\,, \\\\')
+                print(latex(factors) + r'=0\,, \\\\')
             if print_eqs:
                 if only_print:
                     print(factors)
