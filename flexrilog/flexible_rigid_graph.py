@@ -57,6 +57,7 @@ TODO:
     - check functionality with SageMath 9.0
     - tutorial notebooks (basics, flexibility, classification, animations...)
     - finish Cn-symmetry functionality (doc, classification)
+    - make lnumber optional
 """
 
 #Copyright (C) 2018 Jan Legerský
