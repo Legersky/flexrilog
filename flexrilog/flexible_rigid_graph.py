@@ -2115,7 +2115,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     
     @staticmethod
     def is_Cn_symmetry(graph, sigma, n):
-        """
+        r"""
         Return whether `sigma` generates a $\mathcal{C}_n$-symmetry of the `graph`.
         """
         partially_inv = [v for v in graph.vertices() if len(sigma.orbit(v))<n]
@@ -2126,7 +2126,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         
     @staticmethod
     def Cn_symmetries_gens(graph, n):
-        '''
+        r"""
         Return the list of generators of Cn symmetries of the graph.
         
         An element $\omega$ of order `n` of the automorphism group of the graph
@@ -2134,7 +2134,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         
         - each partially invariant is invariant
         - the set of invariant vertices is independent.
-        '''
+        """
         
         res = []
         for sigma in CnSymmetricFlexRiGraph.cyclic_subgroups(graph.automorphism_group(), n):
