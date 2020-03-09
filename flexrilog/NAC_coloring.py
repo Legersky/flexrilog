@@ -169,7 +169,7 @@ class NACcoloring(SageObject):
             l_name = latex_variable_name(self._name) + ': \\left('
         else:
             l_name = '\\left('
-        return l_name +latex(self._red_edges)+r'\\mapsto red; '+latex(self._blue_edges)+r'\\mapsto blue\\right)'
+        return l_name +latex(self._red_edges)+r'\mapsto red; '+latex(self._blue_edges)+r'\mapsto blue\right)'
 
     def _check_edges(self):
         r"""
@@ -576,7 +576,7 @@ class NACcoloring(SageObject):
             sage: latex(delta)
             \delta: \left( \left\{\left\{1, 2\right\},
             ...
-            \left\{2, 4\right\}\right\} \\mapsto blue\\right)
+            \left\{2, 4\right\}\right\} \mapsto blue\right)
         """
         self._name = new_name
 
