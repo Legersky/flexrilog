@@ -689,7 +689,7 @@ class FlexRiGraph(Graph):
             sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.NAC_colorings()
-            [NAC-coloring with red edges {{3, 4}, {1, 5}, {1, 2}, {0, 3}, {2, 5}, {0, 4}} and blue edges {{1, 4}, {2, 3}, {0, 5}}]
+            [NAC-coloring with red edges [[0, 3], [0, 4], [1, 2], [1, 5], [2, 5], [3, 4]] and blue edges [[0, 5], [1, 4], [2, 3]]]
 
         ::
 
@@ -757,8 +757,8 @@ class FlexRiGraph(Graph):
             sage: G.has_NAC_coloring()
             True
             sage: G.has_NAC_coloring(certificate=True)
-            (True, NAC-coloring with red edges {{3, 4}, {1, 5}, {1, 2}, {0, 3}, {2, 5}, {0, 4}} and blue edges {{1, 4}, {2, 3}, {0, 5}})
-
+            (True, NAC-coloring with red edges [[0, 3], [0, 4], [1, 2], [1, 5], [2, 5], [3, 4]] and blue edges [[0, 5], [1, 4], [2, 3]])
+            
         ::
 
             sage: from flexrilog import FlexRiGraph
@@ -772,7 +772,7 @@ class FlexRiGraph(Graph):
 
             sage: K = FlexRiGraph(graphs.CompleteBipartiteGraph(3,3))
             sage: K.has_NAC_coloring(certificate=True)
-            (True, NAC-coloring with red edges {{1, 4}, {1, 5}, {0, 3}, {1, 3}, {0, 4}, {0, 5}} and blue edges {{2, 5}, {2, 4}, {2, 3}})
+            (True, NAC-coloring with red edges [[0, 3], [0, 4], [0, 5], [1, 3], [1, 4], [1, 5]] and blue edges [[2, 3], [2, 4], [2, 5]])
         """
         if self._NACs_computed == 'no':
             self._find_NAC_colorings(onlyOne=True)
@@ -895,9 +895,9 @@ class FlexRiGraph(Graph):
             sage: [len(cls) for cls in isomorphism_classes]
             [1, 3, 3]
             sage: for cls in isomorphism_classes: print(cls[0])
-                NAC-coloring with red edges {{0, 2}, {0, 4}, {0, 3}} and blue edges {{1, 4}, {1, 3}, {1, 2}}
-                NAC-coloring with red edges {{0, 2}, {1, 3}, {1, 2}, {0, 3}} and blue edges {{1, 4}, {0, 4}}
-                NAC-coloring with red edges {{1, 4}, {0, 2}, {0, 3}} and blue edges {{1, 2}, {1, 3}, {0, 4}}
+            NAC-coloring with red edges [[0, 2], [0, 3], [0, 4]] and blue edges [[1, 2], [1, 3], [1, 4]]
+            NAC-coloring with red edges [[0, 2], [0, 3], [1, 2], [1, 3]] and blue edges [[0, 4], [1, 4]]
+            NAC-coloring with red edges [[0, 2], [0, 3], [1, 4]] and blue edges [[0, 4], [1, 2], [1, 3]]
         """
         if self._NAC_isomorphism_classes:
             return self._NAC_isomorphism_classes
@@ -938,14 +938,13 @@ class FlexRiGraph(Graph):
             sage: G = FlexRiGraph(graphs.CompleteBipartiteGraph(2,3))
             sage: G.set_NAC_colorings_names()
             sage: G.NAC_colorings()
-            [alpha: NAC-coloring with red edges {{0, 2}, {0, 4}, {0, 3}} and blue edges {{1, 4}, {1, 3}, {1, 2}},
-            beta1: NAC-coloring with red edges {{0, 2}, {1, 3}, {1, 2}, {0, 3}} and blue edges {{1, 4}, {0, 4}},
-            gamma1: NAC-coloring with red edges {{1, 4}, {0, 2}, {0, 3}} and blue edges {{1, 2}, {1, 3}, {0, 4}},
-            beta2: NAC-coloring with red edges {{0, 2}, {1, 2}, {0, 4}, {1, 4}} and blue edges {{1, 3}, {0, 3}},
-            gamma2: NAC-coloring with red edges {{0, 2}, {1, 3}, {0, 4}} and blue edges {{1, 4}, {1, 2}, {0, 3}},
-            beta3: NAC-coloring with red edges {{0, 2}, {1, 2}} and blue edges {{1, 4}, {1, 3}, {0, 4}, {0, 3}},
-            gamma3: NAC-coloring with red edges {{0, 2}, {1, 3}, {1, 4}} and blue edges {{1, 2}, {0, 4}, {0, 3}}]
-
+            [alpha: NAC-coloring with red edges [[0, 2], [0, 3], [0, 4]] and blue edges [[1, 2], [1, 3], [1, 4]],
+            beta1: NAC-coloring with red edges [[0, 2], [0, 3], [1, 2], [1, 3]] and blue edges [[0, 4], [1, 4]],
+            gamma1: NAC-coloring with red edges [[0, 2], [0, 3], [1, 4]] and blue edges [[0, 4], [1, 2], [1, 3]],
+            beta2: NAC-coloring with red edges [[0, 2], [0, 4], [1, 2], [1, 4]] and blue edges [[0, 3], [1, 3]],
+            gamma2: NAC-coloring with red edges [[0, 2], [0, 4], [1, 3]] and blue edges [[0, 3], [1, 2], [1, 4]],
+            beta3: NAC-coloring with red edges [[0, 2], [1, 2]] and blue edges [[0, 3], [0, 4], [1, 3], [1, 4]],
+            gamma3: NAC-coloring with red edges [[0, 2], [1, 3], [1, 4]] and blue edges [[0, 3], [0, 4], [1, 2]]]
         """
         letters = cls_names + ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta',
                                'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu',
@@ -1311,7 +1310,7 @@ class FlexRiGraph(Graph):
             sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: G.has_injective_grid_construction(certificate=True)
-            (True, NAC-coloring with red edges {{3, 4}, {1, 5}, {1, 2}, {0, 3}, {2, 5}, {0, 4}} and blue edges {{1, 4}, {2, 3}, {0, 5}})
+            (True, NAC-coloring with red edges [[0, 3], [0, 4], [1, 2], [1, 5], [2, 5], [3, 4]] and blue edges [[0, 5], [1, 4], [2, 3]])
 
         ::
 
@@ -2002,7 +2001,9 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
 
     TODO:
     
-        examples
+        - examples
+        - check input as list of edges
+        - input only generator
     """
     def __init__(self, data, symmetry, pos=None, name=None, check=True):
         super(CnSymmetricFlexRiGraph, self).__init__(data, symmetry, pos, name, check)
