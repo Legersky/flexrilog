@@ -70,7 +70,7 @@ class NACcoloring(SageObject):
         sage: G = GraphGenerator.SmallestFlexibleLamanGraph(); G
         SmallestFlexibleLamanGraph: FlexRiGraph with the vertices [0, 1, 2, 3, 4] and edges [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]
         sage: delta = NACcoloring(G,[[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)], [(2, 4), (3, 4)]]); delta
-        NAC-coloring with red edges {{1, 2}, {0, 3}, {0, 1}, {0, 2}, {1, 3}} and blue edges {{3, 4}, {2, 4}}
+        NAC-coloring with red edges [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3]] and blue edges [[2, 4], [3, 4]]
 
     By default, it is checked whether the ``coloring`` is a NAC-coloring::
 
@@ -79,14 +79,14 @@ class NACcoloring(SageObject):
         ...
         ValueError: The coloring is not a NAC-coloring.
         sage: delta = NACcoloring(G,[[(0, 1), (0, 2)], [(0, 3), (1, 2), (1, 3), (2, 4), (3, 4)]], check=False); delta
-        NAC-coloring with red edges {{0, 1}, {0, 2}} and blue edges {{3, 4}, {2, 4}, {1, 2}, {0, 3}, {1, 3}}
+        NAC-coloring with red edges [[0, 1], [0, 2]] and blue edges [[0, 3], [1, 2], [1, 3], [2, 4], [3, 4]]
         sage: delta.is_NAC_coloring()
         False
 
     A dictionary can be also used as an input::
 
         sage: delta = NACcoloring(G,{(0, 1) : "red", (0, 2) : "red", (0, 3) : "red", (1, 2) : "red", (1, 3) : "red", (2, 4) : "blue", (3, 4) : "blue"}); delta
-        NAC-coloring with red edges {{1, 2}, {0, 3}, {0, 1}, {0, 2}, {1, 3}} and blue edges {{3, 4}, {2, 4}}
+        NAC-coloring with red edges [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3]] and blue edges [[2, 4], [3, 4]]
 
     The ``coloring`` must be a partition of edges of ``G``::
 
@@ -123,15 +123,13 @@ class NACcoloring(SageObject):
 
     def _repr_(self):
         """
-        TODO:
-        
-            sort the edges in the output
+        Return a string representation of `self`.
         """
         res = (self._name + ': ') if self._name != None else ''
         res += 'NAC-coloring with '
         if len(self._blue_edges) + len(self._red_edges) < 10:
-            res += 'red edges ' + str(self._red_edges)
-            res += ' and blue edges ' + str(self._blue_edges)
+            res += 'red edges ' + str(sorted([sorted(list(e)) for e in self._red_edges]))
+            res += ' and blue edges ' + str(sorted([sorted(list(e)) for e in self._blue_edges]))
         else:
             res += str(len(self._red_edges)) + ' red edges and '
             res += str(len(self._blue_edges)) + ' blue edges '
@@ -473,11 +471,11 @@ class NACcoloring(SageObject):
             sage: colorings = G.NAC_colorings()
             sage: col1, col2, col3 = colorings[4], colorings[5], colorings[7]
             sage: col1
-            NAC-coloring with red edges {{1, 4}, {0, 3}, {1, 3}, {2, 5}, {0, 4}} and blue edges {{2, 4}, {1, 5}, {2, 3}, {0, 5}}
+            NAC-coloring with red edges [[0, 3], [0, 4], [1, 3], [1, 4], [2, 5]] and blue edges [[0, 5], [1, 5], [2, 3], [2, 4]]
             sage: col2
-            NAC-coloring with red edges {{2, 4}, {1, 5}, {2, 3}, {0, 3}, {0, 4}} and blue edges {{1, 4}, {1, 3}, {2, 5}, {0, 5}}
+            NAC-coloring with red edges [[0, 3], [0, 4], [1, 5], [2, 3], [2, 4]] and blue edges [[0, 5], [1, 3], [1, 4], [2, 5]]
             sage: col3
-            NAC-coloring with red edges {{1, 5}, {2, 3}, {0, 3}, {1, 3}, {2, 5}, {0, 5}} and blue edges {{2, 4}, {1, 4}, {0, 4}}
+            NAC-coloring with red edges [[0, 3], [0, 5], [1, 3], [1, 5], [2, 3], [2, 5]] and blue edges [[0, 4], [1, 4], [2, 4]]
             sage: col1.is_isomorphic(col2)
             True
             sage: _, sigma = col1.is_isomorphic(col2, certificate=True); sigma
@@ -572,13 +570,13 @@ class NACcoloring(SageObject):
             sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
             sage: delta = G.NAC_colorings()[0]; delta
-            NAC-coloring with red edges {{1, 2}, {0, 3}, {0, 1}, {0, 2}, {1, 3}} and blue edges {{3, 4}, {2, 4}}
+            NAC-coloring with red edges [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3]] and blue edges [[2, 4], [3, 4]]
             sage: delta.set_name('delta'); delta
-            delta: NAC-coloring with red edges {{1, 2}, {0, 3}, {0, 1}, {0, 2}, {1, 3}} and blue edges {{3, 4}, {2, 4}}
+            delta: NAC-coloring with red edges [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3]] and blue edges [[2, 4], [3, 4]]
             sage: latex(delta)
             \delta: \left( \left\{\left\{1, 2\right\},
             ...
-            \left\{2, 4\right\}\right\} \mapsto blue\right)
+            \left\{2, 4\right\}\right\} \\mapsto blue\\right)
         """
         self._name = new_name
 
