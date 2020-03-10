@@ -166,10 +166,15 @@ class NACcoloring(SageObject):
 
     def _latex_(self):
         if self._name:
-            l_name = latex_variable_name(self._name) + ': \\left('
+            l_name = latex_variable_name(self._name) + ': \\left( \\{'
         else:
-            l_name = '\\left('
-        return l_name +latex(self._red_edges)+r'\mapsto red; '+latex(self._blue_edges)+r'\mapsto blue\right)'
+            l_name = '\\left( \\{'
+        return (l_name +','.join(['\\{' + latex(u) +','+ latex(v) + '\\}' 
+                            for u,v in sorted([sorted(list(e)) for e in self._red_edges])])
+                        + r'\} \mapsto red; \{'
+                        + ','.join(['\\{' + latex(u) +','+ latex(v) + '\\}' 
+                            for u,v in sorted([sorted(list(e)) for e in self._blue_edges])])
+                        + r'\} \mapsto blue\right)')
 
     def _check_edges(self):
         r"""
@@ -574,9 +579,8 @@ class NACcoloring(SageObject):
             sage: delta.set_name('delta'); delta
             delta: NAC-coloring with red edges [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3]] and blue edges [[2, 4], [3, 4]]
             sage: latex(delta)
-            \delta: \left( \left\{\left\{1, 2\right\},
-            ...
-            \left\{2, 4\right\}\right\} \mapsto blue\right)
+            \delta: \left( \{\{ 0 , 1 \},\{ 0 , 2 \},\{ 0 , 3 \},\{ 1 , 2 \},\{ 1 , 3 \}\} \mapsto red; 
+            \{\{ 2 , 4 \},\{ 3 , 4 \}\} \mapsto blue\right)
         """
         self._name = new_name
 
