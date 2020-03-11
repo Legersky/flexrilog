@@ -20,3 +20,8 @@ from .flexible_rigid_graph import FlexRiGraph, SymmetricFlexRiGraph, CnSymmetric
 from .graph_generator import GraphGenerator
 from .NAC_coloring import NACcoloring, CnSymmetricNACcoloring
 from .motion_classification import MotionClassifier
+
+
+colB = '#4169e1'
+colR = '#ee2c2c'
+colGray = 'LightGray'

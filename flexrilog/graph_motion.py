@@ -267,16 +267,17 @@ class GraphMotion(SageObject):
 
         default_colors = ['LimeGreen','Orchid','Orange','Turquoise','SlateGray','LightGray']
         colors = colors + default_colors
+        from .__init__ import colB, colR
         if edge_partition==True and self._same_lengths:
             edge_partition = self._same_lengths
         elif edge_partition=='NAC':
-            colors = ['Red', 'Blue']
+            colors = [colR, colB]
             edge_partition = [
                 self._active_NACs[0].red_edges(),
                 self._active_NACs[0].blue_edges()
                 ]
         elif isinstance(edge_partition, NACcoloring):
-            colors = ['Red', 'Blue']
+            colors = [colR, colB]
             edge_partition = [
                 edge_partition.red_edges(),
                 edge_partition.blue_edges()

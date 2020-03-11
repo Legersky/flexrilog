@@ -59,6 +59,7 @@ TODO:
     - finish Cn-symmetry functionality (doc, classification)
     - make lnumber optional
     - showing the animation of a motion
+    - output pictures of graphs: thicker lines, colors of edges, grey vertices
 """
 
 #Copyright (C) 2018 Jan Legerský
@@ -852,13 +853,16 @@ class FlexRiGraph(Graph):
             triangle_comps = self.triangle_connected_components()
             colors = rainbow(len(triangle_comps))
             kwargs['edge_colors'] = { colors[i] : c for i,c in enumerate(triangle_comps)}
+        from .__init__ import colB, colR, colGray
         if isinstance(NAC_coloring, NACcoloring) or 'NACcoloring' in str(type(NAC_coloring)):
             kwargs['edge_colors'] = {
-                'blue' : NAC_coloring.blue_edges(),
-                'red' : NAC_coloring.red_edges()
+                colB : NAC_coloring.blue_edges(),
+                colR : NAC_coloring.red_edges()
                 }
         if self.name() and name_in_title:
             kwargs['title'] = self.name()
+        kwargs['vertex_color'] = colGray
+        kwargs['edge_thickness'] = 4
         return Graph(self).plot(**kwargs)
 
     @doc_index("Plotting")
