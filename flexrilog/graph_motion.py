@@ -882,18 +882,25 @@ class ParametricGraphMotion(GraphMotion):
 
 
     def _rich_repr_(self, display_manager, **kwds):
+        r"""
+        Return the rich representation of the object.
+        
+        TODO:
+        
+            Check in future versions of SageMath if SVG output works.  
+        """
         # copied from GenericGraph
         prefs = display_manager.preferences
         is_small = (0 < self._graph.num_verts() < 20)
         can_plot = (prefs.supplemental_plot != 'never')
         plot_graph = can_plot and (prefs.supplemental_plot == 'always' or is_small)
         # Under certain circumstances we display the plot as graphics
-        if plot_graph:
-            from sage.repl.rich_output.output_graphics import OutputImageSvg
-            return OutputImageSvg(self.animation_SVG(edge_partition=False).data)
+#         if plot_graph:
+#             from sage.repl.rich_output.output_graphics import OutputImageSvg
+#             return OutputImageSvg(self.animation_SVG(edge_partition=False).data)
         # create text for non-graphical output
-        if can_plot:
-            text = '{0} (use the .animation_SVG() method to show the animation)'.format(repr(self))
+        if can_plot or plot_graph:
+            text = '{0} \n(use the .animation_SVG() method to show the animation)'.format(repr(self))
         else:
             text = repr(self)
         # latex() produces huge tikz environment, override

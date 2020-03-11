@@ -58,7 +58,6 @@ TODO:
     - tutorial notebooks (basics, flexibility, classification, animations...)
     - finish Cn-symmetry functionality (doc, classification)
     - make lnumber optional
-    - showing the animation of a motion
 """
 
 #Copyright (C) 2018 Jan Legerský
