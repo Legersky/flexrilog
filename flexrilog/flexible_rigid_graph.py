@@ -57,7 +57,6 @@ TODO:
     - check functionality with SageMath 9.0
     - tutorial notebooks (basics, flexibility, classification, animations...)
     - finish Cn-symmetry functionality (doc, classification)
-    - make lnumber optional
 """
 
 #Copyright (C) 2018 Jan Legerský
@@ -1673,7 +1672,7 @@ class FlexRiGraph(Graph):
 
         EXAMPLES::
 
-            sage: import phcpy # random
+            sage: import phcpy # random, optional - phcpy
             sage: # the previous import is just because of the message that phcpy prints when imported
             sage: from flexrilog import GraphGenerator
             sage: GraphGenerator.ThreePrismGraph().mixed_volume() # optional - phcpy
@@ -1729,7 +1728,7 @@ class FlexRiGraph(Graph):
         EXAMPLE::
 
             sage: from flexrilog import GraphGenerator
-            sage: [GraphGenerator.MaxEmbeddingsLamanGraph(i).num_realizations() for i in range(6,13)]
+            sage: [GraphGenerator.MaxEmbeddingsLamanGraph(i).num_realizations() for i in range(6,13)] # optional - lnumber
             [24, 56, 136, 344, 880, 2288, 6180]
         """
         if check and not self.is_Laman():
@@ -1737,11 +1736,6 @@ class FlexRiGraph(Graph):
 
         from lnumber import lnumber
         return lnumber(self.graph2int(), self.num_verts())
-#         from os import path as os_path
-#         from ctypes import cdll, c_size_t
-#         dir_path = os_path.dirname(os_path.realpath(__file__))
-#         lib = cdll.LoadLibrary(os_path.join(dir_path, "lnumber.pyd"))
-#         return lib.laman_number(str(self.graph2int()).encode("utf-8"), c_size_t(self.num_verts()))
 
 
     @doc_index("Rigidity")
@@ -1777,7 +1771,7 @@ class FlexRiGraph(Graph):
 
         EXAMPLE::
 
-            sage: import phcpy # random
+            sage: import phcpy # random, optional - phcpy
             sage: # the previous import is just because of the message that phcpy prints when imported
             sage: from flexrilog import GraphGenerator
             sage: L = {(1, 2): 3, (1, 5): 4, (0, 5): 5, (0, 4): 3, (2, 3): 5, (0, 3): 2, (3, 4): 4, (2, 5): 2, (1, 4): 5}

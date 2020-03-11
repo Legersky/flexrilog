@@ -40,12 +40,13 @@ or
 
 ``make test-all``
 
-For some functions, the package `phcpy <http://homepages.math.uic.edu/~jan/phcpy_doc_html/welcome.html>`_ must be installed.
+For some functions, the package `phcpy <http://homepages.math.uic.edu/~jan/phcpy_doc_html/welcome.html>`_ 
+or `lnumber https://pypi.org/project/lnumber/` must be installed.
 
 Demos
 -----
 
-The basic functinality of ``FlexRiLoG`` is presented in the Jupyter notebook ``examples/FlexRiLoG_demo.ipynb``:
+The basic functionality of ``FlexRiLoG`` is presented in the Jupyter notebook ``examples/FlexRiLoG_demo.ipynb``:
 
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://mybinder.org/v2/gh/Legersky/flexrilog/master?filepath=examples%2FFlexRiLoG_demo.ipynb

@@ -14,7 +14,7 @@ def readfile(filename):
 # For the tests
 class SageTest(TestCommand):
     def run_tests(self):
-        errno = os.system("sage -t --force-lib flexrilog")
+        errno = os.system("sage -t --force-lib --show-skipped flexrilog")
         if errno != 0:
             sys.exit(1)
 
@@ -23,8 +23,8 @@ setup(
     version = readfile("VERSION").strip(), # the VERSION file is shared with the documentation
     description='FlexRiLoG - A package for investigating Flexible and Rigid Labelings of Graphs',
     long_description = readfile("README.rst"), # get the long description from the README
-#    url='https://github.com/legersky/',
-    author='Jan Legerský',
+    url='https://github.com/legersky/flexrilog',
+    author='Jan Legerský, Georg Grasegger',
     author_email='jan.legersky@risc.jku.at', # choose a main contact email
     license='GPLv3+', # This should be consistent with the LICENCE file
     classifiers=[
@@ -42,6 +42,5 @@ setup(
     packages = ['flexrilog'],
     cmdclass = {'test': SageTest}, # adding a special setup command for tests
     setup_requires   = ['sage-package'],
-    install_requires = ['sage-package', 'sphinx', 'lnumber'],
-#     package_data={'flexrilog': ['lnumber.pyd']},
+    install_requires = ['sage-package', 'sphinx'],
 )
