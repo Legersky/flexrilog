@@ -59,7 +59,6 @@ TODO:
     - finish Cn-symmetry functionality (doc, classification)
     - make lnumber optional
     - showing the animation of a motion
-    - output pictures of graphs: thicker lines, colors of edges, grey vertices
 """
 
 #Copyright (C) 2018 Jan Legerský
@@ -861,8 +860,10 @@ class FlexRiGraph(Graph):
                 }
         if self.name() and name_in_title:
             kwargs['title'] = self.name()
-        kwargs['vertex_color'] = colGray
-        kwargs['edge_thickness'] = 4
+        if not 'vertex_color' in kwargs:
+            kwargs['vertex_color'] = colGray
+        if not 'edge_thickness' in kwargs: 
+            kwargs['edge_thickness'] = 4
         return Graph(self).plot(**kwargs)
 
     @doc_index("Plotting")

@@ -353,7 +353,7 @@ class NACcoloring(SageObject):
         return self.red_subgraph().connected_components()
     
 
-    def plot(self, grid_pos=False, zigzag=False):
+    def plot(self, grid_pos=False, zigzag=False, **args_kwd):
         r"""
         Return a plot of the NAC-coloring.
 
@@ -420,7 +420,6 @@ class NACcoloring(SageObject):
 
         doc
         """
-        args_kwd = {}
         if self.name():
             args_kwd['title'] = '$'+latex_variable_name(self.name())+'$'
         if grid_pos:
