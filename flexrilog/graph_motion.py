@@ -303,10 +303,10 @@ class GraphMotion(SageObject):
             lines.append('  <defs>\n')
             lines.append('<marker id="vertex'+rnd_str+str(v)+'" viewBox="0 0 {1} {1}" refX="{0}" refY="{0}"\n'.format(radius, 2*radius))
             lines.append(' markerWidth="{0}" markerHeight="{0}">\n'.format(floor(radius/3)))
-            lines.append('  <circle cx="{0}" cy="{0}" r="{0}" fill="grey" />\n'.format(radius))
+            lines.append('  <circle cx="{0}" cy="{0}" r="{1}" fill="white" stroke="black" stroke-width="2"/>\n'.format(radius, radius-2))
             if vertex_labels:
                 lines.append('<text x="{0:0.0f}" y="{1:0.0f}" font-size="{1}" '.format(float(radius), float(1.5*radius))
-                        +'text-anchor="middle" fill="white">'+str(v)+'</text>\n')
+                        +'text-anchor="middle" fill="black">'+str(v)+'</text>\n')
             lines.append('</marker>\n')
             lines.append('</defs>\n')
 
