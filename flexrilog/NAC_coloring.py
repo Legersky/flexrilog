@@ -652,8 +652,8 @@ class NACcoloring(SageObject):
         Return if the NAC-coloring is a singleton.
 
         Let $G$ be a graph and $N$ be a subset of its NAC-colorings.
-        A NAC-coloring $\\delta$ is called \\emph{singleton} w.r.t.\ $N$
-        if $|\\{(\\delta(e),\\delta'(e))\colon e\\in E_{Q_1}\\}|\\,\\neq 3$ for all $\\delta'\\in N$.
+        A NAC-coloring $\\delta$ is called *singleton* w.r.t.\ $N$
+        if $|\\{(\\delta(e),\\delta'(e))\\colon e\\in E_{Q_1}\\}|\\,\\neq 3$ for all $\\delta'\\in N$.
 
         INPUT:
 

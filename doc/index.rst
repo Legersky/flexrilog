@@ -10,7 +10,7 @@ It implements the concepts described in [GLS2018]_, [GLS2018a]_ and [Leg2019]_.
 	:start-after: start-include
 
 Content
---------
+=======
 
 **General graphs**
 

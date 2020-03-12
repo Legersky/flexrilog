@@ -2,17 +2,6 @@
 r"""
 This is implementation of motions of a graph.
 
-Methods
--------
-
-**GraphMotion**
-
-{INDEX_OF_METHODS_GRAPH_MOTION}
-
-**ParametricGraphMotion**
-
-{INDEX_OF_METHODS_PARAMETRIC_GRAPH_MOTION}
-
 AUTHORS:
 
 -  Jan Legerský (2019-01-24): initial version
@@ -1033,8 +1022,19 @@ class ParametricGraphMotion(GraphMotion):
         return super(ParametricGraphMotion, self).animation_SVG(realizations, **kwargs)
 
 
-
+# Methods
+# -------
+# 
+# **GraphMotion**
+# 
+# {INDEX_OF_METHODS_GRAPH_MOTION}
+# 
+# **ParametricGraphMotion**
+# 
+# {INDEX_OF_METHODS_PARAMETRIC_GRAPH_MOTION}
 
 #__doc__ = __doc__.replace(
     #"{INDEX_OF_METHODS_GRAPH_MOTION}", gen_rest_table_index(GraphMotion)).replace(
     #"{INDEX_OF_METHODS_PARAMETRIC_GRAPH_MOTION}", gen_rest_table_index(ParametricGraphMotion))
+
+

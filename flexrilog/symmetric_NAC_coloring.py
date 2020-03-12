@@ -43,11 +43,11 @@ from .NAC_coloring import NACcoloring
 
 class CnSymmetricNACcoloring(NACcoloring):
     r"""
-    The class for a $\mathcal{C}_n$-symmetric NAC-coloring of a $\mathcal{C}_n$-symmetric graph.
+    The class for a $\\mathcal{C}_n$-symmetric NAC-coloring of a $\\mathcal{C}_n$-symmetric graph.
 
-    We define a NAC-coloring $\delta$ to be a $\mathcal{C}_n$-symmetric if
+    We define a NAC-coloring $\\delta$ to be a $\\mathcal{C}_n$-symmetric if
     
-    - $\delta(\omega e)$ = $\delta(e)$ for all $e \in E_G$, where $\omega$ generates $\mathcal{C}_n$, and 
+    - $\\delta(\\omega e)$ = $\\delta(e)$ for all $e \in E_G$, where $\\omega$ generates $\\mathcal{C}_n$, and 
     - no two distinct blue, resp. red, partially invariant components are connected by an edge.
     """
     def __init__(self, G, coloring, name=None, check=True):

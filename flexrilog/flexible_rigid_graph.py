@@ -44,6 +44,7 @@ TODO:
     - PyPI repository
     - missing doctests in methods
     - tutorial notebooks (basics, flexibility, classification, animations...)
+    - improve the quality of pictures in the documentation
 
 
 FlexRiGraph
@@ -806,7 +807,7 @@ class FlexRiGraph(Graph):
             Graphics object consisting of 16 graphics primitives
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.ThreePrismGraph()
@@ -1341,12 +1342,12 @@ class FlexRiGraph(Graph):
 
         **Lemma** [GLS2018a]_
 
-        Let $G=(V,E)$ be a graph with an injective embedding $\omega:V\rightarrow\mathbb{R}^3$
-        such that for every edge $uv\in E$, the vector $\omega(u)-\omega(v)$ is parallel
+        Let $G=(V,E)$ be a graph with an injective embedding $\\omega:V\\rightarrow\\mathbb{R}^3$
+        such that for every edge $uv\in E$, the vector $\\omega(u)-\\omega(v)$ is parallel
         to one of the four vectors $(1,0,0)$, $(0,1,0)$, $(0,0,1)$, $(-1,-1,-1)$,
         and all four directions are present. Then $G$ is movable.
 
-        Moreover, there exist two NAC-colorings such that two edges are parallel in the embedding $\omega$ if and only if they
+        Moreover, there exist two NAC-colorings such that two edges are parallel in the embedding $\\omega$ if and only if they
         receive the same pair of colors.
 
         INPUT:

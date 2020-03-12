@@ -83,7 +83,7 @@ The basic functionality of ``FlexRiLoG`` is presented in the Jupyter notebook ``
  :target: https://mybinder.org/v2/gh/Legersky/flexrilog/master?filepath=examples%2FFlexRiLoG_demo.ipynb
 
 Rotationally symmetric motions of frameworks
-============================================
+--------------------------------------------
 
 The file ``examples/Rotationally_symmetric_frameworks_SoCGmedia.ipynb`` illustrates using the package for constructing
 *n*-fold rotationally symmetric motions of graphs.

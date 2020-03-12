@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 r"""
-This module implements functionality for investigating rigidity and flexibility of graphs with a symmetry.Methods
+This module implements functionality for investigating rigidity and flexibility of graphs with a symmetry.
+
+Methods
 -------
 
 **SymmetricFlexRiGraph**
@@ -103,7 +105,7 @@ class SymmetricFlexRiGraph(FlexRiGraph):
 class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     r"""
     This class is inherited from :class:`SymmetricFlexRiGraph`.
-    It represents a graph with a given $\mathcal{C}_n$ symmetry,
+    It represents a graph with a given $\\mathcal{C}_n$ symmetry,
     namely, a cyclic subgroup of order `n` of the automorphism group of the graph
     such that
     
@@ -112,9 +114,9 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     
     WARNING:
     
-    Only $\mathcal{C}_n$-symmetric NAC-colorings are considered in an instance of :class:`CnSymmetricFlexRiGraph`
+    Only $\\mathcal{C}_n$-symmetric NAC-colorings are considered in an instance of :class:`CnSymmetricFlexRiGraph`
     for parent methods! 
-    For example, :meth:`FlexRiGraph.NAC_colorings()` returns the list of all  $\mathcal{C}_n$-symmetric NAC-colorings
+    For example, :meth:`FlexRiGraph.NAC_colorings()` returns the list of all  $\\mathcal{C}_n$-symmetric NAC-colorings
     of the graph.
     
     INPUT:
@@ -153,7 +155,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         self.set_symmetric_positions(pos)
          
     def vertex_orbits(self):
-        """
+        r"""
         Return the orbits of vertices.
         """
         if self._vertex_orbits:
@@ -178,7 +180,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     
            
     def edge_orbits(self):
-        """
+        r"""
         Return the orbits of edges.
         """
         if self._edge_orbits:
@@ -194,7 +196,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     
         
     def invariant_vertices(self):
-        """
+        r"""
         Return the invariant vertices.
         """
         if self._invariant_vertices:
@@ -204,7 +206,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
             
     
     def set_symmetric_positions(self, pos):
-        """
+        r"""
         Given a dictionary of positions of one vertex from some orbits, the other vertices in the orbits are set symmetrically.
         """
         new_pos = {}
@@ -233,6 +235,9 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     
     @doc_index("NAC-colorings")   
     def NAC_colorings(self):
+        r"""
+        Return $\\mathcal{C}_n$-symmetric NAC-colorings.
+        """       
         if self._NACs_computed != 'yes':
             self._find_NAC_colorings()
         return self._NAC_colorings
@@ -242,7 +247,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     @staticmethod
     def is_Cn_symmetry(graph, sigma, n):
         r"""
-        Return whether `sigma` generates a $\mathcal{C}_n$-symmetry of the `graph`.
+        Return whether ``sigma`` generates a $\\mathcal{C}_n$-symmetry of the `graph`.
         """
         partially_inv = [v for v in graph.vertices() if len(sigma.orbit(v))<n]
         if [v for v in partially_inv if len(sigma.orbit(v))>1]:
@@ -255,8 +260,8 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         r"""
         Return the list of generators of Cn symmetries of the graph.
         
-        An element $\omega$ of order `n` of the automorphism group of the graph
-        generates a $\mathcal{C}_n$-symmetry of the graph if
+        An element $\\omega$ of order `n` of the automorphism group of the graph
+        generates a $\\mathcal{C}_n$-symmetry of the graph if
         
         - each partially invariant is invariant
         - the set of invariant vertices is independent.
@@ -279,7 +284,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
 
     @staticmethod
     def is_cyclic_subgroup(subgroup):
-        '''
+        r'''
         Return if a group is cyclic, a generator and order.
         '''
         if subgroup.is_cyclic():
@@ -294,8 +299,8 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
 
     @staticmethod
     def cyclic_subgroups(group, order):
-        '''
-        Return all cyclic subgroups of `group` with given `order`.
+        r'''
+        Return all cyclic subgroups of ``group`` with given ``order``.
         '''
         res_sbgrps = []
         for sbgrp in group.subgroups():
