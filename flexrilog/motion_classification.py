@@ -11,6 +11,7 @@ Methods
 AUTHORS:
 
 -  Jan Legerský (2019-02-18): initial version
+-  Jan Legerský (2020-03-12): update do SageMath 9.0
 
 MotionClassifier
 ----------------

@@ -44,6 +44,7 @@ Methods
 AUTHORS:
 
 -  Jan Legerský (2019-01-15): initial version
+-  Jan Legerský (2020-03-12): update do SageMath 9.0
 
 FlexRiGraph
 -----------
@@ -53,10 +54,8 @@ TODO:
     - missing documentation of methods
     - PyPI repository
     - missing doctests in methods
-    - update from 7.5 to 8.9 (failing tests) and then 9.0
-    - check functionality with SageMath 9.0
     - tutorial notebooks (basics, flexibility, classification, animations...)
-    - finish Cn-symmetry functionality (doc, classification)
+    - finish Cn-symmetry functionality (NACs, doc, classification)
 """
 
 #Copyright (C) 2018 Jan Legerský
@@ -231,7 +230,9 @@ class FlexRiGraph(Graph):
         obtained by concatenation of the rows of the upper triangle of the adjacency matrix,
         excluding the diagonal.
         
-        TODO: change to static?
+        TODO: 
+        
+            change to static?
         """
         L=Integer(N).binary()
         n=ceil((1+sqrt(1+8*len(L)))/Integer(2))
@@ -2027,8 +2028,6 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     def vertex_orbits(self):
         """
         Return the orbits of vertices.
-        
-        TODO: simplify implementation?
         """
         if self._vertex_orbits:
             return self._vertex_orbits

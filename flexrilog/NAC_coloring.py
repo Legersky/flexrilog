@@ -16,6 +16,7 @@ Methods
 AUTHORS:
 
 -  Jan Legerský (2019-01-15): initial version
+-  Jan Legerský (2020-03-12): update do SageMath 9.0
 
 NACcoloring
 -----------
@@ -94,10 +95,6 @@ class NACcoloring(SageObject):
         Traceback (most recent call last):
         ...
         RuntimeError: The edges of the NAC-coloring do not match the edges of the graph.
-    
-    TODO:
-    
-        blue/red graph
     """
     def __init__(self, G, coloring, name=None, check=True):
         from .flexible_rigid_graph import FlexRiGraph
