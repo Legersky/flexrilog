@@ -1,4 +1,4 @@
-Rigid and Flexible Graphs
+Flexible and Rigid Graphs
 =========================
 
 .. automodule:: flexrilog.flexible_rigid_graph
