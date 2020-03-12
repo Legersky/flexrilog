@@ -35,6 +35,7 @@ setup(
     version = readfile("VERSION").strip(), # the VERSION file is shared with the documentation
     description='FlexRiLoG - A package for investigating Flexible and Rigid Labelings of Graphs',
     long_description = readfile("README.rst"), # get the long description from the README
+    long_description_content_type = 'text/x-rst',
     url='https://github.com/legersky/flexrilog',
     author='Jan Legerský, Georg Grasegger',
     author_email='jan.legersky@risc.jku.at', # choose a main contact email
