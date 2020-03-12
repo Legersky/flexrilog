@@ -22,14 +22,14 @@ You can try it out online without installation:
 See also the `webpage about movable graphs <https://jan.legersky.cz/project/movablegraphs/>`_.
 
 Installation
-===========
+============
 
 Download or clone the source code from `github.com/Legersky/flexrilog <https://github.com/Legersky/flexrilog>`_ and run
 
 ``make install``
 
 For some functions, the package `phcpy <http://homepages.math.uic.edu/~jan/phcpy_doc_html/welcome.html>`_ 
-or `lnumber https://pypi.org/project/lnumber/` must be installed.
+or `lnumber <https://pypi.org/project/lnumber/>`_ must be installed.
 
 Testing
 -------
@@ -42,18 +42,18 @@ or
 
 ``make test-long``
 
-which runs also doctests marked `long`.
-To test also methods using `phcpy` and `lnumber`, run
+which runs also doctests marked ``long``.
+To test also methods using ``phcpy`` and ``lnumber``, run
 
 ``make test-all`` 
 
 Alternatively, the following commands can be used
 
-``
-sage setup.py test
-sage setup.py testLong
-sage setup.py testAll
-``
+``sage setup.py test``
+
+``sage setup.py testLong``
+
+``sage setup.py testAll``
 
 Documentation
 -------------
