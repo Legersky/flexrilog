@@ -9,10 +9,10 @@ SAGE = sage
 all: install test
 
 install:
-	$(SAGE) -pip install --upgrade sage-package && $(SAGE) -pip install --upgrade --no-index -v .
+	$(SAGE) -pip install --upgrade -v .
 
 install-user:
-	$(SAGE) -pip install --upgrade --user sage-package && $(SAGE) -pip install --upgrade --user --no-index -v .
+	$(SAGE) -pip install --upgrade --user -v .
 	
 uninstall:
 	$(SAGE) -pip uninstall $(PACKAGE)

@@ -24,7 +24,11 @@ See also the `webpage about movable graphs <https://jan.legersky.cz/project/mova
 Installation
 ============
 
-Download or clone the source code from `github.com/Legersky/flexrilog <https://github.com/Legersky/flexrilog>`_ and run
+The package can be installed via ``Pypi``:
+
+`` sage -pip install --upgrade flexrilog``
+
+Another option is to download or clone the source code from `github.com/Legersky/flexrilog <https://github.com/Legersky/flexrilog>`_ and run
 
 ``make install``
 
@@ -34,7 +38,7 @@ or `lnumber <https://pypi.org/project/lnumber/>`_ must be installed.
 Testing
 -------
 
-Test the code by
+In case you have downloaded or cloned the package, you can execute in the root folder:
 
 ``make test``
 
