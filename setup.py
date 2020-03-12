@@ -14,7 +14,19 @@ def readfile(filename):
 # For the tests
 class SageTest(TestCommand):
     def run_tests(self):
-        errno = os.system("sage -t --force-lib --show-skipped flexrilog")
+        errno = os.system("sage -t --force-lib --show-skipped -i -p 4 flexrilog")
+        if errno != 0:
+            sys.exit(1)
+            
+class SageTestLong(TestCommand):
+    def run_tests(self):
+        errno = os.system("sage -t --long --force-lib -i -p 4  flexrilog")
+        if errno != 0:
+            sys.exit(1)
+             
+class SageTestOptional(TestCommand):
+    def run_tests(self):
+        errno = os.system("sage -t --long --force-lib --optional=build,dochtml,memlimit,mpir,sage,lnumber,phcpy -i -p 4 flexrilog")
         if errno != 0:
             sys.exit(1)
 
@@ -36,11 +48,13 @@ setup(
       'Intended Audience :: Science/Research',
       'Topic :: Scientific/Engineering :: Mathematics',
       'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-      'Programming Language :: Python :: 2.7',
+      'Programming Language :: Python :: 3.7',
     ],
     keywords = "rigidity flexibility",
     packages = ['flexrilog'],
-    cmdclass = {'test': SageTest}, # adding a special setup command for tests
+    cmdclass = {'test': SageTest,  # adding a special setup command for tests
+                'testLong': SageTestLong, 
+                'testAll': SageTestOptional},
     setup_requires   = ['sage-package'],
     install_requires = ['sage-package', 'sphinx'],
 )

@@ -23,14 +23,11 @@ develop:
 test:
 	$(SAGE) setup.py test
 
-ptest:
-	$(SAGE) -t --force-lib -i -p 4 $(PACKAGE)
-
 test-long:
-	$(SAGE) -t --long --force-lib -i -p 4 $(PACKAGE)
+	$(SAGE) setup.py testLong
 
 test-all:
-	$(SAGE) -t --long --force-lib --optional=all -i -p 4 $(PACKAGE)
+	$(SAGE) setup.py testAll
 
 coverage:
 	$(SAGE) -coverage $(PACKAGE)/*
@@ -46,4 +43,4 @@ clean: clean-doc
 clean-doc:
 	cd doc && $(SAGE) -sh -c "make clean"
 
-.PHONY: all install install-user develop test ptest test-long test-all coverage clean clean-doc doc doc-pdf
+.PHONY: all install install-user develop test test-long test-all coverage clean clean-doc doc doc-pdf
