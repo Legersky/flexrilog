@@ -28,7 +28,7 @@ The package can be installed via ``pip``:
 
 ``sage -pip install --upgrade flexrilog``
 
-Another option is to download or clone the source code from `github.com/Legersky/flexrilog <https://github.com/Legersky/flexrilog>`_ and run
+In order to install the latest version, download or clone the source code from `github.com/Legersky/flexrilog <https://github.com/Legersky/flexrilog>`_ and run
 
 ``make install``
 
