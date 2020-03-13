@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Graph Rigidity and Flexibility documentation build configuration file, created by
+# FlexRiLoG documentation build configuration file, created by
 # sphinx-quickstart on Tue Jan 15 11:10:03 2019.
 #
 # This file is execfile()d with the current directory set to its
@@ -31,13 +31,17 @@ sys.path.insert(0, os.path.abspath('..'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+
+import sphinx_rtd_theme
+
 extensions = [
     #'inventory_builder', 'multidocs','sage_autodoc',
     'sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
     'sphinx.ext.extlinks',
     'sphinx.ext.viewcode',
-    'matplotlib.sphinxext.plot_directive']
+    'matplotlib.sphinxext.plot_directive',
+    "sphinx_rtd_theme",]
 
 
 mathjax_config = {
@@ -104,9 +108,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Graph Rigidity and Flexibility'
+project = u'FlexRiLoG'
 copyright = u'2019, Jan Legerský'
-author = u'Jan Legerský'
+author = u'Jan Legerský, Georg Grasegger'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -152,7 +156,7 @@ extlinks = {
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'nature'
+html_theme = 'sphinx_rtd_theme' #'nature'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -182,7 +186,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'GraphRigidityandFlexibilitydoc'
+htmlhelp_basename = 'FlexRiLoGdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -209,7 +213,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'GraphRigidityandFlexibility.tex', u'Graph Rigidity and Flexibility Documentation',
+    (master_doc, 'FlexRiLoG.tex', u'FlexRiLoG Documentation',
      u'Jan Legerský', 'manual'),
 ]
 
@@ -219,7 +223,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'graphrigidityandflexibility', u'Graph Rigidity and Flexibility Documentation',
+    (master_doc, 'FlexRiLoG', u'FlexRiLoG Documentation',
      [author], 1)
 ]
 
@@ -230,8 +234,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'GraphRigidityandFlexibility', u'Graph Rigidity and Flexibility Documentation',
-     author, 'GraphRigidityandFlexibility', 'One line description of project.',
+    (master_doc, 'FlexRiLoG', u'FlexRiLoG Documentation',
+     author, 'FlexRiLoG', 'A package for studying flexible and rigid labelings of graphs',
      'Miscellaneous'),
 ]
 
