@@ -860,12 +860,14 @@ class FlexRiGraph(Graph):
         return Graph(self).plot(**kwargs)
 
     @doc_index("Plotting")
-    def show_all_NAC_colorings(self):
+    def show_all_NAC_colorings(self, ncols=3):
         r"""
         Show all NAC-colorings of the graph.
+        
+        The parameter ``ncols`` specifies in how many columns are the NAC colorings displayed. 
         """
-        for col in self.NAC_colorings():
-            show(col.plot())
+        from sage.all import graphics_array
+        show(graphics_array([delta.plot() for delta in self.NAC_colorings()], ncols=ncols))
 
     @doc_index("NAC-colorings")
     def are_NAC_colorings_named(self):
