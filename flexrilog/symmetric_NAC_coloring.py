@@ -51,7 +51,7 @@ class CnSymmetricNACcoloring(NACcoloring):
     - no two distinct blue, resp. red, partially invariant components are connected by an edge.
     """
     def __init__(self, G, coloring, name=None, check=True):
-        from .flexible_rigid_graph import CnSymmetricFlexRiGraph
+        from .symmetric_flexible_rigid_graph import CnSymmetricFlexRiGraph
         if not isinstance(G, CnSymmetricFlexRiGraph):
             raise ValueError('The graph G must be an instance of CnSymmetricFlexRiGraph.')
         super(CnSymmetricNACcoloring, self).__init__(G, coloring, name, check)
