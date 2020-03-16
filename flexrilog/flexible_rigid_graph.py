@@ -867,11 +867,15 @@ class FlexRiGraph(Graph):
         The parameter ``ncols`` specifies in how many columns are the NAC colorings displayed. 
         """
         from sage.all import graphics_array
-        figs = graphics_array([delta.plot() for delta in self.NAC_colorings()], ncols=ncols)
-        if only_return:
-            return figs
+        if ncols==1 and not only_return:
+            for delta in self.NAC_colorings():
+                show(delta.plot())
         else:
-            show(figs)
+            figs = graphics_array([delta.plot() for delta in self.NAC_colorings()], ncols=ncols)
+            if only_return:
+                return figs
+            else:
+                show(figs)
 
     @doc_index("NAC-colorings")
     def are_NAC_colorings_named(self):
