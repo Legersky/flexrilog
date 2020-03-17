@@ -45,6 +45,7 @@ TODO:
     - missing doctests in methods
     - tutorial notebooks (basics, flexibility, classification, animations...)
     - improve the quality of pictures in the documentation
+    - DOI Graphs with flexible labelings allowing injective realizations
 
 
 FlexRiGraph
@@ -637,6 +638,10 @@ class FlexRiGraph(Graph):
 
         The method finds NAC-colorings of the graph and store them in ``self._NAC_colorings``.
         The flag ``self._NACs_computed`` is changed to ``'yes'`` or ``'onlyOne'``.
+        
+        TODO:
+        
+         - skip testing combinations that fail on a subgraph 
         """
         triangle_comps = self._edges_with_same_color()
         n = len(triangle_comps)
