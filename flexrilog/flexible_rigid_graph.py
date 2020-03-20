@@ -45,7 +45,6 @@ TODO:
     - missing doctests in methods
     - tutorial notebooks (basics, flexibility, classification, animations...)
     - improve the quality of pictures in the documentation
-    - DOI Graphs with flexible labelings allowing injective realizations
 
 
 FlexRiGraph
