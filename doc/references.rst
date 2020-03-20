@@ -28,7 +28,7 @@ References
 .. [GLS2018a] \G. Grasegger, J. Legerský, J. Schicho,
               "Graphs with Flexible Labelings allowing Injective Realizations".
               arXiv (2018).
-              :doi:`10.1007/s00454-018-0026-9`.
+              :doi:`10.1016/j.disc.2019.111713`.
               
 .. [Leg2019] \J. Legerský,
               "Flexible and Rigid Labelings of Graphs".
