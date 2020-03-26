@@ -13,7 +13,7 @@ and in the doctoral thesis *Flexible and Rigid Labelings of Graphs* (download `h
 .. start-include
 
 For the definitions of a flexible and rigid labeling and other implemented concepts,
-see the Jupyter notebook ``examples/FlexRiLoG_demo.ipynb``.
+see the Jupyter notebook `examples/FlexRiLoG_demo.ipynb <examples/FlexRiLoG_demo.ipynb>`_.
 You can try it out online without installation:
 
 .. image:: https://mybinder.org/badge_logo.svg
@@ -81,7 +81,7 @@ The coverage can be checked with
 Demos
 =====
 
-The basic functionality of ``FlexRiLoG`` is presented in the Jupyter notebook ``examples/FlexRiLoG_demo.ipynb``:
+The basic functionality of ``FlexRiLoG`` is presented in the Jupyter notebook `examples/FlexRiLoG_demo.ipynb <examples/FlexRiLoG_demo.ipynb>`_:
 
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://mybinder.org/v2/gh/Legersky/flexrilog/master?filepath=examples%2FFlexRiLoG_demo.ipynb
