@@ -98,7 +98,7 @@ FlexRiLoG - A SageMath Package for Motions of Graphs
 The file `examples/flexrilog_Motions_of_Graphs.ipynb <examples/flexrilog_Motions_of_Graphs.ipynb>`_ is a Jupyter notebook version of a paper describing the package:
 
 .. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/Legersky/flexrilog/master?filepath=examples%2Fflexrilog_Motions_of_Graphs.ipynb
+ :target: https://mybinder.org/v2/gh/Legersky/flexrilog/22718ae09591ef78c6a3bd3be8c5edc09e8f918d?filepath=examples%2Fflexrilog_Motions_of_Graphs.ipynb
 
 Rotationally symmetric motions of frameworks
 --------------------------------------------
