@@ -85,6 +85,11 @@ The basic functionality of ``FlexRiLoG`` is presented in the Jupyter notebook ``
 
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://mybinder.org/v2/gh/Legersky/flexrilog/master?filepath=examples%2FFlexRiLoG_demo.ipynb
+ 
+FlexRiLoG - A SageMath Package for Motions of Graphs
+------------------------------------------------------
+
+The file ``examples/flexrilog_Motions_of_Graphs.ipynb`` is a Jupyter notebook version of a paper describing the package.
 
 Rotationally symmetric motions of frameworks
 --------------------------------------------
