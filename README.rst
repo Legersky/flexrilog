@@ -97,7 +97,8 @@ The basic functionality of ``FlexRiLoG`` is presented in the Jupyter notebook `e
 FlexRiLoG - A SageMath Package for Motions of Graphs
 ------------------------------------------------------
 
-The file `examples/flexrilog_Motions_of_Graphs.ipynb <examples/flexrilog_Motions_of_Graphs.ipynb>`_ is a Jupyter notebook version of a paper describing the package:
+The file `examples/flexrilog_Motions_of_Graphs.ipynb <examples/flexrilog_Motions_of_Graphs.ipynb>`_ is a Jupyter notebook version of the paper *FlexRiLoG – A SageMath Package for Motions of Graphs*
+(arXiv:`2003.12029 <https://arxiv.org/abs/2003.12029>`_) by Georg Grasegger and Jan Legerský:
 
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://mybinder.org/v2/gh/Legersky/flexrilog/22718ae09591ef78c6a3bd3be8c5edc09e8f918d?filepath=examples%2Fflexrilog_Motions_of_Graphs.ipynb
