@@ -1,5 +1,5 @@
 ===================================================
-FlexRiLoG - Flexible and Rigid Labelings of Graphs
+FlexRiLoG – Flexible and Rigid Labelings of Graphs
 ===================================================
 
 
@@ -18,14 +18,16 @@ by Sean Dewar, Georg Grasegger and Jan Legerský is under development.
 
 .. start-include
 
-For the definitions of a flexible and rigid labeling and other implemented concepts,
-see the Jupyter notebook `examples/FlexRiLoG_demo.ipynb <examples/FlexRiLoG_demo.ipynb>`_.
+The package is described in *FlexRiLoG – A SageMath Package for Motions of Graphs*
+(arXiv:`2003.12029 <https://arxiv.org/abs/2003.12029>`_) by Georg Grasegger and Jan Legerský. 
+This `Jupyter notebook <examples/flexrilog_Motions_of_Graphs.ipynb>`_ provides an interactive version of the paper.
+It includes the definitions of a flexible and rigid labeling and other implemented concepts.
 You can try it out online without installation:
 
 .. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/Legersky/flexrilog/master?filepath=examples%2FFlexRiLoG_demo.ipynb
-
-See also the `webpage about movable graphs <https://jan.legersky.cz/project/movablegraphs/>`_.
+ :target: https://mybinder.org/v2/gh/Legersky/flexrilog/22718ae09591ef78c6a3bd3be8c5edc09e8f918d?filepath=examples%2Fflexrilog_Motions_of_Graphs.ipynb
+ 
+See also `demos <#demos>`_ and the `webpage about movable graphs <https://jan.legersky.cz/project/movablegraphs/>`_.
 
 Installation
 ============
