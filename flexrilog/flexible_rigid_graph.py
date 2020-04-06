@@ -1798,11 +1798,11 @@ class FlexRiGraph(Graph):
 
         .. PLOT::
 
-            from flexrilog import GraphGenerator
-            G = GraphGenerator.ThreePrismGraph()
+            from flexrilog import GraphGenerator, FlexRiGraph
+            G = FlexRiGraph(list(GraphGenerator.ThreePrismGraph().edges(labels=False)))
             L = {(1, 2): 3, (1, 5): 4, (0, 5): 5, (0, 4): 3, (2, 3): 5, (0, 3): 2, (3, 4): 4, (2, 5): 2, (1, 4): 5}
             res_RR, res_CC = G.realizations(L,[4,3])
-            sphinx_plot_list([G.plot(pos=rho) for rho in res_RR[2:4]],1,2)
+            sphinx_plot(graphics_array([G.plot(pos=rho) for rho in res_RR[2:6]],2,2))
 
         """
         from phcpy import solver
@@ -1835,7 +1835,7 @@ class FlexRiGraph(Graph):
         for sol in sols:
             sol_dict = strsol2dict(sol)
             sol_is_real = is_real(sol, tolerance_real)
-            for k in copy(sol_dict.keys()):
+            for k in list(sol_dict.keys()):
                 if k[0]=='x' or k[0]=='y':
                     if sol_is_real:
                         sol_dict[k] = sol_dict[k].real
