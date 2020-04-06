@@ -55,7 +55,7 @@ class GraphGenerator():
             True
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.ThreePrismGraph()
@@ -86,7 +86,7 @@ class GraphGenerator():
             True
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.K33Graph()
@@ -117,7 +117,7 @@ class GraphGenerator():
             True
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.K23Graph()
@@ -151,7 +151,7 @@ class GraphGenerator():
             True
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.SmallestFlexibleLamanGraph()
@@ -280,7 +280,7 @@ class GraphGenerator():
             Q_1: FlexRiGraph with 7 vertices and 11 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.Q1Graph()
@@ -334,7 +334,7 @@ class GraphGenerator():
             Q_2: FlexRiGraph with 8 vertices and 13 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.Q2Graph()
@@ -393,7 +393,7 @@ class GraphGenerator():
             Q_3: FlexRiGraph with 8 vertices and 14 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.Q3Graph()
@@ -419,7 +419,7 @@ class GraphGenerator():
             Q_4: FlexRiGraph with 8 vertices and 14 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.Q4Graph()
@@ -451,7 +451,7 @@ class GraphGenerator():
             Q_5: FlexRiGraph with 8 vertices and 13 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.Q5Graph()
@@ -483,7 +483,7 @@ class GraphGenerator():
             Q_6: FlexRiGraph with 8 vertices and 13 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.Q6Graph()
@@ -515,7 +515,7 @@ class GraphGenerator():
             S_1: FlexRiGraph with 8 vertices and 14 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.S1Graph()
@@ -539,7 +539,7 @@ class GraphGenerator():
             S_2: FlexRiGraph with 8 vertices and 14 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.S2Graph()
@@ -571,7 +571,7 @@ class GraphGenerator():
             S_3: FlexRiGraph with 8 vertices and 14 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.S3Graph()
@@ -601,7 +601,7 @@ class GraphGenerator():
             S_4: FlexRiGraph with 8 vertices and 14 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.S4Graph()
@@ -631,7 +631,7 @@ class GraphGenerator():
             S_5: FlexRiGraph with 8 vertices and 13 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.S5Graph()
@@ -675,7 +675,7 @@ class GraphGenerator():
             NoNAC: FlexRiGraph with 7 vertices and 12 edges
 
         .. PLOT::
-            :scale: 70
+            :width: 70%
 
             from flexrilog import GraphGenerator
             G = GraphGenerator.NoNACGraph()

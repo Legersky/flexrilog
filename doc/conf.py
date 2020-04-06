@@ -58,18 +58,41 @@ mathjax_config = {
 # through mathplotlib, so that it will be displayed in the HTML doc
 plot_html_show_source_link = False
 plot_pre_code = """
-def sphinx_plot(plot):
+def sphinx_plot(graphics, **kwds):
     import matplotlib.image as mpimg
-    from sage.misc.temporary_file import tmp_filename
     import matplotlib.pyplot as plt
+    from sage.misc.temporary_file import tmp_filename
+    from sage.plot.graphics import _parse_figsize
     if os.environ.get('SAGE_SKIP_PLOT_DIRECTIVE', 'no') != 'yes':
-        fn = tmp_filename(ext=".png")
-        plot.plot().save(fn)
-        img = mpimg.imread(fn)
-        plt.imshow(img)
+        ## Option handling is taken from Graphics.save
+        options = dict()
+        if isinstance(graphics, sage.plot.graphics.Graphics):
+            options.update(sage.plot.graphics.Graphics.SHOW_OPTIONS)
+            options.update(graphics._extra_kwds)
+            options.update(kwds)
+        elif isinstance(graphics, sage.plot.multigraphics.MultiGraphics):
+            options.update(kwds)
+        else:
+            graphics = graphics.plot(vertex_size=250, **kwds)
+        dpi = options.pop('dpi', None)
+        transparent = options.pop('transparent', None)
+        fig_tight = options.pop('fig_tight', None)
+        figsize = options.pop('figsize', None)
+        if figsize is not None:
+            figsize = _parse_figsize(figsize)
+        plt.figure(figsize=figsize)
+        figure = plt.gcf()
+        if isinstance(graphics, (sage.plot.graphics.Graphics,
+                                 sage.plot.multigraphics.MultiGraphics)):
+            graphics.matplotlib(figure=figure, figsize=figsize, **options)
+            if isinstance(graphics, (sage.plot.graphics.Graphics,
+                                     sage.plot.multigraphics.GraphicsArray)):
+                # for Graphics and GraphicsArray, tight_layout adjusts the
+                # *subplot* parameters so ticks aren't cut off, etc.
+                figure.tight_layout()
         plt.margins(0)
-        plt.axis("off")
-        plt.tight_layout(pad=0)
+        if not isinstance(graphics, sage.plot.multigraphics.MultiGraphics):
+            plt.tight_layout(pad=0)
 
 def sphinx_plot_list(plot_list, rows, columns):
     import matplotlib.image as mpimg
