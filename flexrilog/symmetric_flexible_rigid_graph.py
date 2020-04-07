@@ -254,13 +254,13 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     
     
     @doc_index("NAC-colorings")   
-    def NAC_colorings(self):
+    def Cn_symmetric_NAC_colorings(self):
         r"""
+        Alias for :meth:`NAC_colorings`.
+        
         Return $\\mathcal{C}_n$-symmetric NAC-colorings.
-        """       
-        if self._NACs_computed != 'yes':
-            self._find_NAC_colorings()
-        return self._NAC_colorings
+        """
+        return self.NAC_colorings()
 
     
     
