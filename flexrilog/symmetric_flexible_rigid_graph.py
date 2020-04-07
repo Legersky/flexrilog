@@ -157,6 +157,8 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
             pos = {
                 orbit[0]:self._pos[orbit[0]] for orbit in self.vertex_orbits()
                 }
+            for i, v in enumerate(self._invariant_vertices):
+                pos[v] = (0, 0.1*i)
         self.set_symmetric_positions(pos)
          
     def vertex_orbits(self):
