@@ -52,6 +52,7 @@ from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
 from sage.all import Subsets, rainbow, show, binomial, RealField
 from sage.all import var, solve, RR, vector, norm, CC
 from sage.all import PermutationGroup, PermutationGroup_generic
+from sage.groups.perm_gps.permgroup_element import is_PermutationGroupElement
 from sage.all import pi, cos, sin
 import random
 from itertools import chain
@@ -75,7 +76,8 @@ class SymmetricFlexRiGraph(FlexRiGraph):
     - ``data``: provides the information about edges, see :class:`FlexRiGraph`..
 
     - ``symmetry`` -- `sage.graphs.graph.Graph <http://doc.sagemath.org/html/en/reference/groups/sage/groups/perm_gps/permgroup.html>`_
-      that is a subgroup of the automorphism group of the graph or the list of its generators 
+      that is a subgroup of the automorphism group of the graph, the list of its generators
+      or a permutation generating the subgroup.
 
     TODO:
     
@@ -90,6 +92,9 @@ class SymmetricFlexRiGraph(FlexRiGraph):
         elif isinstance(symmetry, list):
             self._sym_gens = symmetry
             self._sym_group = PermutationGroup(symmetry, domain=self.vertices())
+        elif is_PermutationGroupElement(symmetry):
+            self._sym_gens = [symmetry]
+            self._sym_group = PermutationGroup([symmetry], domain=self.vertices())
         
         for gen in self._sym_gens:
             for u,v in self.edges(labels=False):
@@ -131,7 +136,6 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     
         - examples
         - check input as list of edges
-        - input only generator
     """
     def __init__(self, data, symmetry, pos=None, name=None, check=True, verbosity=0):
         super(CnSymmetricFlexRiGraph, self).__init__(data, symmetry, pos, name, check, verbosity)
