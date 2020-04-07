@@ -152,6 +152,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         self._invariant_vertices = None
         self._NACs_computed = 'no'
         
+        self._report('Vertex orbits: ' + str(self.vertex_orbits()), 2)
         if pos==None:
             pos = {
                 orbit[0]:self._pos[orbit[0]] for orbit in self.vertex_orbits()
@@ -178,7 +179,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                 verts.pop(w)
             self._vertex_orbits.append(orbit)
                 
-        self._vertex_orbits += self.invariant_vertices()
+        self._vertex_orbits += [[v] for v in self.invariant_vertices()]
 
         return self._vertex_orbits
     
