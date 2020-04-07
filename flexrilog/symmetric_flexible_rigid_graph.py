@@ -223,13 +223,29 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                 
     @doc_index("NAC-colorings")
     def _find_NAC_colorings(self, onlyOne=False, names=False):
+        r"""
+        Find Cn-symmetric NAC-colorings and store them in ``self._NAC_colorings``.
+        
+        WARNING:
+            
+            Currently, the option ``onlyOne`` is rather meaningless,
+            since all NAC-colorings must be computed to get Cn-symmetric ones.
+            
+        TODO:
+        
+            ``onlyOne`` option if normal NACs work as an iterator.
+        """
         from .symmetric_NAC_coloring import CnSymmetricNACcoloring
-        FlexRiGraph._find_NAC_colorings(self, onlyOne=onlyOne, names=names)
+        FlexRiGraph._find_NAC_colorings(self, onlyOne=False, names=names)
         symmetric_NACs = []
+        self._report('Sorting out Cn-symmetric NAC-colorings')
         for delta in self._NAC_colorings:
             delta_sym = CnSymmetricNACcoloring(self, delta, check=False)
             if delta_sym.is_Cn_symmetric():
                 symmetric_NACs.append(delta_sym)
+                if onlyOne:
+                    break
+                    self._NACs_computed = 'onlyOne'
         self._NAC_colorings = symmetric_NACs
     
     

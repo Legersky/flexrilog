@@ -658,6 +658,7 @@ class FlexRiGraph(Graph):
         
          - skip testing combinations that fail on a subgraph 
         """
+        self._report('Searching NAC-colorings')
         triangle_comps = self._edges_with_same_color()
         n = len(triangle_comps)
         form_len = '0'+str(n-1)+'b'
