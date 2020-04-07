@@ -164,6 +164,24 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     def vertex_orbits(self):
         r"""
         Return the orbits of vertices.
+        
+        EXAMPLES::
+        
+            sage: from flexrilog import CnSymmetricFlexRiGraph, GraphGenerator
+            sage: G = GraphGenerator.CompleteGraphWithTrianglesAround(3, instance_CnSymmetricFlexRiGraph=True); G
+            CnSymmetricFlexRiGraph with 9 vertices and 15 edges
+            with the symmetry Permutation Group with generators [(0,1,2)(3,5,7)(4,6,8)]
+            sage: G.vertex_orbits()
+            [[0, 1, 2], [3, 5, 7], [4, 6, 8]]
+            
+            ::
+            
+            sage: G2 = CnSymmetricFlexRiGraph(G, PermutationGroup([[(1,2),(3,4),(5,8),(6,7)]])); G2
+            CnSymmetricFlexRiGraph with 9 vertices and 15 edges
+            with the symmetry Permutation Group with generators [(1,2)(3,4)(5,8)(6,7)]
+            sage: G2.vertex_orbits()
+            [[1, 2], [3, 4], [5, 8], [6, 7], [0]]
+
         """
         if self._vertex_orbits:
             return self._vertex_orbits
@@ -173,7 +191,8 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         for v in self.invariant_vertices():
             verts.pop(v)
         while verts:
-            v, _ = verts.popitem()
+            v = min(verts.keys())
+            verts.pop(v)
             orbit = [v]
             for _ in range(1,self.n):
                 w = self.omega(orbit[-1])
