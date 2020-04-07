@@ -700,10 +700,10 @@ class GraphGenerator():
                  tuple(n + 2*i for i in range(n)),
                  tuple(n + 2*i +1 for i in range(n))
                 ]
-        alpha = 3.14/n/2.0
+        alpha = 3.14/n
         G = CnSymmetricFlexRiGraph(edges, PermutationGroup([omega]),
                                    pos={0:[1, 0], 
-                                        n:[1+cos(alpha), -sin(alpha)],
+                                        n:[1+cos(alpha), -sin(alpha/2.0)],
                                         n+1:[1+cos(alpha), sin(alpha)]})
         if instance_CnSymmetricFlexRiGraph:
             return G
