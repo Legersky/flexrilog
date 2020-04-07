@@ -260,6 +260,17 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         Alias for :meth:`NAC_colorings`.
         
         Return $\\mathcal{C}_n$-symmetric NAC-colorings.
+        
+        EXAMPLES::
+        
+        sage: from flexrilog import CnSymmetricFlexRiGraph, GraphGenerator
+        sage: T = GraphGenerator.ThreePrismGraph()
+        sage: Cn_symmetries = CnSymmetricFlexRiGraph.Cn_symmetries_gens(T, 2); Cn_symmetries
+        [(0,1)(2,3)(4,5), (0,2)(1,4)(3,5), (0,5)(1,3)(2,4), (0,5)(1,4)(2,3)]
+        sage: T_sym = CnSymmetricFlexRiGraph(T, Cn_symmetries[0])
+        sage: T_sym.NAC_colorings()
+        [Cn-symmetric NAC-coloring with red edges 
+        [[0, 3], [0, 4], [1, 2], [1, 5], [2, 5], [3, 4]] and blue edges [[0, 5], [1, 4], [2, 3]]]
         """
         return self.NAC_colorings()
 
@@ -286,6 +297,13 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         
         - each partially invariant is invariant
         - the set of invariant vertices is independent.
+        
+        EXAMPLES::
+        
+        sage: from flexrilog import CnSymmetricFlexRiGraph, GraphGenerator
+        sage: T = GraphGenerator.ThreePrismGraph()
+        sage: Cn_symmetries = CnSymmetricFlexRiGraph.Cn_symmetries_gens(T, 2); Cn_symmetries
+        [(0,1)(2,3)(4,5), (0,2)(1,4)(3,5), (0,5)(1,3)(2,4), (0,5)(1,4)(2,3)]
         """
         
         res = []
