@@ -36,10 +36,12 @@ TODO:
 #You should have received a copy of the GNU General Public License
 
 from sage.rings.integer import Integer
+from sage.all import cos, sin
 from .flexible_rigid_graph import FlexRiGraph
+from .symmetric_flexible_rigid_graph import CnSymmetricFlexRiGraph
 from sage.misc.rest_index_of_methods import gen_rest_table_index
-from sage.all import flatten, Set,  Graph
-
+from sage.all import flatten, Set,  Graph, PermutationGroup
+from sage.all import graphs
 
 class GraphGenerator():
 
@@ -686,6 +688,27 @@ class GraphGenerator():
                                        4 : (0.5,1.5), 5 : (1.5,1.5), 6 : (1,-0.25)},
                                   name='NoNAC')
 
+    @staticmethod
+    def CompleteGraphWithTrianglesAround(n, instance_CnSymmetricFlexRiGraph=False):
+        edges = graphs.CompleteGraph(n).edges(labels=False)
+        k = n
+        for i in range(n):
+            edges += [[i, k], [i, k+1], [k, k+1], [k+1, k+2]]
+            k +=2
+        edges[-1][1] = n
+        omega = [tuple(range(n)),
+                 tuple(n + 2*i for i in range(n)),
+                 tuple(n + 2*i +1 for i in range(n))
+                ]
+        alpha = 3.14/n/2.0
+        G = CnSymmetricFlexRiGraph(edges, PermutationGroup([omega]),
+                                   pos={0:[1, 0], 
+                                        n:[1+cos(alpha), -sin(alpha)],
+                                        n+1:[1+cos(alpha), sin(alpha)]})
+        if instance_CnSymmetricFlexRiGraph:
+            return G
+        else:
+            return FlexRiGraph(G)
 
     @staticmethod
     def LamanGraphs(n):
