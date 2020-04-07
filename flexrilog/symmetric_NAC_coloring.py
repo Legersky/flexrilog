@@ -96,6 +96,13 @@ class CnSymmetricNACcoloring(NACcoloring):
             return False
         return True
 
+    def _repr_(self):
+        """
+        Return a string representation of `self`.
+        
+        Extend the string representation of NACcoloring.
+        """
+        return NACcoloring._repr_(self).replace('NAC', 'Cn-symmetric NAC')
 
 
 __doc__ = __doc__.replace(
