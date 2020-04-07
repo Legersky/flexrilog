@@ -174,7 +174,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
             sage: G.vertex_orbits()
             [[0, 1, 2], [3, 5, 7], [4, 6, 8]]
             
-            ::
+        ::
             
             sage: G2 = CnSymmetricFlexRiGraph(G, PermutationGroup([[(1,2),(3,4),(5,8),(6,7)]])); G2
             CnSymmetricFlexRiGraph with 9 vertices and 15 edges
@@ -222,7 +222,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
              [[1, 5], [0, 3]],
              [[0, 1]]]
              
-            ::
+        ::
             
             sage: G = GraphGenerator.CompleteGraphWithTrianglesAround(3,instance_CnSymmetricFlexRiGraph=True); G
             CnSymmetricFlexRiGraph with 9 vertices and 15 edges
@@ -234,7 +234,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
              [[0, 1], [0, 2], [1, 2]],
              [[2, 7], [1, 5], [0, 3]]]
              
-            ::
+        ::
             
             sage: from flexrilog import CnSymmetricFlexRiGraph
             sage: fold2syms = CnSymmetricFlexRiGraph.Cn_symmetries_gens(G,2)
