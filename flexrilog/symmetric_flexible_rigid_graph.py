@@ -208,6 +208,49 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     def edge_orbits(self):
         r"""
         Return the orbits of edges.
+        
+        EXAMPLES::
+        
+            sage: from flexrilog import GraphGenerator
+            sage: T = GraphGenerator.CompleteGraphWithTrianglesAround(2,instance_CnSymmetricFlexRiGraph=True); T
+            CnSymmetricFlexRiGraph with the vertices [0, 1, 2, 3, 4, 5] and edges [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4), (4, 5)]
+            with the symmetry Permutation Group with generators [(0,1)(2,4)(3,5)]
+            sage: T.edge_orbits()
+            [[[4, 5], [2, 3]],
+             [[0, 2], [1, 4]],
+             [[3, 4], [2, 5]],
+             [[1, 5], [0, 3]],
+             [[0, 1]]]
+             
+            ::
+            
+            sage: G = GraphGenerator.CompleteGraphWithTrianglesAround(3,instance_CnSymmetricFlexRiGraph=True); G
+            CnSymmetricFlexRiGraph with 9 vertices and 15 edges
+            with the symmetry Permutation Group with generators [(0,1,2)(3,5,7)(4,6,8)]
+            sage: G.edge_orbits()
+            [[[1, 6], [8, 2], [0, 4]],
+             [[8, 3], [6, 7], [4, 5]],
+             [[3, 4], [5, 6], [8, 7]],
+             [[0, 1], [0, 2], [1, 2]],
+             [[2, 7], [1, 5], [0, 3]]]
+             
+            ::
+            
+            sage: from flexrilog import CnSymmetricFlexRiGraph
+            sage: fold2syms = CnSymmetricFlexRiGraph.Cn_symmetries_gens(G,2)
+            sage: G2 = CnSymmetricFlexRiGraph(G,fold2syms[0]); G2
+            CnSymmetricFlexRiGraph with 9 vertices and 15 edges
+            with the symmetry Permutation Group with generators [(1,2)(3,4)(5,8)(6,7)]
+            sage: G2.edge_orbits()
+            [[[3, 4]],
+             [[1, 2]],
+             [[0, 1], [0, 2]],
+             [[1, 6], [2, 7]],
+             [[0, 4], [0, 3]],
+             [[5, 6], [8, 7]],
+             [[8, 2], [1, 5]],
+             [[8, 3], [4, 5]],
+             [[6, 7]]]
         """
         if self._edge_orbits:
             return self._edge_orbits
@@ -284,14 +327,14 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         
         EXAMPLES::
         
-        sage: from flexrilog import CnSymmetricFlexRiGraph, GraphGenerator
-        sage: T = GraphGenerator.ThreePrismGraph()
-        sage: Cn_symmetries = CnSymmetricFlexRiGraph.Cn_symmetries_gens(T, 2); Cn_symmetries
-        [(0,1)(2,3)(4,5), (0,2)(1,4)(3,5), (0,5)(1,3)(2,4), (0,5)(1,4)(2,3)]
-        sage: T_sym = CnSymmetricFlexRiGraph(T, Cn_symmetries[0])
-        sage: T_sym.NAC_colorings()
-        [Cn-symmetric NAC-coloring with red edges 
-        [[0, 3], [0, 4], [1, 2], [1, 5], [2, 5], [3, 4]] and blue edges [[0, 5], [1, 4], [2, 3]]]
+            sage: from flexrilog import CnSymmetricFlexRiGraph, GraphGenerator
+            sage: T = GraphGenerator.ThreePrismGraph()
+            sage: Cn_symmetries = CnSymmetricFlexRiGraph.Cn_symmetries_gens(T, 2); Cn_symmetries
+            [(0,1)(2,3)(4,5), (0,2)(1,4)(3,5), (0,5)(1,3)(2,4), (0,5)(1,4)(2,3)]
+            sage: T_sym = CnSymmetricFlexRiGraph(T, Cn_symmetries[0])
+            sage: T_sym.Cn_symmetric_NAC_colorings()
+            [Cn-symmetric NAC-coloring with red edges 
+            [[0, 3], [0, 4], [1, 2], [1, 5], [2, 5], [3, 4]] and blue edges [[0, 5], [1, 4], [2, 3]]]
         """
         return self.NAC_colorings()
 
@@ -321,19 +364,22 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         
         EXAMPLES::
         
-        sage: from flexrilog import CnSymmetricFlexRiGraph, GraphGenerator
-        sage: T = GraphGenerator.ThreePrismGraph()
-        sage: Cn_symmetries = CnSymmetricFlexRiGraph.Cn_symmetries_gens(T, 2); Cn_symmetries
-        [(0,1)(2,3)(4,5), (0,2)(1,4)(3,5), (0,5)(1,3)(2,4), (0,5)(1,4)(2,3)]
+            sage: from flexrilog import CnSymmetricFlexRiGraph, GraphGenerator
+            sage: T = GraphGenerator.ThreePrismGraph()
+            sage: Cn_symmetries = CnSymmetricFlexRiGraph.Cn_symmetries_gens(T, 2); Cn_symmetries
+            [(0,1)(2,3)(4,5), (0,2)(1,4)(3,5), (0,5)(1,3)(2,4), (0,5)(1,4)(2,3)]
         """
         
         res = []
-        for sigma in CnSymmetricFlexRiGraph.cyclic_subgroups(graph.automorphism_group(), n):
+        for sigma in CnSymmetricFlexRiGraph._cyclic_subgroups(graph.automorphism_group(), n):
             if CnSymmetricFlexRiGraph.is_Cn_symmetry(graph, sigma, n):
                 res.append(sigma)
         return res
 
     def _edges_with_same_color(self):
+        r"""
+        Return list of lists of edges that are necessarily colored the same in a Cn-symmetric NAC-coloring.
+        """
         V = [tuple(sorted(e)) for e in self.edges(labels=False)]
         E = []
         for tr_comp in self.triangle_connected_components():
@@ -358,7 +404,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         return (False, None, None)
 
     @staticmethod
-    def cyclic_subgroups(group, order):
+    def _cyclic_subgroups(group, order):
         r'''
         Return all cyclic subgroups of ``group`` with given ``order``.
         '''
