@@ -215,17 +215,17 @@ class FlexRiGraph(Graph):
 
     def _report(self, text, verbosity_level=1):
         r"""
-        Print ``text`` depending on current verbosity level.
+        Print current class and ``text`` depending on current verbosity level.
         
         TEST::
         
             sage: from flexrilog import FlexRiGraph
             sage: G = FlexRiGraph([(0,1)], verbosity=1)
             sage: G._report('The graph has {} edge.'.format(len(G.edges())))
-            The graph has 1 edge.
+            FlexRiGraph: The graph has 1 edge.
         """
         if verbosity_level<=self._verbosity:
-            print(text)
+            print(str(self.__class__.__name__) + ': ' + text)
     
     def _set_verbosity(self, verbosity):
         self._verbosity = verbosity
@@ -788,7 +788,7 @@ class FlexRiGraph(Graph):
             (True, NAC-coloring with red edges [[0, 3], [0, 4], [0, 5], [1, 3], [1, 4], [1, 5]] and blue edges [[2, 3], [2, 4], [2, 5]])
         """
         if self._NACs_computed == 'no':
-            self._report('Going to compute one NAC-coloring', 1)
+            self._report('Going to check if there is at least one NAC-coloring', 1)
             self._find_NAC_colorings(onlyOne=True)
             
         if certificate:
