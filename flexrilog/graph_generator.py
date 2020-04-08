@@ -709,6 +709,47 @@ class GraphGenerator():
             return G
         else:
             return FlexRiGraph(G)
+        
+    @staticmethod
+    def CartesianProductOfCompleteGraphs(n,k):
+        r"""
+        Return Cartesian product of $K_n$ and $K_k$.
+        
+        Vertices are labeled from 0 to $nk-1$.
+        
+        EXAMPLE::
+        
+            sage: from flexrilog import GraphGenerator
+            sage: G = GraphGenerator.CartesianProductOfCompleteGraphs(2,3); G
+            K2xK3: FlexRiGraph with the vertices [0, 1, 2, 3, 4, 5] 
+            and edges [(0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]
+            sage: G.is_isomorphic(GraphGenerator.ThreePrismGraph())
+            True
+        """
+        Kn = graphs.CompleteGraph(n)
+        Kk = graphs.CompleteGraph(k)
+        return FlexRiGraph(FlexRiGraph(Kn.cartesian_product(Kk)).graph2int(),
+                           name='K{}xK{}'.format(n,k))
+
+    @staticmethod
+    def C16with4diagonals():
+        r"""
+        Return $C_{16}$ with four diagonals.
+        
+        EXAMPLE::
+        
+            sage: from flexrilog import GraphGenerator
+            sage: G = GraphGenerator.C16with4diagonals(); G
+            FlexRiGraph with 16 vertices and 20 edges
+        """ 
+        return FlexRiGraph([(0, 1), (0, 15), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7),
+                            (7, 8), (8, 9), (9, 10), (10, 11), (11, 12), (12, 13), (13, 14),
+                            (14, 15), (2,10), (6,14), (0,8), (4,12)],
+                            pos={0: (-2, -2), 1: (-1, -2), 2: (0, -2), 3: (1, -2),
+                             4: (2, -2), 5: (2, -1), 6: (2, 0), 7: (2, 1),
+                             8: (2, 2), 9: (1, 2), 10: (0, 2), 11: (-1, 2),
+                             12: (-2, 2), 13: (-2, 1), 14: (-2, 0), 15: (-2, -1)}
+                            )
 
     @staticmethod
     def LamanGraphs(n):
