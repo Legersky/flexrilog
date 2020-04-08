@@ -375,6 +375,53 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
             if CnSymmetricFlexRiGraph.is_Cn_symmetry(graph, sigma, n):
                 res.append(sigma)
         return res
+    
+    @staticmethod    
+    def Cn_symmetries_gens_according_isomorphic_orbits(G, n):
+        r"""
+        Return the generators of Cn-symmetries divided according to isomorphic orbits.
+        
+        An element $\\omega$ of order `n` of the automorphism group of the graph
+        generates a $\\mathcal{C}_n$-symmetry of the graph if
+        
+        - each partially invariant is invariant
+        - the set of invariant vertices is independent.
+        
+        OUTPUT:
+        
+        The output is the list of lists of generators - two generators are in the same
+        list if there is a graph isomorphism mapping orbits of one generator to orbits of the other.
+        
+        EXAMPLES::
+        
+            sage: from flexrilog import CnSymmetricFlexRiGraph, GraphGenerator
+            sage: T = GraphGenerator.ThreePrismGraph()
+            sage: CnSymmetricFlexRiGraph.Cn_symmetries_gens_according_isomorphic_orbits(T, 2)
+            [[(0,1)(2,3)(4,5), (0,2)(1,4)(3,5), (0,5)(1,3)(2,4)],
+             [(0,5)(1,4)(2,3)]]
+        """
+        def gen2orbit_sets(gamma):
+            Gsym = CnSymmetricFlexRiGraph(G, gamma)
+            return Set([Set(orbit) for orbit in Gsym.vertex_orbits()])
+        
+        def orbits_image(tau, orbits):
+            return Set([Set([tau(v) for v in orbit]) for orbit in orbits])
+        
+        autG = G.automorphism_group()
+        symmetries = CnSymmetricFlexRiGraph.Cn_symmetries_gens(G, n)
+        if symmetries==[]:
+            return []
+        res = {}
+        for omega in symmetries:
+            orbits = gen2orbit_sets(omega)
+            for tau in autG:
+                tau_orbits = orbits_image(tau, orbits)
+                if tau_orbits in res:
+                    res[tau_orbits].append(omega)
+                    break
+            else:
+                res[tau_orbits] = [omega]
+        return list(res.values())
 
     def _edges_with_same_color(self):
         r"""
