@@ -67,7 +67,7 @@ FlexRiGraph
 
 #from sage.all_cmdline import *   # import sage library
 from sage.all import Graph, Set, ceil, sqrt, matrix, deepcopy, copy
-from sage.all import Subsets, rainbow, show, binomial, RealField
+from sage.all import Subsets, rainbow, show, binomial, RealField, flatten
 from sage.all import var, solve, RR, vector, norm, CC
 from sage.all import PermutationGroup, PermutationGroup_generic
 from sage.all import pi, cos, sin
@@ -573,6 +573,36 @@ class FlexRiGraph(Graph):
         """
         return self.num_edges() == binomial(self.num_verts(),2)
 
+    
+
+    @doc_index("Graph properties")
+    def quotient_graph(self, blocks):
+        r"""
+        Return the quotient graph w.r.t. ``blocks``.
+        
+        INPUT:
+        
+        ``blocks`` is the list of lists of vertices of ``self``
+        forming the vertex set of the quotient.
+        The vertices of self which are not listed are automatically added as singletons.
+        
+        EXAMPLE::
+        
+            sage: from flexrilog import GraphGenerator
+            sage: T = GraphGenerator.ThreePrismGraph()
+            sage: quot = T.quotient_graph([[0,3,4]])
+            sage: quot.remove_loops()
+            sage: quot.is_isomorphic(graphs.CompleteGraph(4))
+            True
+        """
+        quotient_vertices_dict = {}
+        vertices = [Set(block) for block in blocks] + [Set([v]) for v in self.vertices() if v not in flatten(blocks)]
+        for i, block in enumerate(vertices):
+            for v in block:
+                quotient_vertices_dict[v] = i
+        edges = [[vertices[quotient_vertices_dict[u]], vertices[quotient_vertices_dict[v]]]
+                 for u,v in self.edges(labels=False)]
+        return Graph([vertices, edges], format='vertices_and_edges', loops=True)
 
     @doc_index("Graph properties")
     def triangle_connected_components(self):
