@@ -35,8 +35,10 @@ from sage.rings.integer import Integer
 _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(1);
 _sage_const_0 = Integer(0); _sage_const_6 = Integer(6); _sage_const_5 = Integer(5);
 _sage_const_4 = Integer(4); _sage_const_13 = Integer(13); _sage_const_12 = Integer(12)
+from IPython.display import display 
 #from sage.rings.rational import Rational
 from .flexible_rigid_graph import FlexRiGraph, NACcoloring
+from .symmetric_flexible_rigid_graph import CnSymmetricFlexRiGraph
 
 class GraphMotion(SageObject):
     def __init__(self, graph):
@@ -105,6 +107,54 @@ class GraphMotion(SageObject):
                 M.fix_edge(Graph(G).subgraph(comp).edges(labels=False)[Integer(0) ])
                 break
         return M
+
+    @staticmethod
+    def all_Cn_symmetric_grid_motions(G, n, show_animation=True, only_one_per_isomorphic_NAC=True,
+                                 only_one_per_isomorphic_orbits=True, only_injective=False):
+        r"""
+        Return Cn-symmetric motions obtained by grid construction for all Cn-symmetric NAC-colorings.
+        
+        INPUT::
+            
+            - ``show_animation`` determines whether the animations are displayed during the computation
+            - ``only_one_per_isomorphic_NAC`` - if ``True`` (default), then only one NAC-coloring
+              from each class of isomorphic NAC-colorings is used
+            - ``only_one_per_isomorphic_orbits`` - if ``True`` (default), then
+              only Cn-symmetries having orbits that cannot be mapped to each other by an automorphism of ``G`` are used
+            - ``only_injective`` - if ``True`` (default is ``False), then only NAC-colorings yielding
+              a motion with injective placements are used 
+        
+        EXAMPLES::
+        
+            sage: from flexrilog import GraphGenerator, GraphMotion
+            sage: G = GraphGenerator.C16with4diagonals()
+            sage: len(GraphMotion.all_Cn_symmetric_grid_motions(G,4,show_animation=False))
+            4
+            sage: len(GraphMotion.all_Cn_symmetric_grid_motions(G,4,show_animation=False, only_injective=True))
+            2
+            sage: len(GraphMotion.all_Cn_symmetric_grid_motions(G,4,show_animation=False, only_injective=False, only_one_per_isomorphic_NAC=False))
+            6
+        """
+        res = []
+        if only_one_per_isomorphic_orbits:
+            gens = [cls[0] for cls in CnSymmetricFlexRiGraph.Cn_symmetries_gens_according_isomorphic_orbits(G, n)]
+        else:
+            gens = CnSymmetricFlexRiGraph.Cn_symmetries_gens(G, n)
+        for sigma in gens:
+            Gsym = CnSymmetricFlexRiGraph(G, [sigma])
+            if only_one_per_isomorphic_NAC:
+                NACs = [cls[0] for cls in Gsym.NAC_colorings_isomorphism_classes()]
+            else:
+                NACs = Gsym.NAC_colorings()
+            for delta in NACs:
+                if only_injective and not delta.grid_coordinates_are_injective():
+                    continue
+                M = GraphMotion.CnSymmetricGridConstruction(Gsym, delta)
+                if M:
+                    if show_animation:
+                        display(M.animation_SVG(edge_partition='NAC'))
+                    res.append(M)
+        return res
 
     @classmethod
     def ParametricMotion(cls, graph, parametrization, par_type, active_NACs=None, sampling_type=None, interval=None, check=True):
