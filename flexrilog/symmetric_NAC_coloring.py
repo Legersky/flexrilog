@@ -31,7 +31,7 @@ CnSymmetricNACcoloring
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from sage.all import Graph, Set#, show
+from sage.all import Graph, Set, Subsets#, show
 from sage.all import SageObject, latex, flatten
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.misc.latex import latex_variable_name
@@ -39,6 +39,7 @@ from sage.all import PermutationGroup
 from sage.all import copy
 
 from .NAC_coloring import NACcoloring
+from .flexible_rigid_graph import FlexRiGraph
 
 
 class CnSymmetricNACcoloring(NACcoloring):
@@ -104,6 +105,36 @@ class CnSymmetricNACcoloring(NACcoloring):
         """
         return NACcoloring._repr_(self).replace('NAC', 'Cn-symmetric NAC')
 
+    def partially_inv_components_connected(self):
+        r"""
+        Return whether some partially invariant components of the same color are connected by a path.
+        
+        EXAMPLE::
+        
+            sage: from flexrilog import FlexRiGraph, CnSymmetricFlexRiGraph
+            sage: G = FlexRiGraph([(0,1), (0,2), (0,3), (1,2), (1,3), (2,3),
+            ....:                      (4,5), (4,6), (4,7), (5,6), (5,7), (6,7),
+            ....:                      (0,8), (1,9), (2,10),
+            ....:                      (4,8), (5,9), (6,10), 
+            ....:                     ])
+            sage: Gsym = CnSymmetricFlexRiGraph(G, CnSymmetricFlexRiGraph.Cn_symmetries_gens(G, 3)[0])
+            sage: [[cls[0], cls[0].partially_inv_components_connected()]
+            ....:         for cls in Gsym.NAC_colorings_isomorphism_classes()]
+            [[Cn-symmetric NAC-coloring with 12 red edges and 6 blue edges , True],
+             [Cn-symmetric NAC-coloring with 9 red edges and 9 blue edges , True],
+             [Cn-symmetric NAC-coloring with 9 red edges and 9 blue edges , False]]
+        """
+        quotient_by_blue = FlexRiGraph(self.red_subgraph(), check=False
+                                      ).quotient_graph(self._partially_invariant_components['blue'])
+        quotient_by_red = FlexRiGraph(self.blue_subgraph(), check=False
+                                     ).quotient_graph(self._partially_invariant_components['red'])
+        for u,v in Subsets([Set(comp) for comp in self._partially_invariant_components['blue']], 2):
+            if quotient_by_blue.shortest_path(u, v):
+                return True
+        for u,v in Subsets([Set(comp) for comp in self._partially_invariant_components['red']], 2):
+            if quotient_by_red.shortest_path(u, v):
+                return True
+        return False
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", (gen_rest_table_index(CnSymmetricNACcoloring)))
