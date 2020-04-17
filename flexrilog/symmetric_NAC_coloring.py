@@ -48,7 +48,7 @@ class CnSymmetricNACcoloring(NACcoloring):
 
     We define a NAC-coloring $\\delta$ to be a $\\mathcal{C}_n$-symmetric if
     
-    - $\\delta(\\omega e)$ = $\\delta(e)$ for all $e \in E_G$, where $\\omega$ generates $\\mathcal{C}_n$, and 
+    - $\\delta(\\omega e)$ = $\\delta(e)$ for all $e \\in E_G$, where $\\omega$ generates $\\mathcal{C}_n$, and 
     - no two distinct blue, resp. red, partially invariant components are connected by an edge.
     """
     def __init__(self, G, coloring, name=None, check=True):
@@ -123,6 +123,19 @@ class CnSymmetricNACcoloring(NACcoloring):
             [[Cn-symmetric NAC-coloring with 12 red edges and 6 blue edges , True],
              [Cn-symmetric NAC-coloring with 9 red edges and 9 blue edges , True],
              [Cn-symmetric NAC-coloring with 9 red edges and 9 blue edges , False]]
+             
+        The $\\mathcal{C}_3$-symetric NAC-colorings in the example above are the following:
+        
+        .. PLOT::
+        
+            from flexrilog import FlexRiGraph, CnSymmetricFlexRiGraph
+            G = FlexRiGraph([(0,1), (0,2), (0,3), (1,2), (1,3), (2,3),
+                    (4,5), (4,6), (4,7), (5,6), (5,7), (6,7),
+                    (0,8), (1,9), (2,10),
+                    (4,8), (5,9), (6,10), ])
+            Gsym = CnSymmetricFlexRiGraph(G, CnSymmetricFlexRiGraph.Cn_symmetries_gens(G, 3)[0],
+                    pos={0: (1.324, 0.579), 4: (1.322, -0.640), 8: (1.645, -0.039), 3: (0, -0.1), 7: (0, 0.1)})
+            sphinx_plot(graphics_array([cls[0].plot() for cls in Gsym.NAC_colorings_isomorphism_classes()]))
         """
         quotient_by_blue = FlexRiGraph(self.red_subgraph(), check=False
                                       ).quotient_graph(self._partially_invariant_components['blue'])
@@ -135,6 +148,43 @@ class CnSymmetricNACcoloring(NACcoloring):
             if quotient_by_red.shortest_path(u, v):
                 return True
         return False
+    
+    def vertices_in_blue_and_red_partially_inv_components(self):
+        r"""
+        Return the vertices that are simultaneously in a red and blue partially invariant component.
+                
+        EXAMPLE::
+                
+            sage: from flexrilog import FlexRiGraph, CnSymmetricFlexRiGraph
+            sage: G = FlexRiGraph([(0,1), (0,2), (0,3), (1,2), (1,3), (2,3),
+            ....:                      (4,5), (4,6), (4,7), (5,6), (5,7), (6,7),
+            ....:                      (0,8), (1,9), (2,10),
+            ....:                      (4,8), (5,9), (6,10), 
+            ....:                     ])
+            sage: Gsym = CnSymmetricFlexRiGraph(G, CnSymmetricFlexRiGraph.Cn_symmetries_gens(G, 3)[0])
+            sage: [[cls[0], cls[0].vertices_in_blue_and_red_partially_inv_components()]
+            ....:         for cls in Gsym.NAC_colorings_isomorphism_classes()]
+                [[Cn-symmetric NAC-coloring with 12 red edges and 6 blue edges , [3, 7]],
+                 [Cn-symmetric NAC-coloring with 9 red edges and 9 blue edges ,
+                  [3, 8, 9, 10, 7]],
+                 [Cn-symmetric NAC-coloring with 9 red edges and 9 blue edges , [3, 7]]]
+        
+        The $\\mathcal{C}_3$-symetric NAC-colorings in the example above are the following:
+        
+        .. PLOT::
+        
+            from flexrilog import FlexRiGraph, CnSymmetricFlexRiGraph
+            G = FlexRiGraph([(0,1), (0,2), (0,3), (1,2), (1,3), (2,3),
+                    (4,5), (4,6), (4,7), (5,6), (5,7), (6,7),
+                    (0,8), (1,9), (2,10),
+                    (4,8), (5,9), (6,10), ])
+            Gsym = CnSymmetricFlexRiGraph(G, CnSymmetricFlexRiGraph.Cn_symmetries_gens(G, 3)[0],
+                    pos={0: (1.324, 0.579), 4: (1.322, -0.640), 8: (1.645, -0.039), 3: (0, -0.1), 7: (0, 0.1)})
+            sphinx_plot(graphics_array([cls[0].plot() for cls in Gsym.NAC_colorings_isomorphism_classes()]))
+        """
+        blue = flatten(self._partially_invariant_components['blue'])
+        return [v for v in flatten(self._partially_invariant_components['red'])
+                if v in blue]
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", (gen_rest_table_index(CnSymmetricNACcoloring)))
