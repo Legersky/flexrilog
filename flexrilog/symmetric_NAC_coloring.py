@@ -185,6 +185,27 @@ class CnSymmetricNACcoloring(NACcoloring):
         blue = flatten(self._partially_invariant_components['blue'])
         return [v for v in flatten(self._partially_invariant_components['red'])
                 if v in blue]
+        
+    def grid_construction_is_injective(self):
+        r"""
+        Return if the Cn-symmetric grid construction has injective placements.
+        
+        This is the case if:
+        
+         - each red component intersects with each blue component in at most one vertex 
+           (:meth:`flexrilog.NAC_coloring.NACcoloring.grid_coordinates_are_injective`),
+         - no two blue, resp. red, partially invariant components are connected 
+           by a red, resp. blue, path (:meth:`partially_inv_components_connected`), and 
+         - at most one vertex is in a blue and red partially invariant component simultaneously
+           (:meth:`vertices_in_blue_and_red_partially_inv_components`). 
+          
+        """
+        if (self.grid_coordinates_are_injective()
+            and not self.partially_inv_components_connected()
+            and len(self.vertices_in_blue_and_red_partially_inv_components())<=1):
+            return True
+        else:
+            return False
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", (gen_rest_table_index(CnSymmetricNACcoloring)))
