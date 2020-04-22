@@ -672,6 +672,113 @@ class FlexRiGraph(Graph):
                 triangleComponents[l].append([u,v])
         return triangleComponents
     
+    @doc_index("Graph properties")
+    def theta(self):
+        r"""
+        Return edges in the relation $\\theta$.
+        
+        Two edges $xy$ and $uv$ are in  $\\theta$ relation if and only if
+        $$
+            d(u,x) + d(v, y) \\neq d(v,x) + d(u, y)\,, 
+        $$
+        where $d(a, b) is the length of the shortest path from $a$ to $b$.
+        See [HIK2011].
+        
+        OUTPUT:
+        
+        The output is a list of pairs of distinct edges which are in $\\theta$ relation.
+        Notice that the relation is reflexive but the diagonal is not included in the output.
+        
+        EXAMPLES::
+        
+            sage: from flexrilog import FlexRiGraph, GraphGenerator
+            sage: T = FlexRiGraph([(0, 3), (0, 4), (0, 5), (1, 2), (1, 5), (2, 3), (2, 5), (3, 4)])
+            sage: T.theta()
+            [[(0, 3), (0, 4)],
+             [(1, 2), (0, 3)],
+             [(1, 5), (0, 3)],
+             [(0, 3), (2, 5)],
+             [(0, 3), (3, 4)],
+             [(1, 2), (0, 4)],
+             [(2, 5), (0, 4)],
+             [(3, 4), (0, 4)],
+             [(0, 5), (2, 3)],
+             [(1, 2), (1, 5)],
+             [(1, 2), (2, 5)],
+             [(1, 5), (2, 5)],
+             [(1, 5), (3, 4)],
+             [(2, 5), (3, 4)]]                
+
+        ::
+        
+            sage: T = GraphGenerator.ThreePrismGraph()
+            sage: T.theta()
+            [[(0, 3), (0, 4)],
+             [(1, 2), (0, 3)],
+             [(1, 5), (0, 3)],
+             [(0, 3), (2, 5)],
+             [(0, 3), (3, 4)],
+             [(1, 2), (0, 4)],
+             [(1, 5), (0, 4)],
+             [(2, 5), (0, 4)],
+             [(3, 4), (0, 4)],
+             [(0, 5), (1, 4)],
+             [(0, 5), (2, 3)],
+             [(1, 2), (1, 5)],
+             [(1, 2), (2, 5)],
+             [(1, 2), (3, 4)],
+             [(2, 3), (1, 4)],
+             [(1, 5), (2, 5)],
+             [(1, 5), (3, 4)],
+             [(2, 5), (3, 4)]]
+
+        ::
+
+            sage: FlexRiGraph(graphs.CycleGraph(4)).theta()
+            [[(0, 1), (2, 3)], [(1, 2), (0, 3)]]
+            sage: FlexRiGraph(graphs.CycleGraph(5)).theta()
+            [[(0, 1), (2, 3)],
+             [(0, 1), (3, 4)],
+             [(1, 2), (0, 4)],
+             [(2, 3), (0, 4)],
+             [(1, 2), (3, 4)]]
+            sage: FlexRiGraph(graphs.CycleGraph(6)).theta()
+            [[(0, 1), (3, 4)], [(0, 5), (2, 3)], [(1, 2), (4, 5)]]
+        """
+        res = []
+        distance = self.shortest_path_all_pairs()[0]
+        for e,f in Subsets(self.edges(labels=False),2):
+            u,v = e
+            x,y = f
+            if distance[x][u] + distance[y][v] != distance[x][v] + distance[y][u]:
+                res.append([e, f])
+        return res
+
+    @doc_index("Graph properties")
+    def Djokovic_Winkler_equiv_classes(self):
+        r"""
+        Return equivalence classes of the Djokovic-Winkler relation.
+        
+        Djokovic-Winkler relation is the transitive closure of $\\theta$ relation,
+        see [HIK2011].
+        
+        EXAMPLES::
+        
+            sage: from flexrilog import FlexRiGraph, GraphGenerator
+            sage: T = GraphGenerator.ThreePrismGraph()
+            sage: T.Djokovic_Winkler_equiv_classes()
+            [[(0, 3), (0, 4), (1, 2), (1, 5), (2, 5), (3, 4)], [(0, 5), (1, 4), (2, 3)]]
+            sage: FlexRiGraph(graphs.CycleGraph(4)).Djokovic_Winkler_equiv_classes()
+            [[(0, 1), (2, 3)], [(0, 3), (1, 2)]]
+            sage: FlexRiGraph(graphs.CycleGraph(5)).Djokovic_Winkler_equiv_classes()
+            [[(0, 1), (0, 4), (1, 2), (2, 3), (3, 4)]]
+            sage: FlexRiGraph(graphs.CycleGraph(6)).Djokovic_Winkler_equiv_classes()
+            [[(0, 1), (3, 4)], [(0, 5), (2, 3)], [(1, 2), (4, 5)]]        
+        """
+        H = Graph(self.theta(), format='list_of_edges')
+        return H.connected_components()
+
+
     @doc_index("NAC-colorings")
     def _edges_with_same_color(self):
         return self.triangle_connected_components()

@@ -30,6 +30,11 @@ References
               arXiv (2018).
               :doi:`10.1016/j.disc.2019.111713`.
               
+.. [HIK2011] \R. Hammack, W. Imrich, S. Klavžar
+			 "Handbook of Product Graphs".
+			 Boca Raton: CRC Press (2011),
+			 :doi:`10.1201/b10959`.
+              
 .. [Leg2019] \J. Legerský,
               "Flexible and Rigid Labelings of Graphs".
               Doctoral thesis.
