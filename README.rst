@@ -25,7 +25,7 @@ It includes the definitions of a flexible and rigid labeling and other implement
 You can try it out online without installation:
 
 .. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/Legersky/flexrilog/22718ae09591ef78c6a3bd3be8c5edc09e8f918d?filepath=examples%2Fflexrilog_Motions_of_Graphs.ipynb
+ :target: https://jan.legersky.cz/flexrilogICMS2020
  
 See also `demos <#demos>`_ and the `webpage about movable graphs <https://jan.legersky.cz/project/movablegraphs/>`_.
 
@@ -101,7 +101,7 @@ The file `examples/flexrilog_Motions_of_Graphs.ipynb <examples/flexrilog_Motions
 (arXiv:`2003.12029 <https://arxiv.org/abs/2003.12029>`_) by Georg Grasegger and Jan Legerský:
 
 .. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/Legersky/flexrilog/22718ae09591ef78c6a3bd3be8c5edc09e8f918d?filepath=examples%2Fflexrilog_Motions_of_Graphs.ipynb
+ :target: https://jan.legersky.cz/flexrilogICMS2020
 
 Rotationally symmetric motions of frameworks
 --------------------------------------------
