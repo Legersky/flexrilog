@@ -806,8 +806,8 @@ class FlexRiGraph(Graph):
             str_col = '0' + format(i,form_len)
             red = []
             blue = []
-            for i, comp in enumerate(triangle_comps):
-                if str_col[i] == '0':
+            for j, comp in enumerate(triangle_comps):
+                if str_col[j] == '0':
                     red += comp
                 else:
                     blue += comp
