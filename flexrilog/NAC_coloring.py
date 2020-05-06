@@ -604,11 +604,15 @@ class NACcoloring(SageObject):
         red_comps = self.red_components()
         blue_comps = self.blue_components()
         if ordered_red:
-            if type(ordered_red)!=list or len(ordered_red)!=len(red_comps) or Set(flatten(ordered_red))!=Set(self._graph.vertices()):
+            if (type(ordered_red)!=list 
+                or len(ordered_red)!=len(red_comps) 
+                or Set(flatten(ordered_red, max_level=1))!=Set(self._graph.vertices())):
                 raise ValueError('`ordered_red` must be a list of all red components, not ' + str(ordered_red))
             red_comps = ordered_red
         if ordered_blue:
-            if type(ordered_blue)!=list or len(ordered_blue)!=len(blue_comps) or Set(flatten(ordered_blue))!=Set(self._graph.vertices()):
+            if (type(ordered_blue)!=list 
+                or len(ordered_blue)!=len(blue_comps) 
+                or Set(flatten(ordered_blue, max_level=1))!=Set(self._graph.vertices())):
                 raise ValueError('`ordered_blue` must be a list of all blue components, not ' + str(ordered_blue))
             blue_comps = ordered_blue
         for (i,red) in enumerate(red_comps):

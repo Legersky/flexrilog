@@ -91,9 +91,11 @@ class CnSymmetricNACcoloring(NACcoloring):
     def is_Cn_symmetric(self):
         if not self.is_equal(self.isomorphic_NAC_coloring(self.omega), moduloConjugation=False):
             return False
-        if len(self.blue_subgraph().subgraph(flatten(self._partially_invariant_components['red'])).edges())>0:
+        if len(self.blue_subgraph(
+            ).subgraph(flatten(self._partially_invariant_components['red'], max_level=1)).edges())>0:
             return False
-        if len(self.red_subgraph().subgraph(flatten(self._partially_invariant_components['blue'])).edges())>0:
+        if len(self.red_subgraph(
+            ).subgraph(flatten(self._partially_invariant_components['blue'], max_level=1)).edges())>0:
             return False
         return True
 
@@ -182,8 +184,8 @@ class CnSymmetricNACcoloring(NACcoloring):
                     pos={0: (1.324, 0.579), 4: (1.322, -0.640), 8: (1.645, -0.039), 3: (0, -0.1), 7: (0, 0.1)})
             sphinx_plot(graphics_array([cls[0].plot() for cls in Gsym.NAC_colorings_isomorphism_classes()]))
         """
-        blue = flatten(self._partially_invariant_components['blue'])
-        return [v for v in flatten(self._partially_invariant_components['red'])
+        blue = flatten(self._partially_invariant_components['blue'], max_level=1)
+        return [v for v in flatten(self._partially_invariant_components['red'], max_level=1)
                 if v in blue]
         
     def grid_construction_is_injective(self):

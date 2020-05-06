@@ -596,7 +596,9 @@ class FlexRiGraph(Graph):
             True
         """
         quotient_vertices_dict = {}
-        vertices = [Set(block) for block in blocks] + [Set([v]) for v in self.vertices() if v not in flatten(blocks)]
+        vertices = [Set(block) for block in blocks
+                    ] + [Set([v]) for v in self.vertices() 
+                         if v not in flatten(blocks, max_level=1)]
         for i, block in enumerate(vertices):
             for v in block:
                 quotient_vertices_dict[v] = i
