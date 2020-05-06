@@ -341,7 +341,8 @@ class GraphMotion(SageObject):
         lines.append('xmlns:xlink="http://www.w3.org/1999/xlink">\n')
         for v in self._graph.vertices():
             lines.append('  <defs>\n')
-            lines.append('<marker id="vertex'+rnd_str+str(v)+'" viewBox="0 0 {1} {1}" refX="{0}" refY="{0}"\n'.format(radius, 2*radius))
+            lines.append('<marker id="vertex'+rnd_str+str(v).replace(' ', '').replace(')', 'Y').replace('(', 'X')
+                         +'" viewBox="0 0 {1} {1}" refX="{0}" refY="{0}"\n'.format(radius, 2*radius))
             lines.append(' markerWidth="{0}" markerHeight="{0}">\n'.format(floor(radius/3)))
             lines.append('  <circle cx="{0}" cy="{0}" r="{1}" fill="white" stroke="black" stroke-width="2"/>\n'.format(radius, radius-2))
             if vertex_labels:
@@ -362,7 +363,9 @@ class GraphMotion(SageObject):
                         +str(u)+'-'+str(v)+'"'+
                     ' d="M {:0.0f} {:0.0f} L {:0.0f} {:0.0f}" '.format(*(shift_scale(embd[u]) +
                                                             shift_scale(embd[v])))
-                    +'marker-start="url(#vertex'+rnd_str+str(u)+')"   marker-end="url(#vertex'+rnd_str+str(v)+')" />\n')
+                    +'marker-start="url(#vertex'+rnd_str+str(u).replace(' ', '').replace(')', 'Y').replace('(', 'X')
+                    +')"   marker-end="url(#vertex'+rnd_str+str(v).replace(' ', '').replace(')', 'Y').replace('(', 'X')
+                    +')" />\n')
             i += 1
 
         for edges_part in edge_partition:
