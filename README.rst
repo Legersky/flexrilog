@@ -19,7 +19,7 @@ by Sean Dewar, Georg Grasegger and Jan Legerský is under development.
 .. start-include
 
 The package is described in *FlexRiLoG – A SageMath Package for Motions of Graphs*
-(arXiv:`2003.12029 <https://arxiv.org/abs/2003.12029>`_) by Georg Grasegger and Jan Legerský. 
+(doi:`10.1007/978-3-030-52200-1_44 <https://doi.org/10.1007/978-3-030-52200-1_44>`_) by Georg Grasegger and Jan Legerský. 
 This `Jupyter notebook <examples/flexrilog_Motions_of_Graphs.ipynb>`_ provides an interactive version of the paper.
 It includes the definitions of a flexible and rigid labeling and other implemented concepts.
 You can try it out online without installation:
@@ -98,7 +98,7 @@ FlexRiLoG - A SageMath Package for Motions of Graphs
 ------------------------------------------------------
 
 The file `examples/flexrilog_Motions_of_Graphs.ipynb <examples/flexrilog_Motions_of_Graphs.ipynb>`_ is a Jupyter notebook version of the paper *FlexRiLoG – A SageMath Package for Motions of Graphs*
-(arXiv:`2003.12029 <https://arxiv.org/abs/2003.12029>`_) by Georg Grasegger and Jan Legerský:
+(doi:`10.1007/978-3-030-52200-1_44 <https://doi.org/10.1007/978-3-030-52200-1_44>`_) by Georg Grasegger and Jan Legerský:
 
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://jan.legersky.cz/flexrilogICMS2020
