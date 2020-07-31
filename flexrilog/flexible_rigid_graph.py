@@ -99,7 +99,7 @@ class FlexRiGraph(Graph):
       * ``FlexRiGraph(graph)`` -- return the graph with the same edges, positions and name as ``graph``.
 
     - ``name`` --  gives the graph a name
-    - ``pos`` -- a positioning dictionary. For example, to
+    - ``pos`` -- a positioning dictionary for plotting. For example, to
       draw 4 vertices on a square ``pos={0: [-1,-1], 1: [ 1,-1], 2: [ 1, 1], 3: [-1, 1]}``.
     - ``check`` (boolean) -- If ``True`` (default), then it is checked whether the graph connected and has at least one edge.
 
@@ -576,7 +576,7 @@ class FlexRiGraph(Graph):
     
 
     @doc_index("Graph properties")
-    def quotient_graph(self, blocks):
+    def quotient_graph(self, blocks, labeled=False):
         r"""
         Return the quotient graph w.r.t. ``blocks``.
         
@@ -585,6 +585,7 @@ class FlexRiGraph(Graph):
         ``blocks`` is the list of lists of vertices of ``self``
         forming the vertex set of the quotient.
         The vertices of self which are not listed are automatically added as singletons.
+        If `labeled` is `True`, then the edges of the quotient graph are labeled by the edges inducing them. 
         
         EXAMPLE::
         
@@ -602,8 +603,13 @@ class FlexRiGraph(Graph):
         for i, block in enumerate(vertices):
             for v in block:
                 quotient_vertices_dict[v] = i
-        edges = [[vertices[quotient_vertices_dict[u]], vertices[quotient_vertices_dict[v]]]
-                 for u,v in self.edges(labels=False)]
+        if labeled:
+            edges = [[vertices[quotient_vertices_dict[u]], vertices[quotient_vertices_dict[v]], [u,v]]
+                     for u,v in self.edges(labels=False)]
+        else:
+            edges = [[vertices[quotient_vertices_dict[u]], vertices[quotient_vertices_dict[v]]]
+                     for u,v in self.edges(labels=False)]
+            
         return Graph([vertices, edges], format='vertices_and_edges', loops=True)
 
     @doc_index("Graph properties")
