@@ -622,16 +622,19 @@ class NACcoloring(SageObject):
                         pos[v] = (i,j)
         return pos
 
-    def grid_coordinates_are_injective(self):
+    def is_cartesian(self):
         r"""
-        Return if the grid coordinates are injective.
-
+        Return if the NAC-coloring is cartesian.
+        
+        A NAC-coloring is called cartesian if no two distinct vertices are
+        connected by a red and blue path.
+        
         EXAMPLES::
 
             sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.ThreePrismGraph()
             sage: delta = G.NAC_colorings()[0]
-            sage: delta.grid_coordinates_are_injective()
+            sage: delta.is_cartesian()
             True
 
         ::
@@ -639,10 +642,16 @@ class NACcoloring(SageObject):
             sage: from flexrilog import GraphGenerator
             sage: G = GraphGenerator.SmallestFlexibleLamanGraph()
             sage: delta = G.NAC_colorings()[0]
-            sage: delta.grid_coordinates_are_injective()
+            sage: delta.is_cartesian()
             False
-            """
+        """
         return len(Set(self.grid_coordinates().values())) == self._graph.num_verts()
+    
+    def grid_coordinates_are_injective(self):
+        r"""
+        Alias for `:meth:is_cartesian`.
+        """
+        return self.is_cartesian()
 
     def conjugated(self):
         r"""
