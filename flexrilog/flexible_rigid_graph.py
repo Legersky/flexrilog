@@ -1015,6 +1015,8 @@ class FlexRiGraph(Graph):
                 }
         if self.name() and name_in_title:
             kwargs['title'] = self.name()
+        if type(name_in_title)==str:
+            kwargs['title'] = name_in_title
         if not 'vertex_color' in kwargs:
             kwargs['vertex_color'] = colGray
         if not 'edge_thickness' in kwargs: 
