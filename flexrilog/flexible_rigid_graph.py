@@ -33,10 +33,16 @@ Methods
 
 {INDEX_OF_METHODS_FLEXRIGRAPH}
 
+**FlexRiGraphWithCartesianNACs**
+
+{INDEX_OF_METHODS_FLEXRIGRAPHCARTESIAN}
+
+
 AUTHORS:
 
 -  Jan Legerský (2019-01-15): initial version
 -  Jan Legerský (2020-03-12): update to SageMath 9.0
+-  Jan Legerský (2020-08-01): FlexRiGraphWithCartesianNACs added
 
 TODO:
 
@@ -2160,11 +2166,70 @@ class FlexRiGraph(Graph):
         print( '\\end{tikzpicture}')
 
    
+   
+class FlexRiGraphWithCartesianNACs(FlexRiGraph):
+    r"""
+    This class is inherited from :class:`FlexRiGraph`.
+    Only cartesian NAC-colorings are computed.
+    To speed this up comparing to computing all NAC-colorings followed by a check,
+    opposite edges in a 4-cycle are forced to have the same color in NAC-colorings
+    (by overriding :meth:`_edges_with_same_color`).
+    """
+    def _reset(self):
+        super()._reset()
+        self._ribbons = None
+    
+    def ribbons(self):
+        if self._ribbons==None:
+            V = [Set(e) for e in self.edges(labels=False)]
+            E = []
+            for a,b,c,d in self.four_cycles():
+                E += [[Set([a,b]), Set([c,d])], [Set([a,d]), Set([b,c])]]
+            self._ribbons = Graph([V,E], format='vertices_and_edges').connected_components()
+        return self._ribbons
+    
+    def is_ribbon_cutting(self,certificate=False):
+        for ribbon in self.ribbons():
+            G = Graph(self.edges(labels=False))
+            G.delete_edges(ribbon)
+            if G.is_connected():
+                return False if not certificate else (False, ribbon)
+        return True if not certificate else (True, None)
+
+    def _edges_with_same_color(self):
+        V = [Set(v) for v in self.edges(labels=False)]
+        E = []
+        for same in super(FlexRiGraphWithCartesianNACs, self)._edges_with_same_color():
+            E += [[Set(e), Set(f)] for e, f in zip(same, same[1:])]
+
+        for a,b,c,d in self.four_cycles():
+            E += [[Set([a,b]), Set([c,d])], [Set([a,d]), Set([b,c])]]
+
+        sameColorGraph = Graph([V,E], format='vertices_and_edges')
+        return sameColorGraph.connected_components()
+    
+    def NAC_colorings(self):
+        if self._NACs_computed != 'yes-cartesian':
+            self._find_NAC_colorings()
+            self._NAC_colorings = [delta for delta in self._NAC_colorings if delta.is_cartesian()]
+            self._NACs_computed = 'yes-cartesian'
+        return self._NAC_colorings
+    
+    def cartesian_NAC_colorings(self):
+        r"""
+        Alias for :meth:`NAC_colorings`.
+        
+        Return cartesian NAC-colorings of the graph.
+        """
+        return self.NAC_colorings()
+    
 _additional_categories = {
     FlexRiGraph.plot         : "Plotting",
     }
 
 __doc__ = __doc__.replace(
+    "{INDEX_OF_METHODS_FLEXRIGRAPHCARTESIAN}", (gen_thematic_rest_table_index(FlexRiGraphWithCartesianNACs)
+   )).replace(
     "{INDEX_OF_METHODS_FLEXRIGRAPH}", (gen_thematic_rest_table_index(FlexRiGraph, _additional_categories)
    )).replace('**Plotting**', """
 **Plotting**

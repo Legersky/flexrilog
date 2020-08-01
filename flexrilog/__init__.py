@@ -16,7 +16,7 @@
 
 import sage.all
 from .graph_motion import GraphMotion, ParametricGraphMotion
-from .flexible_rigid_graph import FlexRiGraph 
+from .flexible_rigid_graph import FlexRiGraph, FlexRiGraphWithCartesianNACs
 from .symmetric_flexible_rigid_graph import SymmetricFlexRiGraph, CnSymmetricFlexRiGraph
 from .graph_generator import GraphGenerator
 from .NAC_coloring import NACcoloring
