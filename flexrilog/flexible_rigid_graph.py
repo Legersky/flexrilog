@@ -101,7 +101,10 @@ class FlexRiGraph(Graph):
     - ``name`` --  gives the graph a name
     - ``pos`` -- a positioning dictionary for plotting. For example, to
       draw 4 vertices on a square ``pos={0: [-1,-1], 1: [ 1,-1], 2: [ 1, 1], 3: [-1, 1]}``.
-    - ``check`` (boolean) -- If ``True`` (default), then it is checked whether the graph connected and has at least one edge.
+    - ``check`` (boolean) -- If ``True`` (default), then it is checked whether the graph connected and has at least one edge (also when modified).
+    - ``immutable`` -- if ``True`` (default), then the graph is immutable. Otherwise, edges and vertices can be added/removed
+      (:meth:`add_edge`, :meth:`add_edges`, :meth:`delete_edge`, :meth:`delete_vertex`, :meth:`delete_vertices`).
+      In this case, cached values are reseted/recomputed (Be careful with setting this ``True``!). 
 
     EXAMPLES:
 
@@ -150,10 +153,12 @@ class FlexRiGraph(Graph):
 
     TODO:
     
-        Other inputs: adjacency matrix
+        - Other inputs: adjacency matrix
+        - test adding/removing edges
     """
 
-    def __init__(self, data, pos=None, name=None, check=True, verbosity=0):
+    def __init__(self, data, pos=None, name=None, check=True, immutable=True, verbosity=0):
+        self._check = check
         if type(data)==Integer:
             edges = self._int2graph_edges(data)
         elif type(data)==list:
@@ -171,23 +176,22 @@ class FlexRiGraph(Graph):
             tmp_g.graphplot(save_pos=True)
             pos = tmp_g.get_pos()
 
-        super(FlexRiGraph, self).__init__(self,data=[[e[0],e[1]] for e in edges], format='list_of_edges',
-                       name=name, pos=pos, loops=False, multiedges=False, immutable=True)
+        super(FlexRiGraph, self).__init__(data=[[e[0],e[1]] for e in edges], format='list_of_edges',
+                       name=name, pos=pos, loops=False, multiedges=False, immutable=immutable)
 
-        if check:
-            self._basic_check()
-
+        self._basic_check()
         self._reset()
-
         self._verbosity = verbosity
 
     def _basic_check(self):
-        if not self.is_connected():
-            raise ValueError('The graph must be connected.')
-        if len(self.edges())==0:
-            raise ValueError('The graph must have at least one edge.')
+        if self._check:
+            if not self.is_connected():
+                raise ValueError('The graph must be connected.')
+            if len(self.edges())==0:
+                raise ValueError('The graph must have at least one edge.')
 
     def _reset(self):
+        self._Henneberg_sequences = None
         self._triangleComponents = None
         self._NACs_computed = 'no'
         self._NAC_colorings = []
@@ -269,6 +273,41 @@ class FlexRiGraph(Graph):
             adjacencyMatrix[r,c]=L[j]
         return Graph(adjacencyMatrix+adjacencyMatrix.transpose()).edges(labels=False)
 
+    def add_vertex(self, name=None):
+        super(FlexRiGraph, self).add_vertex(name)
+        raise ValueError('FlexRiGraph has to be connected, i.e., no vertex can be added. Use add_edge/s instead.')
+    
+    def add_vertices(self,vertices):
+        super(FlexRiGraph, self).add_vertices(vertices)
+        raise ValueError('FlexRiGraph has to be connected, i.e., no vertices can be added. Use add_edge/s instead.')
+        
+    def add_edge(self,u, v=None, label=None):
+        super(FlexRiGraph, self).add_edge(u, v, label)
+        self._reset()
+        self._basic_check()
+        
+    def add_edges(self,edges, loops=True):
+        """
+        TODO: recompute NAC-colorings from old ones
+        """
+        super(FlexRiGraph, self).add_edges(edges, loops)
+        self._reset()
+        self._basic_check()
+        
+    def delete_edge(self, u, v=None, label=None):
+        super(FlexRiGraph, self).delete_edge(u, v, label)
+        self._reset()
+        self._basic_check()
+        
+    def delete_vertex(self, vertex, in_order=False):
+        super(FlexRiGraph, self).delete_vertex(vertex, in_order)
+        self._reset()
+        self._basic_check()
+        
+    def delete_vertices(self, vertices):
+        super(FlexRiGraph, self).delete_vertices(vertices)
+        self._reset()
+        self._basic_check()
 
     @doc_index("Other")
     def graph2int(self, canonical=True):
@@ -519,13 +558,13 @@ class FlexRiGraph(Graph):
         """
         self._Henneberg_sequences=[]
         if onlyOne:
-            self._inverse_Henneberg_step(self, [], True)
+            self._inverse_Henneberg_step(Graph(self), [], True)
             if self._Henneberg_sequences:
                 return self._Henneberg_sequences[0]
             else:
                 return None
         else:
-            self._inverse_Henneberg_step(self, [], False)
+            self._inverse_Henneberg_step(Graph(self), [], False)
             if self._Henneberg_sequences:
                 res = copy(self._Henneberg_sequences)
                 self._Henneberg_sequences = None
