@@ -179,9 +179,13 @@ class FlexRiGraph(Graph):
         super(FlexRiGraph, self).__init__(data=[[e[0],e[1]] for e in edges], format='list_of_edges',
                        name=name, pos=pos, loops=False, multiedges=False, immutable=immutable)
 
+        from .__init__ import colGray
+        self._vertex_color = colGray
+        
         self._basic_check()
         self._reset()
         self._verbosity = verbosity
+        self._report('The constructor of FlexRiGraph finished')
 
     def _basic_check(self):
         if self._check:
@@ -1071,7 +1075,7 @@ class FlexRiGraph(Graph):
         if type(name_in_title)==str:
             kwargs['title'] = name_in_title
         if not 'vertex_color' in kwargs:
-            kwargs['vertex_color'] = colGray
+            kwargs['vertex_color'] = self._vertex_color
         if not 'edge_thickness' in kwargs: 
             kwargs['edge_thickness'] = 4
         return Graph(self).plot(**kwargs)
