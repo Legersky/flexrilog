@@ -243,6 +243,7 @@ class FlexRiGraph(Graph):
         
             sage: from flexrilog import FlexRiGraph
             sage: G = FlexRiGraph([(0,1)], verbosity=1)
+            FlexRiGraph: The constructor of FlexRiGraph finished
             sage: G._report('The graph has {} edge.'.format(len(G.edges())))
             FlexRiGraph: The graph has 1 edge.
         """
