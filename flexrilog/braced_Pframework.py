@@ -295,6 +295,9 @@ class BracedPframework(Pframework):
         return self.unbraced_framework().ribbon_graph()
     
     def plot(self, **kwargs):
+        """
+        Return the plot of the braced framework.
+        """
         return super().plot(edge_colors={'lightgrey':self._braces}, **kwargs)
     
     def bracing_graph(self):
