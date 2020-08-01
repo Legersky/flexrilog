@@ -31,6 +31,13 @@ Content
    module/symmetric_flexible_rigid_graph
    module/symmetric_NAC_coloring
 
+**Frameworks**
+
+.. toctree::
+   :maxdepth: 1
+   
+   module/framework
+   module/braced_Pframework
 
 General
 ==================
