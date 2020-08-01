@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 r"""
-This module implements functionality for investigating braced P-frameworks.
+This module implements functionality for investigating frameworks.
 
 
 Methods
