@@ -171,19 +171,27 @@ class FlexRiGraph(Graph):
             tmp_g.graphplot(save_pos=True)
             pos = tmp_g.get_pos()
 
-        Graph.__init__(self,data=[[e[0],e[1]] for e in edges], format='list_of_edges',
+        super(FlexRiGraph, self).__init__(self,data=[[e[0],e[1]] for e in edges], format='list_of_edges',
                        name=name, pos=pos, loops=False, multiedges=False, immutable=True)
 
         if check:
-            if not self.is_connected():
-                raise ValueError('The graph must be connected.')
-            if len(self.edges())==0:
-                raise ValueError('The graph must have at least one edge.')
+            self._basic_check()
 
+        self._reset()
+
+        self._verbosity = verbosity
+
+    def _basic_check(self):
+        if not self.is_connected():
+            raise ValueError('The graph must be connected.')
+        if len(self.edges())==0:
+            raise ValueError('The graph must have at least one edge.')
+
+    def _reset(self):
         self._triangleComponents = None
         self._NACs_computed = 'no'
+        self._NAC_colorings = []
         self._NAC_isomorphism_classes = None
-        self._verbosity = verbosity
 
     def _repr_(self):
         if self.name():
