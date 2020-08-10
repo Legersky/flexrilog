@@ -255,8 +255,9 @@ class BracedPframework(Pframework):
             e = Set([u,v])
         if not e in self.unbraced_framework().diagonals():
             raise ValueError('{} must be a diagonal of a parallelogram.'.format(e))
-        self.add_edge(e)
-        self._braces.append(e)
+        if not self.has_edge(e):
+            self.add_edge(e)
+            self._braces.append(e)
     
     def add_braces(self, braces):
         for e in braces:
@@ -282,14 +283,15 @@ class BracedPframework(Pframework):
         print(self._tikz_edges[:-1]+";\n\\end{tikzpicture}")
         
     def ribbons(self):
-        res = []
-        for ribbon in self.unbraced_framework().ribbons():
-            verts = [v for e in ribbon for v in e]
+        braced_par = []
+        for par in self.parallelograms():
             for brace in self._braces:
-                if brace[0] in verts and brace[1] in verts:
-                    ribbon.append(brace)
-            res.append(ribbon)
-        return res
+                if brace[0] in par and brace[1] in par:
+                    braced_par += [[Set([par[0], par[1]]), brace],
+                                  [Set([par[1], par[2]]), brace]]
+        print(braced_par)
+        return [ribbon + [b for e, b  in braced_par if e in ribbon]
+                for ribbon in self.unbraced_framework().ribbons()]
     
     def ribbon_graph(self):
         return self.unbraced_framework().ribbon_graph()
@@ -303,8 +305,8 @@ class BracedPframework(Pframework):
     def bracing_graph(self):
         ribbons = self.ribbons()
         return Graph([[r[0] for r in ribbons],
-                       [[ribbon[0] for ribbon in ribbons if brace in ribbon]
-                       for brace in self._braces]
+                      flatten([Subsets([r[0] for r in ribbons if brace in r], 2).list()
+                               for brace in self._braces], max_level=1)
                       ], format='vertices_and_edges')
 
 
