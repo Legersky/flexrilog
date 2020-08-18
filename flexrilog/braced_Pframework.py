@@ -289,7 +289,6 @@ class BracedPframework(Pframework):
                 if brace[0] in par and brace[1] in par:
                     braced_par += [[Set([par[0], par[1]]), brace],
                                   [Set([par[1], par[2]]), brace]]
-        print(braced_par)
         return [ribbon + [b for e, b  in braced_par if e in ribbon]
                 for ribbon in self.unbraced_framework().ribbons()]
     
