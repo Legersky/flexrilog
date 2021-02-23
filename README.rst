@@ -121,5 +121,5 @@ The file `examples/BracingFrameworks.ipynb <examples/BracingFrameworks.ipynb>`_ 
 It is available on Binder as well:
 
 .. image:: https://mybinder.org/badge_logo.svg
- :target: BracingFrameworks.ipynb
+ :target: https://jan.legersky.cz/bracingFrameworks
  
