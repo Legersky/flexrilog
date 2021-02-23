@@ -152,9 +152,14 @@ class Pframework(FlexRiGraphWithCartesianNACs,Framework):
         pos_w1 = self.placement(u) + shift
         pos_w2 = self.placement(v) + shift
         
+        x1, y1 = RR(pos_w1[0]) , RR(pos_w1[1])
+        x2, y2 = RR(pos_w2[0]) , RR(pos_w2[1])
+        tol_squared = self._tolerance**2
         for i in self.vertices():
-            if (norm(self.placement(i) - pos_w1) < self._tolerance
-                or norm(self.placement(i) - pos_w2) < self._tolerance):
+            a = self._pos[i]
+            ax, ay = RR(a[0]), RR(a[1])
+            if ((ax-x1)**2 + (ay-y1)**2 < tol_squared
+                or (ax-x2)**2 + (ay-y2)**2 < tol_squared):
                 raise ValueError('A new vertex coincides with {}'.format(i))
 
         if type(new_vertices)==list and len(new_vertices)==2:
@@ -183,8 +188,11 @@ class Pframework(FlexRiGraphWithCartesianNACs,Framework):
             w_new = new_vertex
             
         pos_w_new = self.placement(u) + self.placement(w) - self.placement(v)
+        x, y = RR(pos_w_new[0]) , RR(pos_w_new[1])
+        tol_squared = self._tolerance**2
         for i in self.vertices():
-            if norm(self.placement(i) - pos_w_new) < self._tolerance:
+            a = self._pos[i]
+            if (RR(a[0])-x)**2 + (RR(a[1])-y)**2 < tol_squared:
                 raise ValueError('The new vertex coincides with {}'.format(i))
                 
         self.add_edges([[u,w_new], [w,w_new]])
