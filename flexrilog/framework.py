@@ -72,8 +72,9 @@ class Framework(FlexRiGraph):
         self._report('The constructor of Framework finished')
         
     def is_injective(self, certificate=False):
-        for u,v in Subsets(self.vertices(),2):
-            if norm(self.placement(u) - self.placement(v)) < self._tolerance:
+        positions = [self.placementRR(u) for u in self.vertices()]
+        for u,v in Subsets(range(len(positions)),2):
+            if norm(positions[u] - positions[v]) < self._tolerance:
                 return [False, [u,v]] if certificate else False 
         return [True, None] if certificate else True
     
@@ -86,6 +87,12 @@ class Framework(FlexRiGraph):
         else:
             return {v:vector(p) for v,p in self._pos.items()}
     
+    def placementRR(self, v):
+        """
+        Return the position of `v` converted to RealField.
+        """
+        return vector([RR(self._pos[v][0]), RR(self._pos[v][1])])
+        
     def _repr_(self):
         return self.__class__.__name__ + " consisting of " + super(
             )._repr_().replace(self.__class__.__name__,self.__class__.__bases__[0].__name__) + " and its placement"
