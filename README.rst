@@ -117,7 +117,7 @@ It is available on Binder as well:
 Bracing of P-frameworks
 -----------------------
 
-The file `examples/BracingFrameworks.ipynb <examples/BracingFrameworks.ipynb>`_ illustrates bracing of frameworks consisteing of parallelograms.
+The file `examples/BracingFrameworks.ipynb <examples/BracingFrameworks.ipynb>`_ illustrates bracing of frameworks consisting of parallelograms.
 It is available on Binder as well:
 
 .. image:: https://mybinder.org/badge_logo.svg
