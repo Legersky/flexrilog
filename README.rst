@@ -8,8 +8,8 @@ It implements the concepts described in the papers
  
 - *Graphs with Flexible Labelings* (doi:`10.1007/s00454-018-0026-9 <https://dx.doi.org/10.1007/s00454-018-0026-9>`_),
 - *Graphs with Flexible Labelings allowing Injective Realizations* (doi:`10.1016/j.disc.2019.111713 <https://dx.doi.org/10.1016/j.disc.2019.111713>`_)
-- *On the Classification of Motions of Paradoxically Movable Graphs* (arXiv:`2003.11416 <https://arxiv.org/abs/2003.11416>`_)
- 
+- *On the Classification of Motions of Paradoxically Movable Graphs* (doi:`10.20382/jocg.v11i1a22 <https://dx.doi.org/10.20382/jocg.v11i1a22>`_)
+
 by Georg Grasegger, Jan Legerský and Josef Schicho,
 and in the doctoral thesis *Flexible and Rigid Labelings of Graphs* (download `here <https://jan.legersky.cz/publication/phd-thesis/>`_) by Jan Legerský. 
 The construction of motions of *n*-fold rotationally symmetric frameworks according to the paper
