@@ -111,8 +111,7 @@ The file `examples/Rotationally_symmetric_frameworks_SoCGmedia.ipynb <examples/R
 It is available on Binder as well:
 
 .. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/Legersky/flexrilog/9033ec885c56928e9f0a79727a59d0d7f48d6137?filepath=examples\%2FRotationally_symmetric_frameworks_SoCGmedia.ipynb
- 
+ :target: https://jan.legersky.cz/SoCGmedia2020 
  
 Bracing of P-frameworks
 -----------------------
