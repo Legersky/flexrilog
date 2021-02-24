@@ -1,11 +1,5 @@
-# Dockerfile for binder
-# Reference: https://mybinder.readthedocs.io/en/latest/dockerfile.html#preparing-your-dockerfile
+FROM registry.gitlab.com/sagemath/sage/sagemath:latest
 
-FROM sagemath/sagemath:9.1-py3
-
-RUN sage -pip install jupyterlab
-
-# Copy the contents of the repo in ${HOME}
 COPY --chown=sage:sage . ${HOME}
 
 RUN sudo apt-get update && sudo apt-get install make
