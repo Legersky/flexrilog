@@ -15,6 +15,8 @@ and in the doctoral thesis *Flexible and Rigid Labelings of Graphs* (download `h
 The construction of motions of *n*-fold rotationally symmetric frameworks according to the paper
 *Flexible placements of graphs with rotational symmetry* (arXiv:`2003.09328 <https://arxiv.org/abs/2003.09328>`_) 
 by Sean Dewar, Georg Grasegger and Jan Legerský is under development.
+Also the concepts from *Bracing frameworks consisting of parallelograms* (arXiv:`2008.11521 <https://arxiv.org/abs/2008.11521>`_)
+are implemented.
 
 .. start-include
 
