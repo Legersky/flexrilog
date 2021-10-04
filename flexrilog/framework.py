@@ -55,7 +55,7 @@ class Framework(FlexRiGraph):
     This class represents a framework, i.e., a graph with its placement.
 
     INPUT:
-    - `edges` - edges of a ribbon-cutting graph in a format accepted by :class:`FlexRiGraph`.
+    - `edges` - edges of a graph in a format accepted by :class:`FlexRiGraph`.
     - `placement` - a dictionary with positions of the vertices of the underlying graph.
     - `check_injectivity` - if `True`, then the placement is checked to be injective.
     - `tolerance` - numerical tolerance for the injectivity check.
