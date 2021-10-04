@@ -2148,15 +2148,19 @@ class FlexRiGraph(Graph):
             self._pos[v][1] = tmp
 
     @doc_index("Plotting")
-    def print_tikz(self, colored_edges=[], color_names=['edge'], vertex_style='vertex', scale=1):
+    def print_tikz(self, colored_edges=[], color_names=['edge'], vertex_style='vertex', scale=1, vertex_labels=True):
         r"""
         Print TikZ code of the graph.
         """
         lowPrecField = RealField(20)
         print('\\begin{tikzpicture}[scale=' + str(lowPrecField(scale)) + ']')
         for k in self.vertices():
+            if vertex_labels:
+                label = str(k)
+            else:
+                label = ''
             print( '\t\\node[' + vertex_style + '] ('+str(k)+') at '+
-                    str((lowPrecField(self._pos[k][0]),lowPrecField(self._pos[k][1])))+' {'+str(k)+'};')
+                    str((lowPrecField(self._pos[k][0]),lowPrecField(self._pos[k][1])))+' {'+label+'};')
         if len(colored_edges) == len(color_names):
             for subset, col_name in zip(colored_edges, color_names):
                 print( '\t\\draw[' + col_name + ']' +
