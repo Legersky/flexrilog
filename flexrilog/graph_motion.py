@@ -747,6 +747,12 @@ class ParametricGraphMotion(GraphMotion):
                             ((tmp[1]*direction[0] - tmp[0]*direction[1])/l)])
         self._parametrization = res
 
+    def translate_vertex_to_origin(self, v):
+        r"""
+        Translate the whole flex so that ``v`` is at the origin.
+        """
+        shift = self._parametrization[v]
+        self._parametrization = { u: pos-shift for u, pos in self._parametrization.items()}
 
     def animation_SVG(self, fileName='', edge_partition=True, first=None, totalTime=12, width=500,
                            repetitions='indefinite', radius='default', return_IPythonSVG=True, fps=25,
