@@ -62,7 +62,7 @@ from sage.rings.integer import Integer
 
 
 from .NAC_coloring import NACcoloring
-from .flexible_rigid_graph import FlexRiGraph
+from .flexible_rigid_graph import FlexRiGraph, FlexRiGraphWithCartesianNACs
 
     
     
@@ -462,7 +462,30 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                 res_sbgrps.append(gen)
         return res_sbgrps
 
-   
+class CnSymmetricFlexRiGraphCartesianNACs(CnSymmetricFlexRiGraph, FlexRiGraphWithCartesianNACs):
+    r"""
+    This class is inherited from :class:`CnSymmetricFlexRiGraph` and :class:`FlexRiGraphWithCartesianNACs`.
+    Only Cn-symmetric cartesian NAC-colorings are computed.
+    To speed this up comparing to computing all NAC-colorings followed by a check,
+    opposite edges in a 4-cycle are forced to have the same color in NAC-colorings
+    (by overriding :meth:`_edges_with_same_color`) as well as orbits of edges under the symmetry.
+    """
+    def _edges_with_same_color(self):
+        r"""
+        Return list of lists of edges that are necessarily colored the same in a Cn-symmetric NAC-coloring.
+        """
+        V = [tuple(sorted(e)) for e in self.edges(labels=False)]
+        E = []
+        for tr_comp in self.triangle_connected_components():
+            E += [[tuple(sorted(e)), tuple(sorted(f))] for e, f in zip(tr_comp[:-1], tr_comp[1:])]
+        for orbit in self.edge_orbits():
+            E += [[tuple(sorted(e)), tuple(sorted(f))] for e, f in zip(orbit[:-1], orbit[1:])]
+            
+        for a,b,c,d in self.four_cycles():
+            E += [[tuple(sorted([a,b])), tuple(sorted([c,d]))], [tuple(sorted([a,d])), tuple(sorted([b,c]))]]
+            
+        return [[[u,v] for u, v in comp] for comp in Graph([V, E], format='vertices_and_edges').connected_components()]
+  
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS_SYMMETRIC_FLEXRIGRAPH}", gen_thematic_rest_table_index(SymmetricFlexRiGraph))
