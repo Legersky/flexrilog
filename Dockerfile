@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/sagemath/sage/sagemath:latest
+FROM registry.gitlab.com/sagemath/sage/sagemath:9.1
 
 COPY --chown=sage:sage . ${HOME}
 
