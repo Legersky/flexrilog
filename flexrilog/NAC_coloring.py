@@ -746,11 +746,11 @@ class NACcoloring(SageObject):
                 return False
         return False
 
-    def print_tikz(self):
+    def print_tikz(self, **kwargs):
         r"""
         Print TikZ code for the graph colored with the NAC-coloring.
         """
-        self._graph.print_tikz([self.blue_edges(), self.red_edges()], ['redge', 'bedge'])
+        self._graph.print_tikz([self.blue_edges(), self.red_edges()], ['redge', 'bedge'], **kwargs)
         
     def NAC2int(self):
         r"""
