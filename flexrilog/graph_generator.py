@@ -41,7 +41,8 @@ from .flexible_rigid_graph import FlexRiGraph
 from .symmetric_flexible_rigid_graph import CnSymmetricFlexRiGraph
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.all import flatten, Set,  Graph, PermutationGroup
-from sage.all import graphs
+from sage.all import graphs, infinity
+from sage.all import RR, vector, sqrt, I, pi, exp, norm
 
 class GraphGenerator():
 
@@ -875,6 +876,102 @@ class GraphGenerator():
         10653343, 12684655, 25726175, 10587935, 10816735, 6393207, 25267423,
         6395259, 35753583, 18975983, 6481131, 19434847, 10798303, 10653279,
         10783967, 6393199, 6393071, 6393055]]
+            
+    
+    
+    @staticmethod
+    def PenroseFramework(n, numeric=False, radius=False):
+        """
+        Returns a piece of Penrose framework obtained by inflating 'n' times the five fat rhombi forming a star.
+        
+        'numeric' specifies whether the positions are returned numerci or symbolic.
+        'radius' allows to keep only vertices closer than the given value to the origin.
+        """
+        class PenroseConstructor(Graph):
+    #     the code is inspired by https://scipython.com/blog/penrose-tiling-1/
+            def __init__(self, triangles, pos, numeric=numeric):
+                E = []
+                for t,_ in triangles:
+                    E.append([str(t[0]), str(t[1])])
+                    E.append([str(t[1]), str(t[2])])
+                    E.append([str(t[0]), str(t[2])])
+                super(PenroseConstructor,self).__init__(E)
+                if numeric:
+                    self.set_pos({str(k):vector([RR(v[0]),RR(v[1])]) for k,v in pos.items()})
+                    self.psi = RR((sqrt(5) - 1) / 2)
+                    self.psi2 = RR(1 - self.psi)
+                else:
+                    self.set_pos({str(k):v for k,v in pos.items()})
+                    self.psi = (sqrt(5) - 1) / 2
+                    self.psi2 = 1 - self.psi
+                self.triangles = [[[str(x) for x in t],r] for t,r in triangles]
+                self.dist2boundary = 1
+        
+            def inflate(self):
+                def createName(u,v):
+                    if u<v:
+                        return '({}-{})'.format(u,v)
+                    return '({}-{})'.format(v,u)
+                new_triangles = []
+                if self.triangles==[]:
+                    raise Exception('The framework cannot be inflated since it was turned into rhombic one.')
+                for t, r in self.triangles:
+                    A, B, C = t
+                    if r == 'S':
+                        D = createName(A,B)
+                        self._pos[D] = self.psi * self._pos[A] + self.psi2 * self._pos[B]
+                        new_triangles.append([[D, C, A],'S'])
+                        new_triangles.append([[C, D, B],'L'])
+                        self.delete_edge(A,B)
+                        self.add_edges([[D,v] for v in t])
+                    else:
+                        D = createName(A,B)                
+                        E = createName(A,C)
+                        self._pos[E] = self.psi2 * self._pos[A] + self.psi * self._pos[C]
+                        self._pos[D] = self.psi2 * self._pos[A] + self.psi * self._pos[B]
+                        new_triangles.append([[E, D, A],'L'])
+                        new_triangles.append([[C, E, B],'L'])
+                        new_triangles.append([[D, E, B],'S'])
+                        self.delete_edge(A,B)
+                        self.delete_edge(A,C)
+                        self.add_edges([[E,v] for v in t])
+                        self.add_edges([[D,v] for v in [A,B,E]])
+                self.triangles = new_triangles
+                self._pos = {k:(1/self.psi)*v for k,v in self._pos.items()}
+                self.dist2boundary = self.dist2boundary/self.psi
+                
+        
+            def iterate(self, n):
+                for _ in range(n):
+                    self.inflate()
+                 
+            def toRhombic(self):
+                aux_edges = [[t[0],t[2]] for t,_ in self.triangles]
+                self.delete_edges(aux_edges)
+                self.delete_vertices([v for v in self.vertices() if self.degree(v)==1])
+                self.triangles=[]
+            
+        pos = {0: vector([0, 0])}
+        w = exp(I*2*pi/5)
+        for i in range(5):
+            z = exp(I*pi*(1/2-2/5))*w**i
+            pos[i+1] = vector([z.real(),z.imag()])
+        for i in range(4):
+            pos[i+6] = pos[i+1] + pos[i+2]
+        pos[10] = pos[1] + pos[5]
+        
+        T = [[0,i,i+5] for i in range(1,6)] + [[0,i,i+4] for i in range(2,6)] + [[0, 1, 10]]
+        P = PenroseConstructor([[t,'L'] for t in T], pos)
+        
+        P.iterate(n)
+        P.toRhombic()
+        
+        if radius:
+            P.delete_vertices([v for v in P.vertices() if norm(P._pos[v])>= radius])
+                    
+        return FlexRiGraph(P)
+        
+    
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", (gen_rest_table_index(GraphGenerator))).replace(
