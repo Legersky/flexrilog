@@ -187,6 +187,7 @@ class NACcoloring(SageObject):
         Return if the coloring is a NAC-coloring.
 
         The implementation uses Lemma 2.4 in [GLS2018]_.
+        It is checked whehter the vertices of each blue edge belong different connected components of the red subgraph and vice versa.  
 
         EXAMPLES::
 
@@ -212,10 +213,16 @@ class NACcoloring(SageObject):
         """
         if len(self._red_edges) == 0 or len(self._blue_edges) == 0:
             return False
-        for one_color_subgraph in [self.red_subgraph(), self.blue_subgraph()]:
+        for one_color_subgraph, edgs in zip([self.red_subgraph(), self.blue_subgraph()],
+                                            [self.blue_edges(), self.red_edges()]):
+            v2c = {}
+            cnt = 0
             for component in one_color_subgraph.connected_components():
-                if (len(Graph(self._graph).subgraph(component).edges(labels=False))
-                    - len(one_color_subgraph.subgraph(component).edges(labels=False))):
+                for v in component:
+                    v2c[v] = cnt
+                cnt +=1
+            for u,v in edgs:
+                if v2c[v]==v2c[u]:
                     return False
         return True
 
