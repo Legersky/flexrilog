@@ -113,7 +113,8 @@ class NACcoloring(SageObject):
             self._blue_edges = copy(coloring._blue_edges)
         else:
             raise TypeError('The coloring must be a dict, list consisting of two lists or an instance of NACcoloring.')
-        self._check_edges()
+        if check:
+            self._check_edges()
         self._name = name
         if check and not self.is_NAC_coloring():
             raise ValueError('The coloring is not a NAC-coloring.')
@@ -209,8 +210,6 @@ class NACcoloring(SageObject):
             False
 
         """
-        self._check_edges()
-
         if len(self._red_edges) == 0 or len(self._blue_edges) == 0:
             return False
         for one_color_subgraph in [self.red_subgraph(), self.blue_subgraph()]:
