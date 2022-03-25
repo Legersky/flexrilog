@@ -178,6 +178,8 @@ class NACcoloring(SageObject):
         r"""
         Raise a ``RuntimeError`` if the edges of the NAC-coloring do not match the edges of the graph.
         """
+        if len(self._blue_edges) + len(self._red_edges) != self._graph.num_edges():
+            raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
         if (Set([Set(e) for e in self._graph.edges(labels=False)])
             != self._blue_edges.union(self._red_edges)):
             raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
