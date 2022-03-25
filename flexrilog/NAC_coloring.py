@@ -113,11 +113,11 @@ class NACcoloring(SageObject):
             self._blue_edges = copy(coloring._blue_edges)
         else:
             raise TypeError('The coloring must be a dict, list consisting of two lists or an instance of NACcoloring.')
+        self._name = name
         if check:
             self._check_edges()
-        self._name = name
-        if check and not self.is_NAC_coloring():
-            raise ValueError('The coloring is not a NAC-coloring.')
+            if not self.is_NAC_coloring():
+                raise ValueError('The coloring is not a NAC-coloring.')
 
     def _repr_(self):
         """
@@ -539,7 +539,7 @@ class NACcoloring(SageObject):
             return [Set([Set([sigma(e[0]),sigma(e[1])]) for e in self._red_edges]),
                     Set([Set([sigma(e[0]),sigma(e[1])]) for e in self._blue_edges])]
         else:
-            return NACcoloring(self._graph, [[[sigma(e[0]),sigma(e[1])] for e in edges] for edges in [self._red_edges, self._blue_edges]])
+            return NACcoloring(self._graph, [[[sigma(e[0]),sigma(e[1])] for e in edges] for edges in [self._red_edges, self._blue_edges]], check=False)
 
     def is_equal(self, other_coloring, moduloConjugation=True):
         r"""
