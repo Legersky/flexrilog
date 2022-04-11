@@ -1,0 +1,8 @@
+name: test-binder-flexrilog
+
+channels:
+  - defaults
+  - conda-forge
+
+dependencies:
+  - sage
