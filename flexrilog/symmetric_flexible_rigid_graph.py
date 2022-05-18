@@ -137,7 +137,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         - examples
         - check input as list of edges
     """
-    def __init__(self, data, symmetry, pos=None, name=None, check=True, verbosity=0):
+    def __init__(self, data, symmetry, pos=None, pos_sym=True, name=None, check=True, verbosity=0):
         super(CnSymmetricFlexRiGraph, self).__init__(data, symmetry, pos, name, check, verbosity)
         is_cyclic, gen, order = CnSymmetricFlexRiGraph.is_cyclic_subgroup(self._sym_group)
         if not is_cyclic:
@@ -154,12 +154,14 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         
         self._report('Vertex orbits: ' + str(self.vertex_orbits()), 2)
         if pos==None:
+            pos_sym = False
             pos = {
                 orbit[0]:self._pos[orbit[0]] for orbit in self.vertex_orbits()
                 }
             for i, v in enumerate(self._invariant_vertices):
                 pos[v] = (0, 0.1*i)
-        self.set_symmetric_positions(pos)
+        if not pos_sym:
+            self.set_symmetric_positions(pos)
          
     def vertex_orbits(self):
         r"""
