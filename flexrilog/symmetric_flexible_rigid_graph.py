@@ -13,9 +13,14 @@ Methods
 
 {INDEX_OF_METHODS_CN_SYMMETRIC_FLEXRIGRAPH}
 
+**CsSymmetricFlexRiGraph**
+
+{INDEX_OF_METHODS_CS_SYMMETRIC_FLEXRIGRAPH}
+
 AUTHORS:
 
 -  Jan Legerský (2020-03-12): initial version
+-  Jan Legerský (2022-05-19): Cs-symmetry added
 
 TODO:
 
@@ -669,6 +674,8 @@ __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS_CN_SYMMETRIC_FLEXRIGRAPH}", gen_thematic_rest_table_index(CnSymmetricFlexRiGraph))
 
 
+__doc__ = __doc__.replace(
+    "{INDEX_OF_METHODS_CS_SYMMETRIC_FLEXRIGRAPH}", gen_thematic_rest_table_index(CsSymmetricFlexRiGraph))
 
 
 

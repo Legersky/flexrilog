@@ -1,4 +1,4 @@
-$\\mathcal{C}_n$-symmetric NAC-colorings
+Symmetric NAC-colorings
 ========================================
 
 .. automodule:: flexrilog.symmetric_NAC_coloring

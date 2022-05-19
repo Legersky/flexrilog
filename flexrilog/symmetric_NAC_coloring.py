@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 r"""
-This class implements a NAC-coloring of a graph with a symmetry.
+This class implements NAC-colorings of graphs with a symmetry.
 
-Methods
--------
+$\\mathcal{C}_n$-symmetric NAC-coloring
+---------------------------------------
+
+{INDEX_OF_METHODS_CN}
 
 
-{INDEX_OF_METHODS}
+$\\mathcal{C}_s$-symmetric NAC-coloring
+---------------------------------------
+
+{INDEX_OF_METHODS_CS}
 
 AUTHORS:
 
 -  Jan Legerský (2020-03-12): initial version
+-  Jan Legerský (2022-05-19): Cs-symmetry added
 
 CnSymmetricNACcoloring
 ----------------------
@@ -420,4 +426,11 @@ class CsSymmetricNACcoloring(NACcoloring):
 
 
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS}", (gen_rest_table_index(CnSymmetricNACcoloring)))
+    "{INDEX_OF_METHODS_CN}", (gen_rest_table_index(CnSymmetricNACcoloring)))
+
+
+__doc__ = __doc__.replace(
+    "{INDEX_OF_METHODS_CS}", (gen_rest_table_index(CsSymmetricNACcoloring)))
+
+
+
