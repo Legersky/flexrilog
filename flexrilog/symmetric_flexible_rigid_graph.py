@@ -489,6 +489,179 @@ class CnSymmetricFlexRiGraphCartesianNACs(CnSymmetricFlexRiGraph, FlexRiGraphWit
         return [[[u,v] for u, v in comp] for comp in Graph([V, E], format='vertices_and_edges').connected_components()]
   
 
+
+class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
+    r"""
+    This class is inherited from :class:`SymmetricFlexRiGraph`.
+    It represents a graph with a given $\\mathcal{C}_s$ symmetry,
+    namely, a cyclic subgroup of order 2 of the automorphism group of the graph.
+       
+    INPUT:
+
+    - ``data``: provides the information about edges, see :class:`FlexRiGraph`..
+
+    - ``symmetry`` -- `sage.graphs.graph.Graph <http://doc.sagemath.org/html/en/reference/groups/sage/groups/perm_gps/permgroup.html>`_
+      that is a subgroup of the automorphism group of the graph or the list of its generator.
+
+    TODO:
+    
+        - examples
+    """
+    def __init__(self, data, symmetry, pos=None, pos_sym=True, name=None, check=True, verbosity=0):
+        super(CsSymmetricFlexRiGraph, self).__init__(data, symmetry, pos, name, check, verbosity)
+        is_cyclic, gen, order = SymmetricFlexRiGraph.is_cyclic_subgroup(self._sym_group)
+        if check:
+            if not is_cyclic:
+                raise ValueError(str(self._sym_group) + ' is not a cyclic subgroup of the automorphism group of the graph.')
+            if order != 2:
+                raise ValueError('The order of ' + str(self._sym_group) + ' must be 2.')
+        self._sym_gens = [gen]
+        self.sigma =  gen
+        self._vertex_orbits = None
+        self._edge_orbits = None
+        self._invariant_vertices = None
+        self._invariant_edges = None
+        self._NACs_computed = 'no'
+        
+        self._report('Vertex orbits: ' + str(self.vertex_orbits()), 2)
+        if pos==None:
+            pos_sym = False
+            pos = {
+                orbit[0]:self._pos[orbit[0]] for orbit in self.vertex_orbits()
+                }
+            for i, v in enumerate(self._invariant_vertices):
+                pos[v] = self._pos[v]
+        if not pos_sym:
+            self.set_symmetric_positions(pos)
+            
+    
+    def invariant_vertices(self):
+        if self._invariant_vertices != None:
+            return self._invariant_vertices
+        
+        self._invariant_vertices = []
+        
+        for v in self.vertices():
+            if self.sigma(v)==v:
+                self._invariant_vertices.append(v)
+                
+        return self._invariant_vertices
+            
+    def vertex_orbits(self):
+        if self._vertex_orbits:
+            return self._vertex_orbits
+        
+        verts = {v:1 for v in self.vertices()}
+        self._vertex_orbits = []
+        for v in verts:
+            if verts[v]:
+                u = self.sigma(v)
+                if u!=v:
+                    verts[u] = 0
+                    self._vertex_orbits.append([u,v])
+        
+        self._vertex_orbits += [[v] for v in self.invariant_vertices()]
+        return self._vertex_orbits
+            
+    def edge_orbits(self):
+        if self._edge_orbits:
+            return self._edge_orbits
+        
+        edgs = {tuple(sorted(e)):1 for e in self.edges(labels=False)}
+        self._edge_orbits = []
+        for e in edgs:
+            e = tuple(sorted(e))
+            if edgs[e]:
+                f = tuple(sorted([self.sigma(e[0]),self.sigma(e[1])]))
+                if e!=f:
+                    edgs[f] = 0
+                    self._edge_orbits.append([list(e),list(f)])
+                else:
+                    self._edge_orbits.append([list(e)])
+        
+        return self._edge_orbits
+    
+    def set_symmetric_positions(self, pos):
+        for orbit in self.vertex_orbits():
+            if len(orbit)==2:
+                u,v = orbit
+                if u in pos:
+                    x, y = pos[u]
+                    pos[v] = [-x,y]
+                else:
+                    x, y = pos[v]
+                    pos[u] = [-x,y]
+            else:
+                pos[orbit[0]] = [0, pos[orbit[0]][1]]
+        self.set_pos(pos)
+        
+    def invariant_edges(self):
+        if self._invariant_edges != None:
+            return self._invariant_edges
+        
+        self._invariant_edges = []
+        for e in self.edges(labels=False):
+            u,v = e
+            if self.sigma(u) in e and self.sigma(v) in e:
+                self._invariant_edges.append(e)
+        
+        return self._invariant_edges
+        
+    def _find_NAC_colorings(self, onlyOne=False, names=False):
+        r"""
+        Find Cs-symmetric  of the graph and store them.
+
+        The method finds NAC-colorings of the graph and store them in ``self._NAC_colorings``.
+        The flag ``self._NACs_computed`` is changed to ``'yes'`` or ``'onlyOne'``.
+
+        TODO:
+
+         - skip testing combinations that fail on a subgraph 
+        """   
+
+        self._report('Searching NAC-colorings') 
+        from .symmetric_NAC_coloring import CsSymmetricNACcoloring
+        self._NAC_colorings = []
+        inv_triangle_comps = []
+        pairs = []
+        for tr_comp in self.triangle_connected_components():
+            c1 = Set([Set(e) for e in tr_comp])
+            c2 = Set([Set([self.sigma(e[0]), self.sigma(e[1])]) for e in tr_comp])
+            if c1 != c2:
+                pairs.append(Set([c1, c2]))
+            else:
+                inv_triangle_comps += tr_comp
+        pairs = list(Set(pairs))
+        pairs = [[t1, t2] for t1,t2 in pairs]
+        counter = 1
+        for comb in cartesian_product([[0,1,2] for _ in range(len(pairs))]):
+            red = []
+            blue = []
+            gold = []
+            for i,c in enumerate(comb):
+                if c==0:
+                    gold += pairs[i][0]
+                    gold += pairs[i][1]
+                elif c==1:
+                    red += pairs[i][0]
+                    blue += pairs[i][1]
+                else:
+                    red += pairs[i][1]
+                    blue += pairs[i][0]
+            gold += inv_triangle_comps
+            if names:
+                delta = CsSymmetricNACcoloring(self, [red, blue, gold], check=False, name='delta_' + str(counter))
+            else:
+                delta = CsSymmetricNACcoloring(self, [red, blue, gold], check=False)
+            if delta.is_Cs_symmetric():
+                self._NAC_colorings.append(delta)
+                counter += 1
+                if onlyOne:
+                    self._NACs_computed = 'onlyOne'
+                    return
+        self._NACs_computed = 'yes' 
+          
+
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS_SYMMETRIC_FLEXRIGRAPH}", gen_thematic_rest_table_index(SymmetricFlexRiGraph))
 
