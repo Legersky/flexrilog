@@ -209,5 +209,215 @@ class CnSymmetricNACcoloring(NACcoloring):
         else:
             return False
 
+class CsSymmetricNACcoloring(NACcoloring):
+    r"""
+    The class for a $\\mathcal{C}_s$-symmetric NAC-coloring of a $\\mathcal{C}_s$-symmetric graph.
+
+    We define a NAC-coloring $\\delta$ to be a $\\mathcal{C}_s$-symmetric if
+    
+    - $\\delta(\\sigma e)$ is red iff  $\\delta(e)$ is blue for all $e \\in E_G$,
+      where $\\sigma$ generates $\\mathcal{C}_s$, and 
+    - If $\\delta(e)$ is golden then $\\delta(\\sigma e)$ is golden.
+    """
+    def __init__(self, G, coloring, name=None, check=True):
+        if type(G) == FlexRiGraph or 'FlexRiGraph' in str(type(G)) or isinstance(G, FlexRiGraph):
+            self._graph = G
+        else:
+            raise TypeError('The graph G must be FlexRiGraph.')
+        from .symmetric_flexible_rigid_graphs import CsSymmetricFlexRiGraph
+        if check and not isinstance(G, CsSymmetricFlexRiGraph):
+            raise ValueError('The graph G must be an instance of CsSymmetricFlexRiGraph.')
+            
+            
+        if type(coloring) in [list, Set] and len(coloring) == 3:
+            self._red_edges = Set([Set(e) for e in coloring[0]])
+            self._blue_edges = Set([Set(e) for e in coloring[1]])
+            self._golden_edges = Set([Set(e) for e in coloring[2]])
+        elif type(coloring) == dict:
+            self._red_edges = Set([Set(e) for e in coloring if coloring[e] == 'red'])
+            self._blue_edges = Set([Set(e) for e in coloring if coloring[e] == 'blue'])
+            self._golden_edges = Set([Set(e) for e in coloring if coloring[e] == 'golden'])
+        elif (type(coloring)==CsSymmetricNACcoloring 
+              or isinstance(coloring, CsSymmetricNACcoloring)):
+            self._red_edges = copy(coloring._red_edges)
+            self._blue_edges = copy(coloring._blue_edges)
+            self._golden_edges = copy(coloring._golden_edges)
+        else:
+            raise TypeError('The coloring must be a dict, list consisting of three lists or an instance of Cs-NACcoloring.')
+        self._name = name
+        self.sigma = self._graph.sigma
+        if check:
+            self._check_edges()
+            if not self.is_Cs_symmetric():
+                raise ValueError('The coloring is not a Cs-symmetric NAC-coloring.')
+          
+    def is_Cs_symmetric(self):
+        if not self.is_equal(self.isomorphic_NAC_coloring().conjugated(), moduloConjugation=False):
+            return False
+        if (not NACcoloring(self._graph, [self.red_edges(), self.blue_edges()+self.golden_edges()],
+                            check=False).is_NAC_coloring()
+            or not NACcoloring(self._graph, [self.red_edges()+self.golden_edges(), self.blue_edges()],
+                               check=False).is_NAC_coloring()):
+            return False
+        return True
+
+
+    def _repr_(self):
+        """
+        Return a string representation of `self`.
+        """
+        res = (self._name + ': ') if self._name != None else ''
+        res += 'Cs-symmetric NAC-coloring with '
+        if self._graph.num_edges()< 10:
+            res += 'red edges ' + str(sorted([sorted(list(e)) for e in self._red_edges]))
+            res += ', blue edges ' + str(sorted([sorted(list(e)) for e in self._blue_edges]))
+            res += ' and golden edges ' + str(sorted([sorted(list(e)) for e in self._golden_edges]))
+        else:
+            res += str(len(self._red_edges)) + ' red edges, '
+            res += str(len(self._blue_edges)) + ' blue edges and '
+            res += str(len(self._golden_edges)) + ' golden edges'
+        return res
+
+    
+    def _latex_(self):
+        if self._name:
+            l_name = latex_variable_name(self._name) + ': \\left( \\{'
+        else:
+            l_name = '\\left( \\{'
+        return (l_name +','.join(['\\{' + latex(u) +','+ latex(v) + '\\}' 
+                            for u,v in sorted([sorted(list(e)) for e in self._red_edges])])
+                        + r'\} \mapsto red; \{'
+                        + ','.join(['\\{' + latex(u) +','+ latex(v) + '\\}' 
+                            for u,v in sorted([sorted(list(e)) for e in self._blue_edges])])
+                        + r'\} \mapsto blue; \{'
+                        + ','.join(['\\{' + latex(u) +','+ latex(v) + '\\}' 
+                            for u,v in sorted([sorted(list(e)) for e in self._golden_edges])])
+                        + r'\} \mapsto golden\right)')
+    
+
+    def _check_edges(self):
+        r"""
+        Raise a ``RuntimeError`` if the edges of the NAC-coloring do not match the edges of the graph.
+        """
+        if len(self._blue_edges) + len(self._red_edges) + len(self._golden_edges) != self._graph.num_edges():
+            raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
+        if (Set([Set(e) for e in self._graph.edges(labels=False)])
+            != self._blue_edges.union(self._red_edges).union(self._golden_edges)):
+            raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
+    
+    def golden_edges(self):
+        r"""
+        Return the list of golden edges of the NAC-coloring.
+        """
+        return list(self._golden_edges)
+    
+
+    def color(self, u, v=None):
+        r"""
+        Return the color of an edge.
+
+        INPUT:
+
+        If ``v`` is ``None``, then ``u`` is consider to be an edge.
+        Otherwise, ``uv`` is taken as the edge.
+        """
+        if not v is None:
+            if not self._graph.has_edge(u,v):
+                raise ValueError('There is no edge ' + str([u,v]))
+            e = Set([u,v])
+            if e in self._golden_edges:
+                return 'golden'
+            elif e in self._blue_edges:
+                return 'blue'
+            else:
+                return 'red'
+        else:
+            if not self._graph.has_edge(u[0],u[1]):
+                raise ValueError('There is no edge ' + str([u[0],u[1]]))
+            e = Set([u[0],u[1]])
+            if e in self._golden_edges:
+                return 'golden'
+            elif e in self._blue_edges:
+                return 'blue'
+            else:
+                return 'red'
+            
+
+    def is_golden(self, u, v=None):
+        r"""
+        Return if the edge is golden.
+
+        INPUT:
+
+        If ``v`` is ``None``, then ``u`` is consider to be an edge.
+        Otherwise, ``uv`` is taken as the edge.
+        """
+        if not v is None:
+            if not self._graph.has_edge(u,v):
+                raise ValueError('There is no edge ' + str([u,v]))
+            return Set([u,v]) in self._golden_edges
+        else:
+            if not self._graph.has_edge(u[0],u[1]):
+                raise ValueError('There is no edge ' + str([u[0],u[1]]))
+            return Set([u[0],u[1]]) in self._golden_edges
+        
+    def golden_subgraph(self):
+        return Graph([self._graph.vertices(),[list(e) for e in self._golden_edges]], format='vertices_and_edges')
+
+
+    def golden_components(self):
+        return self.golden_subgraph().connected_components()
+    
+    
+    def plot(self, grid_pos=False, zigzag=False, **args_kwd):
+        r"""
+        Return a plot of the NAC-coloring.
+        """
+        if self.name():
+            args_kwd['title'] = '$'+latex_variable_name(self.name())+'$'
+
+        from .__init__ import colB, colR, colG
+        edge_colors = {
+                colB : self.blue_edges(),
+                colR : self.red_edges(),
+                colG : self.golden_edges()
+                }
+        return self._graph.plot(edge_colors=edge_colors, name_in_title=False, **args_kwd)
+
+    def path_is_unicolor(self, path):
+        r"""
+        Return if the edges of the path have the same color.
+        """
+        edges = Set([Set(e) for e in zip(path[:-1],path[1:])])
+        return edges.issubset(self._red_edges) or edges.issubset(self._blue_edges) or edges.issubset(self._golden_edges)
+    
+    def conjugated(self):
+        r"""
+        Return the conjugated NAC-coloring.
+        """
+        return CsSymmetricNACcoloring(self._graph, [self.blue_edges(), self.red_edges(), self.golden_edges()], check=False)
+
+
+    def print_tikz(self, **kwargs):
+        r"""
+        Print TikZ code for the graph colored with the NAC-coloring.
+        """
+        self._graph.print_tikz([self.blue_edges(), self.red_edges(), self.golden_edges()], ['redge', 'bedge', 'gedge'], **kwargs)
+        
+
+    def isomorphic_NAC_coloring(self, onlySets=False):
+        r"""
+        Return the Cs-NAC-coloring under the morphism ``sigma``.
+        """
+        if onlySets:
+            return [Set([Set([self.sigma(e[0]),self.sigma(e[1])]) for e in self._red_edges]),
+                    Set([Set([self.sigma(e[0]),self.sigma(e[1])]) for e in self._blue_edges]),
+                    Set([Set([self.sigma(e[0]),self.sigma(e[1])]) for e in self._golden_edges])]
+        else:
+            return CsSymmetricNACcoloring(self._graph, 
+                                 [[[self.sigma(e[0]),self.sigma(e[1])] for e in edges] 
+                                  for edges in [self._red_edges, self._blue_edges, self._golden_edges]], check=False)
+
+
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", (gen_rest_table_index(CnSymmetricNACcoloring)))
