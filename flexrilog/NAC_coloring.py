@@ -189,7 +189,7 @@ class NACcoloring(SageObject):
         Return if the coloring is a NAC-coloring.
 
         The implementation uses Lemma 2.4 in [GLS2018]_.
-        It is checked whehter the vertices of each blue edge belong different connected components of the red subgraph and vice versa.  
+        It is checked whether the vertices of each blue edge belong different connected components of the red subgraph and vice versa.  
 
         EXAMPLES::
 
