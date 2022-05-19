@@ -638,7 +638,13 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         pairs = list(Set(pairs))
         pairs = [[t1, t2] for t1,t2 in pairs]
         counter = 1
-        for comb in cartesian_product([[0,1,2] for _ in range(len(pairs))]):
+        for comb in cartesian_product([[0,1]]+[[0,1,2] for _ in range(len(pairs)-1)]):
+            try:
+                first2 = list(comb).index(2)  #this is to avoid conjugated NACs in the list
+                if not 1 in comb[:first2]:
+                    continue
+            except ValueError:
+                pass
             red = []
             blue = []
             gold = []
@@ -663,7 +669,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                 if onlyOne:
                     self._NACs_computed = 'onlyOne'
                     return
-        self._NACs_computed = 'yes' 
+        self._NACs_computed = 'yes'
           
 
 __doc__ = __doc__.replace(
