@@ -53,7 +53,7 @@ from sage.all import Subsets, rainbow, show, binomial, RealField
 from sage.all import var, solve, RR, vector, norm, CC
 from sage.all import PermutationGroup, PermutationGroup_generic
 from sage.groups.perm_gps.permgroup_element import is_PermutationGroupElement
-from sage.all import pi, cos, sin
+from sage.all import pi, cos, sin, cartesian_product
 import random
 from itertools import chain
 
@@ -106,6 +106,32 @@ class SymmetricFlexRiGraph(FlexRiGraph):
     def _repr_(self):
         return super(SymmetricFlexRiGraph, self)._repr_() + '\nwith the symmetry ' + str(self._sym_group)
 
+    @staticmethod
+    def is_cyclic_subgroup(subgroup):
+        r'''
+        Return if a group is cyclic, a generator and order.
+        '''
+        if subgroup.is_cyclic():
+            order = subgroup.order()
+            for gen in subgroup.gens():
+                if gen.order() == order:
+                    return (True, gen, order)
+            for gen in subgroup:
+                if gen.order() == order:
+                    return (True, gen, order)
+        return (False, None, None)
+
+    @staticmethod
+    def _cyclic_subgroups(group, order):
+        r'''
+        Return all cyclic subgroups of ``group`` with given ``order``.
+        '''
+        res_sbgrps = []
+        for sbgrp in group.subgroups():
+            cyclic, gen, n = SymmetricFlexRiGraph.is_cyclic_subgroup(sbgrp)
+            if cyclic and n == order:
+                res_sbgrps.append(gen)
+        return res_sbgrps
 
 class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     r"""
@@ -139,7 +165,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     """
     def __init__(self, data, symmetry, pos=None, pos_sym=True, name=None, check=True, verbosity=0):
         super(CnSymmetricFlexRiGraph, self).__init__(data, symmetry, pos, name, check, verbosity)
-        is_cyclic, gen, order = CnSymmetricFlexRiGraph.is_cyclic_subgroup(self._sym_group)
+        is_cyclic, gen, order = SymmetricFlexRiGraph.is_cyclic_subgroup(self._sym_group)
         if not is_cyclic:
             raise ValueError(str(self._sym_group) + ' is not a cyclic subgroup of the automorphism group of the graph.')
         if not CnSymmetricFlexRiGraph.is_Cn_symmetry(self, gen, order):
@@ -373,7 +399,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         """
         
         res = []
-        for sigma in CnSymmetricFlexRiGraph._cyclic_subgroups(graph.automorphism_group(), n):
+        for sigma in SymmetricFlexRiGraph._cyclic_subgroups(graph.automorphism_group(), n):
             if CnSymmetricFlexRiGraph.is_Cn_symmetry(graph, sigma, n):
                 res.append(sigma)
         return res
@@ -437,32 +463,6 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
             E += [[tuple(sorted(e)), tuple(sorted(f))] for e, f in zip(orbit[:-1], orbit[1:])]
         return [[[u,v] for u, v in comp] for comp in Graph([V, E], format='vertices_and_edges').connected_components()]
 
-    @staticmethod
-    def is_cyclic_subgroup(subgroup):
-        r'''
-        Return if a group is cyclic, a generator and order.
-        '''
-        if subgroup.is_cyclic():
-            order = subgroup.order()
-            for gen in subgroup.gens():
-                if gen.order() == order:
-                    return (True, gen, order)
-            for gen in subgroup:
-                if gen.order() == order:
-                    return (True, gen, order)
-        return (False, None, None)
-
-    @staticmethod
-    def _cyclic_subgroups(group, order):
-        r'''
-        Return all cyclic subgroups of ``group`` with given ``order``.
-        '''
-        res_sbgrps = []
-        for sbgrp in group.subgroups():
-            cyclic, gen, n = CnSymmetricFlexRiGraph.is_cyclic_subgroup(sbgrp)
-            if cyclic and n == order:
-                res_sbgrps.append(gen)
-        return res_sbgrps
 
 class CnSymmetricFlexRiGraphCartesianNACs(CnSymmetricFlexRiGraph, FlexRiGraphWithCartesianNACs):
     r"""
@@ -487,7 +487,6 @@ class CnSymmetricFlexRiGraphCartesianNACs(CnSymmetricFlexRiGraph, FlexRiGraphWit
             E += [[tuple(sorted([a,b])), tuple(sorted([c,d]))], [tuple(sorted([a,d])), tuple(sorted([b,c]))]]
             
         return [[[u,v] for u, v in comp] for comp in Graph([V, E], format='vertices_and_edges').connected_components()]
-  
 
 
 class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):

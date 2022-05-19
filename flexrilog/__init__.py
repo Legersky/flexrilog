@@ -29,3 +29,4 @@ from .motion_classification import MotionClassifier
 colB = '#4169e1'
 colR = '#ee2c2c'
 colGray = 'LightGray'
+colG = '#FFD700'
