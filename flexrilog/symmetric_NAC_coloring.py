@@ -224,7 +224,7 @@ class CsSymmetricNACcoloring(NACcoloring):
             self._graph = G
         else:
             raise TypeError('The graph G must be FlexRiGraph.')
-        from .symmetric_flexible_rigid_graphs import CsSymmetricFlexRiGraph
+        from .symmetric_flexible_rigid_graph import CsSymmetricFlexRiGraph
         if check and not isinstance(G, CsSymmetricFlexRiGraph):
             raise ValueError('The graph G must be an instance of CsSymmetricFlexRiGraph.')
             
