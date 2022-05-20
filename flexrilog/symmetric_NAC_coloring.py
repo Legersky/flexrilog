@@ -424,6 +424,21 @@ class CsSymmetricNACcoloring(NACcoloring):
                                  [[[self.sigma(e[0]),self.sigma(e[1])] for e in edges] 
                                   for edges in [self._red_edges, self._blue_edges, self._golden_edges]], check=False)
 
+    def has_almost_red_blue_cycle(self, certificate=False):
+        if len(self._golden_edges) == 0:
+            return (False, None) if certificate else False 
+        v2c = {}
+        cnt = 0
+        red_blue_subgraph = self.red_subgraph().union(self.blue_subgraph())
+        for component in red_blue_subgraph.connected_components():
+            for v in component:
+                v2c[v] = cnt
+            cnt +=1
+        for u,v in self._golden_edges:
+            if v2c[v]==v2c[u]:
+                return (True, red_blue_subgraph.shortest_path(u,v)) if certificate else True
+    
+        return (False, None) if certificate else False 
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS_CN}", (gen_rest_table_index(CnSymmetricNACcoloring)))
