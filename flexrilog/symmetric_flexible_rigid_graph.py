@@ -674,7 +674,14 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                     return
         self._NACs_computed = 'yes'
 
-
+    @staticmethod
+    def Cs_symmetries_gens(graph):
+        r"""
+        Return the list of generators of Cs symmetries of the graph.
+        """
+        return [sigma for sigma in SymmetricFlexRiGraph._cyclic_subgroups(graph.automorphism_group(), 2)]
+    
+    
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS_SYMMETRIC_FLEXRIGRAPH}", gen_thematic_rest_table_index(SymmetricFlexRiGraph))
 
