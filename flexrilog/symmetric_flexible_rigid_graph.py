@@ -641,37 +641,38 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         pairs = list(Set(pairs))
         pairs = [[t1, t2] for t1,t2 in pairs]
         counter = 1
-        for comb in cartesian_product([[0,1]]+[[0,1,2] for _ in range(len(pairs)-1)]):
-            try:
-                first2 = list(comb).index(2)  #this is to avoid conjugated NACs in the list
-                if not 1 in comb[:first2]:
-                    continue
-            except ValueError:
-                pass
-            red = []
-            blue = []
-            gold = []
-            for i,c in enumerate(comb):
-                if c==0:
-                    gold += pairs[i][0]
-                    gold += pairs[i][1]
-                elif c==1:
-                    red += pairs[i][0]
-                    blue += pairs[i][1]
+        if pairs:
+            for comb in cartesian_product([[0,1]]+[[0,1,2] for _ in range(len(pairs)-1)]):
+                try:
+                    first2 = list(comb).index(2)  #this is to avoid conjugated NACs in the list
+                    if not 1 in comb[:first2]:
+                        continue
+                except ValueError:
+                    pass
+                red = []
+                blue = []
+                gold = []
+                for i,c in enumerate(comb):
+                    if c==0:
+                        gold += pairs[i][0]
+                        gold += pairs[i][1]
+                    elif c==1:
+                        red += pairs[i][0]
+                        blue += pairs[i][1]
+                    else:
+                        red += pairs[i][1]
+                        blue += pairs[i][0]
+                gold += inv_triangle_comps
+                if names:
+                    delta = CsSymmetricNACcoloring(self, [red, blue, gold], check=False, name='delta_' + str(counter))
                 else:
-                    red += pairs[i][1]
-                    blue += pairs[i][0]
-            gold += inv_triangle_comps
-            if names:
-                delta = CsSymmetricNACcoloring(self, [red, blue, gold], check=False, name='delta_' + str(counter))
-            else:
-                delta = CsSymmetricNACcoloring(self, [red, blue, gold], check=False)
-            if delta.is_Cs_symmetric():
-                self._NAC_colorings.append(delta)
-                counter += 1
-                if onlyOne:
-                    self._NACs_computed = 'onlyOne'
-                    return
+                    delta = CsSymmetricNACcoloring(self, [red, blue, gold], check=False)
+                if delta.is_Cs_symmetric():
+                    self._NAC_colorings.append(delta)
+                    counter += 1
+                    if onlyOne:
+                        self._NACs_computed = 'onlyOne'
+                        return
         self._NACs_computed = 'yes'
 
     @staticmethod
