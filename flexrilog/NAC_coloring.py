@@ -592,9 +592,10 @@ class NACcoloring(SageObject):
         r"""
         Return if the edges of the path have the same color.
         """
-        edges = Set([Set(e) for e in zip(path[:-1],path[1:])])
-        return edges.issubset(self._red_edges) or edges.issubset(self._blue_edges)
-
+#         edges = Set([Set(e) for e in zip(path[:-1],path[1:])])
+#         return edges.issubset(self._red_edges) or edges.issubset(self._blue_edges)
+        colors = Set([self.color(u, v) for u,v in zip(path[:-1],path[1:])])
+        return len(colors)==1
 
     def grid_coordinates(self, ordered_red=[], ordered_blue=[]):
         r"""
