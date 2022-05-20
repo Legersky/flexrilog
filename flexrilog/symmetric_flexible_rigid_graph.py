@@ -675,6 +675,58 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                         return
         self._NACs_computed = 'yes'
 
+    def Cs_closure(self, active_colorings=None, save_colorings=False):
+        r"""
+        Return the Cs-closure of the graph.
+        """
+        res = deepcopy(self)
+        res._name = 'Cs-closure of ' + res.name()
+        if active_colorings == None:
+            active_colorings = self.NAC_colorings()
+        
+        def monochromatic_pairs(active):
+            upairs = []
+            for u in res.invariant_vertices():
+                for v,_ in res.orthogonal_invariant_edges():
+                    if not res.has_edge(u,v):
+                        path = res.unicolor_path(u,v, active)
+                        if path:
+                            upairs.append([[u,v],path])
+            return upairs
+        
+        from .symmetric_NAC_coloring import CsSymmetricNACcoloring
+        upairs = monochromatic_pairs(active_colorings)
+        while upairs:
+            res.add_edges([e for e,_ in upairs])
+            res.add_edges([[self.sigma(e[0]), self.sigma(e[1])] for e,_ in upairs])
+            active_res = []
+            for col in active_colorings:
+                red = col.red_edges()
+                blue = col.blue_edges()
+                golden = col.golden_edges()
+                for e, path in upairs:
+                    sigma_e = [self.sigma(e[0]), self.sigma(e[1])]
+                    if col.is_red(path[0:2]):
+                        red.append(e)
+                        blue.append(sigma_e)
+                    elif col.is_golden(path[0:2]):
+                        golden.append(e)
+                    else:
+                        blue.append(e)
+                        red.append(sigma_e)
+                if col._name:
+                    col_new = CsSymmetricNACcoloring(res, [red, blue, golden], check=False, name=col._name)
+                else:
+                    col_new = CsSymmetricNACcoloring(res, [red, blue, golden], check=False)
+                if col_new.is_Cs_symmetric():
+                    active_res.append(col_new)
+            active_colorings = active_res
+            upairs = monochromatic_pairs(active_colorings)
+        if save_colorings:
+            res._NAC_colorings = active_colorings
+            res._NACs_computed = True
+        return res
+
     @staticmethod
     def Cs_symmetries_gens(graph):
         r"""
