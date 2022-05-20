@@ -610,6 +610,9 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                 self._invariant_edges.append(e)
         
         return self._invariant_edges
+    
+    def orthogonal_invariant_edges(self):
+        return [e for e in self.invariant_edges() if self.sigma(e[0])==e[1]]
         
     def _find_NAC_colorings(self, onlyOne=False, names=False):
         r"""
@@ -670,7 +673,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                     self._NACs_computed = 'onlyOne'
                     return
         self._NACs_computed = 'yes'
-          
+
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS_SYMMETRIC_FLEXRIGRAPH}", gen_thematic_rest_table_index(SymmetricFlexRiGraph))
