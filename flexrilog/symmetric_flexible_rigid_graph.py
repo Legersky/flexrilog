@@ -734,7 +734,38 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         """
         return [sigma for sigma in SymmetricFlexRiGraph._cyclic_subgroups(graph.automorphism_group(), 2)]
     
-    
+    @staticmethod    
+    def Cs_symmetries_gens_according_isomorphic_orbits(G):
+        r"""
+        Return the generators of Cs-symmetries divided according to isomorphic orbits.
+        
+        OUTPUT:
+        
+        The output is the list of lists of generators - two generators are in the same
+        list if there is a graph isomorphism mapping orbits of one generator to orbits of the other.
+        """
+        def gen2orbit_sets(gamma):
+            Gsym = CsSymmetricFlexRiGraph(G, gamma)
+            return Set([Set(orbit) for orbit in Gsym.vertex_orbits()])
+        
+        def orbits_image(tau, orbits):
+            return Set([Set([tau(v) for v in orbit]) for orbit in orbits])
+        
+        autG = G.automorphism_group()
+        symmetries = CsSymmetricFlexRiGraph.Cs_symmetries_gens(G)
+        if symmetries==[]:
+            return []
+        res = {}
+        for omega in symmetries:
+            orbits = gen2orbit_sets(omega)
+            for tau in autG:
+                tau_orbits = orbits_image(tau, orbits)
+                if tau_orbits in res:
+                    res[tau_orbits].append(omega)
+                    break
+            else:
+                res[tau_orbits] = [omega]
+        return list(res.values())    
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS_SYMMETRIC_FLEXRIGRAPH}", gen_thematic_rest_table_index(SymmetricFlexRiGraph))
 
