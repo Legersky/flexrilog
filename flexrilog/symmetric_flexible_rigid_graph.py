@@ -686,12 +686,21 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         
         def monochromatic_pairs(active):
             upairs = []
-            for u in res.invariant_vertices():
-                for v,_ in res.orthogonal_invariant_edges():
-                    if not res.has_edge(u,v):
-                        path = res.unicolor_path(u,v, active)
-                        if path:
-                            upairs.append([[u,v],path])
+            for w in res.vertices():
+                for u,v in res.orthogonal_invariant_edges():
+                    if not res.has_edge(w,v):
+                        if w==res.sigma(w):
+                            path = res.unicolor_path(w,v, active)
+                            if path:
+                                upairs.append([[w,v],path])
+                        else:
+                            path_u = res.unicolor_path(w,u, active)
+                            path_v = res.unicolor_path(w,v, active)
+                            if path_u and path_v:
+                                if ([1 for delta in active if not delta.is_golden(path_u[0:2])] and 
+                                    [1 for delta in active if not delta.is_golden(path_v[0:2])]):
+                                    upairs.append([[w,v],path_v])
+                                    upairs.append([[w,u],path_u])
             return upairs
         
         from .symmetric_NAC_coloring import CsSymmetricNACcoloring
