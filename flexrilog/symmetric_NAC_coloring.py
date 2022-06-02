@@ -375,6 +375,11 @@ class CsSymmetricNACcoloring(NACcoloring):
         return self.golden_subgraph().connected_components()
     
     
+    def red_blue_components(self):
+        return Graph([self._graph.vertices(),[list(e) for e in self._red_edges + self._blue_edges]], 
+                     format='vertices_and_edges').connected_components()
+                     
+    
     def plot(self, grid_pos=False, zigzag=False, **args_kwd):
         r"""
         Return a plot of the NAC-coloring.
