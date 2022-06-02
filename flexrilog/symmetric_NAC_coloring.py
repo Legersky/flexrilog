@@ -374,9 +374,17 @@ class CsSymmetricNACcoloring(NACcoloring):
     def golden_components(self):
         return self.golden_subgraph().connected_components()
     
-    
+   
     def red_blue_components(self):
         return Graph([self._graph.vertices(),[list(e) for e in self._red_edges + self._blue_edges]], 
+                     format='vertices_and_edges').connected_components()    
+   
+    def red_golden_components(self):
+        return Graph([self._graph.vertices(),[list(e) for e in self._red_edges + self._golden_edges]], 
+                     format='vertices_and_edges').connected_components()    
+   
+    def blue_golden_components(self):
+        return Graph([self._graph.vertices(),[list(e) for e in self._golden_edges + self._blue_edges]], 
                      format='vertices_and_edges').connected_components()
                      
     
