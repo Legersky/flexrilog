@@ -4,11 +4,11 @@ channels:
   - conda-forge
 dependencies:
   - python=3.9
-  - sagelib
+  - sage
   - ipywidgets
+  - matplotlib-base
   - jupytext
   - pip
   - pip:
-    - flipper
     - jupyter_ui_poll >=0.2.1,<0.3
   
