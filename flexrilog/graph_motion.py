@@ -29,7 +29,7 @@ Classes
 from sage.all import deepcopy, Set, Graph, find_root, ceil#, sqrt, matrix, copy
 from sage.all import SageObject,  parent, Subsets #, rainbow, latex, flatten
 from sage.all import vector, matrix, sin, cos, pi,  var,  RR,  floor,  tan, log
-from sage.all import FunctionField, QQ,  sqrt,  function, mod
+from sage.all import FunctionField, QQ,  sqrt,  function, mod, PermutationGroup
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 from sage.rings.integer import Integer
 _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(1);
@@ -155,6 +155,80 @@ class GraphMotion(SageObject):
                         display(M.animation_SVG(edge_partition='NAC'))
                     res.append(M)
         return res
+    
+    @classmethod
+    def CsSymmetricGridConstruction(cls, graph, delta, a_list=[], d_list=[], d_inv_list=[]):
+        red_ordered = delta.red_golden_components()
+        vert2red = { v: i for i, comp in enumerate(red_ordered) for v in comp }
+        vert2blue = { v: vert2red[graph.sigma(v)] for v in graph.vertices()}
+        
+        from random import randint
+        if a_list==[]:
+            N = 10
+            a_list = [[randint(0,N), randint(0,N)] for _ in red_ordered]
+        else:
+            if len(a_list)<len(red_ordered):
+                raise ValueError('The number of points in `a_list` has to be greater than the number of red-golden components')
+            
+        if delta.has_almost_red_blue_cycle():
+            raise ValueError('The NAC-coloring has an almost red-blue cycle so the construction would collapse an edge.')
+        
+        inv_rb_ordered = []
+        noninv_rb_ordered = []
+        comps_as_sets = [Set(component) for component in delta.red_blue_components()]
+        comps_perm = PermutationGroup([[Set([graph.sigma(v) for v in component]) 
+                                                for component in comps_as_sets]],
+                                     domain=comps_as_sets)
+        for orbit in comps_perm.orbits():
+            if len(orbit)==1:
+                inv_rb_ordered.append(orbit[0])
+            else:
+                noninv_rb_ordered.append(orbit)
+        
+        if d_list==[]:
+            N = 10
+            d_list = [[randint(0,N), randint(0,N)] for _ in noninv_rb_ordered]
+        else:
+            if len(d_list)<len(noninv_rb_ordered):
+                raise ValueError('The number of points in `d_list` has to be greater than the number of red-blue noninvariant components')
+        
+        if d_inv_list==[]:
+            N = 10
+            d_inv_list = [randint(0,N) for _ in inv_rb_ordered]
+        else:
+            if len(d_inv_list)<len(inv_rb_ordered):
+                raise ValueError('The number of points in `d_inv_list` has to be greater than the number of red-blue invariant components')
+                    
+        vert2red_blue = { v: (True, i) for i, comp in enumerate(inv_rb_ordered) for v in comp }
+        for i, comp_pair in enumerate(noninv_rb_ordered):
+            for j, comp in enumerate(comp_pair):
+                for v in comp:
+                    vert2red_blue[v] = (False, (i,j))
+                    
+        reflection = matrix([[-1,0],[0,1]])
+        
+        def z(u):
+            inv, ind = vert2red_blue[u]
+            if inv:
+                return vector([0, d_inv_list[ind]])
+            else:
+                orb_number, pos_in_orbit = ind
+                return reflection**(pos_in_orbit) * vector(d_list[orb_number])
+            
+        t = var('t')
+        Rot = matrix([[cos(t), -sin(t)],
+                      [sin(t),  cos(t)]])
+        par = {
+            v : (Rot*vector(a_list[vert2red[v]]) 
+                 + Rot.transpose()*reflection*vector(a_list[vert2blue[v]])
+                 + z(v))
+            for v in graph.vertices()
+        }
+        M = ParametricGraphMotion.ParametricMotion(graph, par, 'symbolic', active_NACs=delta)
+        if graph.invariant_edges():
+            M.fix_edge(graph.invariant_edges()[0])
+        
+        return M
 
     @classmethod
     def ParametricMotion(cls, graph, parametrization, par_type, active_NACs=None, sampling_type=None, interval=None, check=True):
