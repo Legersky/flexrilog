@@ -13,9 +13,9 @@ It implements the concepts described in the papers
 by Georg Grasegger, Jan Legerský and Josef Schicho,
 and in the doctoral thesis *Flexible and Rigid Labelings of Graphs* (download `here <https://jan.legersky.cz/publication/phd-thesis/>`_) by Jan Legerský. 
 The construction of motions of *n*-fold rotationally symmetric frameworks according to the paper
-*Flexible placements of graphs with rotational symmetry* (arXiv:`2003.09328 <https://arxiv.org/abs/2003.09328>`_) 
+*Flexible placements of graphs with rotational symmetry* (doi:`10.1007/978-3-030-91352-6_9 <https://dx.doi.org/10.1007/978-3-030-91352-6_9>`_) 
 by Sean Dewar, Georg Grasegger and Jan Legerský is under development.
-Also the concepts from *Bracing frameworks consisting of parallelograms* (arXiv:`2008.11521 <https://arxiv.org/abs/2008.11521>`_)
+Also the concepts from *Bracing frameworks consisting of parallelograms* (doi:`10.26493/2590-9770.1379.7a4 <https://dx.doi.org/10.26493/2590-9770.1379.7a4>`_)
 are implemented.
 
 .. start-include
@@ -123,4 +123,13 @@ It is available on Binder as well:
 
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://jan.legersky.cz/bracingFrameworks
+ 
+Penrose frameworks
+------------------
+
+The following notebook is associated to the paper *Flexing infinite frameworks with applications to braced Penrose tilings* (doi:`10.1016/j.dam.2022.09.002 <https://dx.doi.org/10.1016/j.dam.2022.09.002>`_) by Jan Legerský and Sean Dewar.
+ 
+.. image:: https://mybinder.org/badge_logo.svg
+ :target: https://jan.legersky.cz/PenroseFrameworks
+ 
  
