@@ -72,7 +72,7 @@ class Framework(FlexRiGraph):
         self._report('The constructor of Framework finished')
         
     def is_injective(self, certificate=False):
-        positions = [self.placementRR(u) for u in self.vertices()]
+        positions = [self.placementRR(u) for u in self.vertices(sort=False)]
         for u,v in Subsets(range(len(positions)),2):
             if norm(positions[u] - positions[v]) < self._tolerance:
                 return [False, [u,v]] if certificate else False 

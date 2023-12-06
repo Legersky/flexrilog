@@ -368,7 +368,7 @@ class CsSymmetricNACcoloring(NACcoloring):
             return Set([u[0],u[1]]) in self._golden_edges
         
     def golden_subgraph(self):
-        return Graph([self._graph.vertices(),[list(e) for e in self._golden_edges]], format='vertices_and_edges')
+        return Graph([self._graph.vertices(sort=False),[list(e) for e in self._golden_edges]], format='vertices_and_edges')
 
 
     def golden_components(self):
@@ -376,15 +376,15 @@ class CsSymmetricNACcoloring(NACcoloring):
     
    
     def red_blue_components(self):
-        return Graph([self._graph.vertices(),[list(e) for e in self._red_edges + self._blue_edges]], 
+        return Graph([self._graph.vertices(sort=False),[list(e) for e in self._red_edges + self._blue_edges]], 
                      format='vertices_and_edges').connected_components()    
    
     def red_golden_components(self):
-        return Graph([self._graph.vertices(),[list(e) for e in self._red_edges + self._golden_edges]], 
+        return Graph([self._graph.vertices(sort=False),[list(e) for e in self._red_edges + self._golden_edges]], 
                      format='vertices_and_edges').connected_components()    
    
     def blue_golden_components(self):
-        return Graph([self._graph.vertices(),[list(e) for e in self._golden_edges + self._blue_edges]], 
+        return Graph([self._graph.vertices(sort=False),[list(e) for e in self._golden_edges + self._blue_edges]], 
                      format='vertices_and_edges').connected_components()
                      
     

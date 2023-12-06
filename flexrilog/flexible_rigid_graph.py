@@ -437,7 +437,7 @@ class FlexRiGraph(Graph):
                 else:
                     return False
             for k in range(4,self.num_verts()):
-                for subvert in Subsets(self.vertices(),k):
+                for subvert in Subsets(self.vertices(sort=False),k):
                     g_ind=Graph(self).subgraph(subvert.list())
                     if g_ind.num_edges()>2*g_ind.num_verts()-3:
                         if certificate:
@@ -474,14 +474,14 @@ class FlexRiGraph(Graph):
         if self._Henneberg_sequences and onlyOne:
             return
 
-        degTwo=[v for v in g.vertices() if g.degree(v)==2]
+        degTwo=[v for v in g.vertices(sort=False) if g.degree(v)==2]
         if onlyOne and degTwo:
             degTwo = [degTwo[0]]
         for v in degTwo:
             g_smaller = deepcopy(g)
             g_smaller.delete_vertex(v)
             self._inverse_Henneberg_step(g_smaller, seq+[('I',degTwo[0])], onlyOne)
-        degThree = [v for v in g.vertices() if g.degree(v)==3]
+        degThree = [v for v in g.vertices(sort=False) if g.degree(v)==3]
         for v in degThree:
             [u1,u2,u3] = g.neighbors(v)
             g_smaller = deepcopy(g)
@@ -656,7 +656,7 @@ class FlexRiGraph(Graph):
         """
         quotient_vertices_dict = {}
         vertices = [Set(block) for block in blocks
-                    ] + [Set([v]) for v in self.vertices() 
+                    ] + [Set([v]) for v in self.vertices(sort=False) 
                          if v not in flatten(blocks, max_level=1)]
         for i, block in enumerate(vertices):
             for v in block:
@@ -1275,7 +1275,7 @@ class FlexRiGraph(Graph):
         """
         res = []
         G = deepcopy(Graph(self))
-        for v in G.vertices():
+        for v in G.vertices(sort=False):
             neigh_v = G.neighbors(v)
             for u1,u2 in Subsets(neigh_v,2):
                 for u in Set(G.neighbors(u1)).intersection(Set(G.neighbors(u2))):
@@ -1321,7 +1321,7 @@ class FlexRiGraph(Graph):
             True
         """
         res = []
-        for u,v,w in Subsets(self.vertices(),3):
+        for u,v,w in Subsets(self.vertices(sort=False),3):
             if Graph(self).subgraph([u,v,w]).num_edges() == 0:
                 for x,y in Subsets(Set(self.neighbors(u)
                                        ).intersection(Set(self.neighbors(v))
@@ -1406,7 +1406,7 @@ class FlexRiGraph(Graph):
         connected by a unicolor path ``path`` in the form ``[[u,v],path]``.
         """
         res = []
-        for u,v in Subsets(self.vertices(),2):
+        for u,v in Subsets(self.vertices(sort=False),2):
             if not self.has_edge(u,v):
                 path = self.unicolor_path(u,v, active_colorings)
                 if path:
@@ -1613,12 +1613,12 @@ class FlexRiGraph(Graph):
              7: (a, 0, a)}
         """
         if vertex_at_origin == None:
-            vertex_at_origin = self.vertices()[0]
+            vertex_at_origin = self.vertices(sort=True)[0]
 
         x = {}
         y = {}
         z = {}
-        for u in self.vertices():
+        for u in self.vertices(sort=False):
             x[u] = var('x'+str(u))
             y[u] = var('y'+str(u))
             z[u] = var('z'+str(u))
@@ -1645,7 +1645,7 @@ class FlexRiGraph(Graph):
 
         for solution in solve(equations, list(chain(x.values(), y.values(), z.values())), solution_dict=True):
             is_injective = True
-            for u,v in Subsets(self.vertices(),2):
+            for u,v in Subsets(self.vertices(sort=False),2):
                 if ((solution[x[u]]-solution[x[v]]).is_zero() and
                     (solution[y[u]]-solution[y[v]]).is_zero() and
                     (solution[z[u]]-solution[z[v]]).is_zero()):
@@ -1666,7 +1666,7 @@ class FlexRiGraph(Graph):
                         sub_dict[par] = var('c'+str(i-2))
                     i += 1
                 embedding = {}
-                for v in self.vertices():
+                for v in self.vertices(sort=False):
                     embedding[v] = (solution[x[v]].subs(sub_dict),
                                 solution[y[v]].subs(sub_dict),
                                 solution[z[v]].subs(sub_dict))
@@ -1853,7 +1853,7 @@ class FlexRiGraph(Graph):
         x = {}
         y = {}
         s = {}
-        for w in self.vertices():
+        for w in self.vertices(sort=False):
             s[w] = var('s'+str(w))
             x[w] = var('x'+str(w))
             y[w] = var('y'+str(w))
@@ -1878,7 +1878,7 @@ class FlexRiGraph(Graph):
         eqs_edges = [s[u_]  + s[v_] -Integer(2) *x[u_] * x[v_] -Integer(2) *y[u_] * y[v_] - edge_length(u_,v_)**Integer(2)
                     for u_,v_ in self.edges(labels=False, sort=False)
                     ]
-        eqs_spheres = [s[v_] - (x[v_]**Integer(2)  + y[v_]**Integer(2) ) for v_ in Set(self.vertices())]
+        eqs_spheres = [s[v_] - (x[v_]**Integer(2)  + y[v_]**Integer(2) ) for v_ in Set(self.vertices(sort=False))]
 
         eqs = eqs_edges+eqs_spheres
         return [[eq for eq in eqs if not eq in RR], vertex_in_triangle]
@@ -2092,7 +2092,7 @@ class FlexRiGraph(Graph):
             else:
                 result_complex.append(sol_dict)
         for sol_dict in result_real + result_complex:
-            for w in self.vertices():
+            for w in self.vertices(sort=False):
                 sol_dict[w] = vector([sol_dict['x'+str(w)], sol_dict['y'+str(w)]])
                 sol_dict.pop('x'+str(w))
                 sol_dict.pop('y'+str(w))
@@ -2115,7 +2115,7 @@ class FlexRiGraph(Graph):
 
         """
         realization = {}
-        for v in self.vertices():
+        for v in self.vertices(sort=False):
             realization[v] = vector([10*random.random(),10*random.random()])
         return realization
 
@@ -2154,7 +2154,7 @@ class FlexRiGraph(Graph):
         """
         lowPrecField = RealField(20)
         print('\\begin{tikzpicture}[scale=' + str(lowPrecField(scale)) + ']')
-        for k in self.vertices():
+        for k in self.vertices(sort=True):
             if vertex_labels:
                 label = str(k)
             else:

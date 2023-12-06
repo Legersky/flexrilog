@@ -160,7 +160,7 @@ class GraphMotion(SageObject):
     def CsSymmetricGridConstruction(cls, graph, delta, a_list=[], d_list=[], d_inv_list=[]):
         red_ordered = delta.red_golden_components()
         vert2red = { v: i for i, comp in enumerate(red_ordered) for v in comp }
-        vert2blue = { v: vert2red[graph.sigma(v)] for v in graph.vertices()}
+        vert2blue = { v: vert2red[graph.sigma(v)] for v in graph.vertices(sort=False)}
         
         from random import randint
         if a_list==[]:
@@ -222,7 +222,7 @@ class GraphMotion(SageObject):
             v : (Rot*vector(a_list[vert2red[v]]) 
                  + Rot.transpose()*reflection*vector(a_list[vert2blue[v]])
                  + z(v))
-            for v in graph.vertices()
+            for v in graph.vertices(sort=False)
         }
         M = ParametricGraphMotion.ParametricMotion(graph, par, 'symbolic', active_NACs=delta)
         if graph.invariant_edges():
@@ -413,7 +413,7 @@ class GraphMotion(SageObject):
                 +'"  version="1.1" baseProfile="full"\n') #viewBox="0 0 500 350"
         lines.append('xmlns="http://www.w3.org/2000/svg"\n')
         lines.append('xmlns:xlink="http://www.w3.org/1999/xlink">\n')
-        for v in self._graph.vertices():
+        for v in self._graph.vertices(sort=True):
             lines.append('  <defs>\n')
             lines.append('<marker id="vertex'+rnd_str+str(v).replace(' ', '').replace(')', 'Y').replace('(', 'X')
                          +'" viewBox="0 0 {1} {1}" refX="{0}" refY="{0}"\n'.format(radius, 2*radius))
@@ -479,9 +479,9 @@ class GraphMotion(SageObject):
         for v in vertex_edge_collisions:
             vertex_edge_collisions[v] = Set([e2s(e) for e in vertex_edge_collisions[v]])
         collision_graph = Graph([[e2s(e) for e in self._graph.edges(labels=False, sort=False)],[]],format='vertices_and_edges')
-        for u in self._graph.vertices():
+        for u in self._graph.vertices(sort=False):
             collision_graph.add_edges([[e2s([u,v]),e2s([u,w]),''] for v,w in Subsets(self._graph.neighbors(u),2)])
-        for e in collision_graph.vertices():
+        for e in collision_graph.vertices(sort=False):
             for v in vertex_edge_collisions:
                 if v in e:
                     for f in vertex_edge_collisions[v]:
@@ -495,7 +495,7 @@ class GraphMotion(SageObject):
             i = 1
             res = []
             num_layers = chrom_number + j
-            min_s = len(self._graph.vertices())*num_layers
+            min_s = self._graph.num_verts()*num_layers
             for col in all_graph_colorings(collision_graph,num_layers):
                 if len(Set(col.keys()))<num_layers:
                     continue
@@ -517,7 +517,7 @@ class GraphMotion(SageObject):
                         break
                 if col_free:
                     s = 0
-                    for v in self._graph.vertices():
+                    for v in self._graph.vertices(sort=False):
                         A_min_v = min([h for h in layers if v in layers[h]])
                         A_max_v = max([h for h in layers if v in layers[h]])
                         s += A_max_v - A_min_v
@@ -628,7 +628,7 @@ class ParametricGraphMotion(GraphMotion):
 
         rotation = matrix([[cos(alpha), sin(alpha)], [-sin(alpha), cos(alpha)]])
         positions = {}
-        for v in self._graph.vertices():
+        for v in self._graph.vertices(sort=False):
             positions[v] = rotation * a[grid_coor[v][1]] + b[grid_coor[v][0]]
         self._parametrization = positions
 
@@ -752,7 +752,7 @@ class ParametricGraphMotion(GraphMotion):
         res = {}
         if self._par_type == 'symbolic':
             subs_dict = { self._parameter : value}
-            for v in self._graph.vertices():
+            for v in self._graph.vertices(sort=False):
                 if numeric:
                     res[v] = vector([RR(xi.subs(subs_dict)) for xi in self._parametrization[v]])
                 else:
@@ -760,7 +760,7 @@ class ParametricGraphMotion(GraphMotion):
             return res
         elif self._par_type == 'rational':
             h = self._field.hom(value)
-            for v in self._graph.vertices():
+            for v in self._graph.vertices(sort=False):
                 if numeric:
                     res[v] = vector([RR(h(xi)) for xi in self._parametrization[v]])
                 else:
@@ -871,7 +871,7 @@ class ParametricGraphMotion(GraphMotion):
         description, make radius as parameter
         """
         A = {}
-        for v in self._graph.vertices():
+        for v in self._graph.vertices(sort=False):
             values = [height_function[e] for e in height_function if v in e]
             A[v] = [min(values), max(values)]
         def transform_rec(expr):
@@ -973,7 +973,7 @@ class ParametricGraphMotion(GraphMotion):
                     f.write('\n   }')
                     f.write('\n}')
 
-            for v in self._graph.vertices():
+            for v in self._graph.vertices(sort=True):
                 f.write('cylinder{')
                 f.write('<' + transform(self.parametrization()[v][0]) + ','
                     + str(layer_height *(A[v][0]-1/2)) + ',' + transform(self.parametrization()[v][1]) + '>,')

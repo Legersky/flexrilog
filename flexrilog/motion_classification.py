@@ -102,7 +102,7 @@ class MotionClassifier(SageObject):
         ys = []
         xs_latex = []
         ys_latex = []
-        for v in self._graph.vertices():
+        for v in self._graph.vertices(sort=False):
             xs.append('x' + str(v))
             ys.append('y' + str(v))
             xs_latex.append('x_{' + str(v) + '}')
@@ -126,7 +126,7 @@ class MotionClassifier(SageObject):
 #        -----Graph of 4-cycles-----
         self._four_cycle_graph = Graph([self._four_cycles,[]], format='vertices_and_edges')
 
-        for c1, c2 in Subsets(self._four_cycle_graph.vertices(), 2):
+        for c1, c2 in Subsets(self._four_cycle_graph.vertices(sort=False), 2):
             intersection = self.cycle_edges(c1, sets=True).intersection(self.cycle_edges(c2, sets=True))
             if len(intersection)>=2 and len(intersection[0].intersection(intersection[1]))==1:
                 common_vert = intersection[0].intersection(intersection[1])[0]
@@ -158,7 +158,7 @@ class MotionClassifier(SageObject):
                 cycles.append(next_cycle)
                 missing_cycles.pop(next_cycle)
 
-        missing_cycles = {c:0 for c in self._four_cycle_graph.vertices() if not c in cycles}
+        missing_cycles = {c:0 for c in self._four_cycle_graph.vertices(sort=False) if not c in cycles}
         while missing_cycles:
             next_cycle = max(missing_cycles.keys(),
                             key=lambda c:sum([1 for c2 in self._four_cycle_graph.neighbors(c) if c2 in cycles]))

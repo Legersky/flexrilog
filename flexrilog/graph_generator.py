@@ -948,7 +948,7 @@ class GraphGenerator():
             def toRhombic(self):
                 aux_edges = [[t[0],t[2]] for t,_ in self.triangles]
                 self.delete_edges(aux_edges)
-                self.delete_vertices([v for v in self.vertices() if self.degree(v)==1])
+                self.delete_vertices([v for v in self.vertices(sort=False) if self.degree(v)==1])
                 self.triangles=[]
             
         pos = {0: vector([0, 0])}
@@ -967,7 +967,7 @@ class GraphGenerator():
         P.toRhombic()
         
         if radius:
-            P.delete_vertices([v for v in P.vertices() if norm(P._pos[v])>= radius])
+            P.delete_vertices([v for v in P.vertices(sort=False) if norm(P._pos[v])>= radius])
                     
         return FlexRiGraph(P)
         

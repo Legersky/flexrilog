@@ -343,7 +343,7 @@ class NACcoloring(SageObject):
 
 
     def blue_subgraph(self):
-        return Graph([self._graph.vertices(),[list(e) for e in self._blue_edges]], format='vertices_and_edges')
+        return Graph([self._graph.vertices(sort=False),[list(e) for e in self._blue_edges]], format='vertices_and_edges')
 
     
     def blue_components(self):
@@ -351,7 +351,7 @@ class NACcoloring(SageObject):
 
 
     def red_subgraph(self):
-        return Graph([self._graph.vertices(),[list(e) for e in self._red_edges]], format='vertices_and_edges')
+        return Graph([self._graph.vertices(sort=False),[list(e) for e in self._red_edges]], format='vertices_and_edges')
 
 
     def red_components(self):
@@ -449,7 +449,7 @@ class NACcoloring(SageObject):
 #            alpha = 0
 #            rotation = matrix([[cos(alpha), sin(alpha)], [-sin(alpha), cos(alpha)]])
 #            positions = {}
-#            for v in self._graph.vertices():
+#            for v in self._graph.vertices(sort=False):
 #                positions[v] = rotation * a[grid_coor[v][1]] + b[grid_coor[v][0]]
 #            return self._graph.plot(NAC_coloring=self, pos=positions)
         return self._graph.plot(NAC_coloring=self, name_in_title=False, **args_kwd)
@@ -615,13 +615,13 @@ class NACcoloring(SageObject):
         if ordered_red:
             if (type(ordered_red)!=list 
                 or len(ordered_red)!=len(red_comps) 
-                or Set(flatten(ordered_red, max_level=1))!=Set(self._graph.vertices())):
+                or Set(flatten(ordered_red, max_level=1))!=Set(self._graph.vertices(sort=False))):
                 raise ValueError('`ordered_red` must be a list of all red components, not ' + str(ordered_red))
             red_comps = ordered_red
         if ordered_blue:
             if (type(ordered_blue)!=list 
                 or len(ordered_blue)!=len(blue_comps) 
-                or Set(flatten(ordered_blue, max_level=1))!=Set(self._graph.vertices())):
+                or Set(flatten(ordered_blue, max_level=1))!=Set(self._graph.vertices(sort=False))):
                 raise ValueError('`ordered_blue` must be a list of all blue components, not ' + str(ordered_blue))
             blue_comps = ordered_blue
         for (i,red) in enumerate(red_comps):
@@ -746,9 +746,9 @@ class NACcoloring(SageObject):
             raise ValueError('The cycle must be a 4-cycle.')
         if self.path_is_unicolor(list(cycle) + [cycle[0]]):
             if self.is_red(cycle[0], cycle[1]):
-                subgraph = Graph([self._graph.vertices(), [list(e) for e in self.blue_edges()]],  format='vertices_and_edges')
+                subgraph = Graph([self._graph.vertices(sort=False), [list(e) for e in self.blue_edges()]],  format='vertices_and_edges')
             else:
-                subgraph = Graph([self._graph.vertices(), [list(e) for e in self.red_edges()]],  format='vertices_and_edges')
+                subgraph = Graph([self._graph.vertices(sort=False), [list(e) for e in self.red_edges()]],  format='vertices_and_edges')
             if subgraph.shortest_path(cycle[0], cycle[2]) and subgraph.shortest_path(cycle[1], cycle[3]):
                 return True
             else:

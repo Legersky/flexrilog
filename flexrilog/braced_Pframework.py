@@ -93,7 +93,7 @@ class Pframework(FlexRiGraphWithCartesianNACs,Framework):
                 
         self._tikz_vertices = "\\begin{tikzpicture}\n"
         self._latex_vertex_style = 'gvertex'
-        for v in self.vertices():
+        for v in self.vertices(sort=True):
             self._tikz_vertices += "    \\node[" + self._latex_vertex_style + "] ({}) at {} {{}};\n".format(
                 v, self.placement(v))
         self._tikz_edges = '    \\draw[edge] ' + ' '.join(
@@ -116,7 +116,7 @@ class Pframework(FlexRiGraphWithCartesianNACs,Framework):
         Return coordinates for red and blue components.
         """        
         def get_coordinates(proj):
-            root = proj.vertices()[0]
+            root = proj.vertices(sort=True)[0]
             shortest_paths = proj.shortest_paths(root)
             positions = {root : vector([0,0])}
             shortest_paths
@@ -155,7 +155,7 @@ class Pframework(FlexRiGraphWithCartesianNACs,Framework):
         x1, y1 = RR(pos_w1[0]) , RR(pos_w1[1])
         x2, y2 = RR(pos_w2[0]) , RR(pos_w2[1])
         tol_squared = self._tolerance**2
-        for i in self.vertices():
+        for i in self.vertices(sort=False):
             a = self._pos[i]
             ax, ay = RR(a[0]), RR(a[1])
             if ((ax-x1)**2 + (ay-y1)**2 < tol_squared
@@ -165,7 +165,7 @@ class Pframework(FlexRiGraphWithCartesianNACs,Framework):
         if type(new_vertices)==list and len(new_vertices)==2:
             w1, w2 = new_vertices
         else:
-            max_vert = max(self.vertices())
+            max_vert = max(self.vertices(sort=False))
             w1, w2 = max_vert+1, max_vert+2
         
         self.add_edges([[u,w1], [w1,w2], [w2,v]])
@@ -183,14 +183,14 @@ class Pframework(FlexRiGraphWithCartesianNACs,Framework):
         if not self.has_edge(w,v):
             raise ValueError('{} must be an edge.'.format([v,w]))
         if new_vertex==None:
-            w_new = max(self.vertices())+1
+            w_new = max(self.vertices(sort=False))+1
         else:
             w_new = new_vertex
             
         pos_w_new = self.placement(u) + self.placement(w) - self.placement(v)
         x, y = RR(pos_w_new[0]) , RR(pos_w_new[1])
         tol_squared = self._tolerance**2
-        for i in self.vertices():
+        for i in self.vertices(sort=False):
             a = self._pos[i]
             if (RR(a[0])-x)**2 + (RR(a[1])-y)**2 < tol_squared:
                 raise ValueError('The new vertex coincides with {}'.format(i))

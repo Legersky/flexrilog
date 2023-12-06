@@ -96,10 +96,10 @@ class SymmetricFlexRiGraph(FlexRiGraph):
             self._sym_gens = self._sym_group.gens()
         elif isinstance(symmetry, list):
             self._sym_gens = symmetry
-            self._sym_group = PermutationGroup(symmetry, domain=self.vertices())
+            self._sym_group = PermutationGroup(symmetry, domain=self.vertices(sort=False))
         elif is_PermutationGroupElement(symmetry):
             self._sym_gens = [symmetry]
-            self._sym_group = PermutationGroup([symmetry], domain=self.vertices())
+            self._sym_group = PermutationGroup([symmetry], domain=self.vertices(sort=False))
         
         for gen in self._sym_gens:
             for u,v in self.edges(labels=False, sort=False):
@@ -220,7 +220,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
             return self._vertex_orbits
         
         self._vertex_orbits = []
-        verts = {v:0 for v in self.vertices()}
+        verts = {v:0 for v in self.vertices(sort=False)}
         for v in self.invariant_vertices():
             verts.pop(v)
         while verts:
@@ -303,7 +303,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         """
         if self._invariant_vertices:
             return self._invariant_vertices
-        self._invariant_vertices = [v for v in self.vertices() if len(self.omega.orbit(v))<self.n]
+        self._invariant_vertices = [v for v in self.vertices(sort=False) if len(self.omega.orbit(v))<self.n]
         return self._invariant_vertices
             
     
@@ -378,7 +378,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         r"""
         Return whether ``sigma`` generates a $\\mathcal{C}_n$-symmetry of the `graph`.
         """
-        partially_inv = [v for v in graph.vertices() if len(sigma.orbit(v))<n]
+        partially_inv = [v for v in graph.vertices(sort=False) if len(sigma.orbit(v))<n]
         if [v for v in partially_inv if len(sigma.orbit(v))>1]:
             return False
         if Graph(graph).is_independent_set(partially_inv):
@@ -545,7 +545,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         
         self._invariant_vertices = []
         
-        for v in self.vertices():
+        for v in self.vertices(sort=False):
             if self.sigma(v)==v:
                 self._invariant_vertices.append(v)
                 
@@ -555,7 +555,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         if self._vertex_orbits:
             return self._vertex_orbits
         
-        verts = {v:1 for v in self.vertices()}
+        verts = {v:1 for v in self.vertices(sort=False)}
         self._vertex_orbits = []
         for v in verts:
             if verts[v]:
@@ -686,7 +686,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         
         def monochromatic_pairs(active):
             upairs = []
-            for w in res.vertices():
+            for w in res.vertices(sort=False):
                 for u,v in res.orthogonal_invariant_edges():
                     if not res.has_edge(w,v):
                         if w==res.sigma(w):
