@@ -2148,7 +2148,7 @@ class FlexRiGraph(Graph):
             self._pos[v][1] = tmp
 
     @doc_index("Plotting")
-    def print_tikz(self, colored_edges=[], color_names=['edge'], vertex_style='vertex', scale=1, vertex_labels=True):
+    def print_tikz(self, colored_edges=[], color_names=['edge'], vertex_style='vertex', scale=1, vertex_labels=True, dense=False):
         r"""
         Print TikZ code of the graph.
         """
@@ -2159,15 +2159,21 @@ class FlexRiGraph(Graph):
                 label = str(k)
             else:
                 label = ''
+            if dense:
+                end = ' '
+            else:
+                end = '\n' 
             print( '\t\\node[' + vertex_style + '] ('+str(k)+') at '+
-                    str((lowPrecField(self._pos[k][0]),lowPrecField(self._pos[k][1])))+' {'+label+'};')
+                    str((lowPrecField(self._pos[k][0]),lowPrecField(self._pos[k][1])))+' {'+label+'};',end=end)
+        if dense:
+            print()
         if len(colored_edges) == len(color_names):
             for subset, col_name in zip(colored_edges, color_names):
                 print( '\t\\draw[' + col_name + ']' +
                        ' '.join(['('+str(e[0])+')edge('+str(e[1])+')' for e in subset]) + ';')
         else:
             print( '\t\\draw[edge]' +
-                       ' '.join(['('+str(e[0])+')edge('+str(e[1])+')' for e in self.edges()]) + ';')
+                       ' '.join(['('+str(e[0])+')edge('+str(e[1])+')' for e in self.edges(sort=True)]) + ';')
         print( '\\end{tikzpicture}')
 
    
