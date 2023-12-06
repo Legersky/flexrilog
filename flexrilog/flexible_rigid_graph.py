@@ -197,7 +197,7 @@ class FlexRiGraph(Graph):
         if self._check:
             if not self.is_connected():
                 raise ValueError('The graph must be connected.')
-            if len(self.edges())==0:
+            if self.num_edges()==0:
                 raise ValueError('The graph must have at least one edge.')
 
     def _reset(self):
@@ -213,12 +213,12 @@ class FlexRiGraph(Graph):
         else:
             pref = ''
         pref += self.__class__.__name__
-        if len(self.edges(labels=False)) < 10:
-            return (pref + ' with the vertices '+str(self.vertices()) +
-                    ' and edges '+str(self.edges(labels=False)) + '')
+        if self.num_edges() < 10:
+            return (pref + ' with the vertices '+str(self.vertices(sort=True)) +
+                    ' and edges '+str(self.edges(labels=False, sort=True)) + '')
         else:
-            return (pref + ' with ' +str(len(self.vertices())) +
-                    ' vertices and ' + str(len(self.edges(labels=False))) + ' edges')
+            return (pref + ' with ' +str(self.num_verts()) +
+                    ' vertices and ' + str(self.num_edges()) + ' edges')
 
     def __copy__(self):
         cls = self.__class__
@@ -244,7 +244,7 @@ class FlexRiGraph(Graph):
             sage: from flexrilog import FlexRiGraph
             sage: G = FlexRiGraph([(0,1)], verbosity=1)
             FlexRiGraph: The constructor of FlexRiGraph finished
-            sage: G._report('The graph has {} edge.'.format(len(G.edges())))
+            sage: G._report('The graph has {} edge.'.format(G.num_edges()))
             FlexRiGraph: The graph has 1 edge.
         """
         if verbosity_level<=self._verbosity:
@@ -431,15 +431,15 @@ class FlexRiGraph(Graph):
             algorithm = "Henneberg"
 
         if algorithm=="definition":
-            if len(self.edges())!=2*len(self.vertices())-3:
+            if self.num_edges()!=2*self.num_verts()-3:
                 if certificate:
                     return (False, Graph(self))
                 else:
                     return False
-            for k in range(4,len(self.vertices())):
+            for k in range(4,self.num_verts()):
                 for subvert in Subsets(self.vertices(),k):
                     g_ind=Graph(self).subgraph(subvert.list())
-                    if len(g_ind.edges())>2*len(g_ind.vertices())-3:
+                    if g_ind.num_edges()>2*g_ind.num_verts()-3:
                         if certificate:
                             return (False, g_ind)
                         else:
@@ -449,7 +449,7 @@ class FlexRiGraph(Graph):
             else:
                 return True
         elif algorithm=="Henneberg":
-            if len(self.edges())!=2*len(self.vertices())-3:
+            if self.num_edges()!=2*self.num_verts()-3:
                 if certificate:
                     return (False, None)
                 else:
@@ -495,7 +495,7 @@ class FlexRiGraph(Graph):
             if not g.has_edge(u3,u2):
                 g_smaller.add_edge(u3,u2)
                 self._inverse_Henneberg_step(g_smaller, seq+[('II',v, (u3,u2))], onlyOne)
-        if len(g.edges())==1 and len(g.vertices())==2:
+        if g.num_edges()==1 and g.num_vertices()==2:
             if onlyOne:
                 self._Henneberg_sequences.append(seq)
                 return seq
@@ -1322,7 +1322,7 @@ class FlexRiGraph(Graph):
         """
         res = []
         for u,v,w in Subsets(self.vertices(),3):
-            if len(Graph(self).subgraph([u,v,w]).edges()) == 0:
+            if Graph(self).subgraph([u,v,w]).num_edges() == 0:
                 for x,y in Subsets(Set(self.neighbors(u)
                                        ).intersection(Set(self.neighbors(v))
                                                       ).intersection(Set(self.neighbors(w))),2):
@@ -1454,7 +1454,7 @@ class FlexRiGraph(Graph):
             sage: from flexrilog import FlexRiGraph
             sage: G = FlexRiGraph(1256267)
             sage: CDC = G.constant_distance_closure()
-            sage: len(CDC.edges())-len(G.edges())
+            sage: CDC.num_edges()-G.num_edges()
             1
 
         TODO:
