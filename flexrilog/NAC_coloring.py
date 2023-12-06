@@ -180,7 +180,7 @@ class NACcoloring(SageObject):
         """
         if len(self._blue_edges) + len(self._red_edges) != self._graph.num_edges():
             raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
-        if (Set([Set(e) for e in self._graph.edges(labels=False)])
+        if (Set([Set(e) for e in self._graph.edges(labels=False, sort=False)])
             != self._blue_edges.union(self._red_edges)):
             raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
 
@@ -713,7 +713,7 @@ class NACcoloring(SageObject):
         if NACs == []:
             NACs = self._graph.NAC_colorings()
         for delta in NACs:
-            if len(Set([(self.is_red(e), delta.is_red(e)) for e in self._graph.edges(labels=False)])) == 3:
+            if len(Set([(self.is_red(e), delta.is_red(e)) for e in self._graph.edges(labels=False, sort=False)])) == 3:
                 return False
         return True
 
@@ -779,9 +779,9 @@ class NACcoloring(SageObject):
             '111100011111'
         """
         s = '1'
-        u1, v1 = self._graph.edges(labels=False)[0]
+        u1, v1 = self._graph.edges(labels=False, sort=True)[0]
         first_color = self.color(u1, v1)
-        for u,v in self._graph.edges(labels=False):
+        for u,v in self._graph.edges(labels=False, sort=True):
             s += '1' if self.color(u,v)==first_color else '0'
         return int(s,2)
 

@@ -102,7 +102,7 @@ class SymmetricFlexRiGraph(FlexRiGraph):
             self._sym_group = PermutationGroup([symmetry], domain=self.vertices())
         
         for gen in self._sym_gens:
-            for u,v in self.edges(labels=False):
+            for u,v in self.edges(labels=False, sort=False):
                 if not self.has_edge(gen(u), gen(v)):
                     raise ValueError('`symmetry must be a subgroup of the automorphism group of the graph or the list of its generators, not '
                                      + str(self._sym_group))                    
@@ -288,7 +288,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         if self._edge_orbits:
             return self._edge_orbits
         orbits = []
-        for u,v in self.edges(labels=False):
+        for u,v in self.edges(labels=False, sort=False):
             orbit = [Set([u,v])]
             for _ in range(1,self.n):
                 orbit.append(Set([self.omega(orbit[-1][0]), self.omega(orbit[-1][1])]))
@@ -460,7 +460,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         r"""
         Return list of lists of edges that are necessarily colored the same in a Cn-symmetric NAC-coloring.
         """
-        V = [tuple(sorted(e)) for e in self.edges(labels=False)]
+        V = [tuple(sorted(e)) for e in self.edges(labels=False, sort=False)]
         E = []
         for tr_comp in self.triangle_connected_components():
             E += [[tuple(sorted(e)), tuple(sorted(f))] for e, f in zip(tr_comp[:-1], tr_comp[1:])]
@@ -481,7 +481,7 @@ class CnSymmetricFlexRiGraphCartesianNACs(CnSymmetricFlexRiGraph, FlexRiGraphWit
         r"""
         Return list of lists of edges that are necessarily colored the same in a Cn-symmetric NAC-coloring.
         """
-        V = [tuple(sorted(e)) for e in self.edges(labels=False)]
+        V = [tuple(sorted(e)) for e in self.edges(labels=False, sort=False)]
         E = []
         for tr_comp in self.triangle_connected_components():
             E += [[tuple(sorted(e)), tuple(sorted(f))] for e, f in zip(tr_comp[:-1], tr_comp[1:])]
@@ -571,7 +571,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         if self._edge_orbits:
             return self._edge_orbits
         
-        edgs = {tuple(sorted(e)):1 for e in self.edges(labels=False)}
+        edgs = {tuple(sorted(e)):1 for e in self.edges(labels=False, sort=False)}
         self._edge_orbits = []
         for e in edgs:
             e = tuple(sorted(e))
@@ -604,7 +604,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
             return self._invariant_edges
         
         self._invariant_edges = []
-        for e in self.edges(labels=False):
+        for e in self.edges(labels=False, sort=False):
             u,v = e
             if self.sigma(u) in e and self.sigma(v) in e:
                 self._invariant_edges.append(e)

@@ -97,11 +97,11 @@ class CnSymmetricNACcoloring(NACcoloring):
     def is_Cn_symmetric(self):
         if not self.is_equal(self.isomorphic_NAC_coloring(self.omega), moduloConjugation=False):
             return False
-        if len(self.blue_subgraph(
-            ).subgraph(flatten(self._partially_invariant_components['red'], max_level=1)).edges())>0:
+        if self.blue_subgraph(
+            ).subgraph(flatten(self._partially_invariant_components['red'], max_level=1)).num_edges()>0:
             return False
-        if len(self.red_subgraph(
-            ).subgraph(flatten(self._partially_invariant_components['blue'], max_level=1)).edges())>0:
+        if self.red_subgraph(
+            ).subgraph(flatten(self._partially_invariant_components['blue'], max_level=1)).num_edges()>0:
             return False
         return True
 
@@ -307,7 +307,7 @@ class CsSymmetricNACcoloring(NACcoloring):
         """
         if len(self._blue_edges) + len(self._red_edges) + len(self._golden_edges) != self._graph.num_edges():
             raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
-        if (Set([Set(e) for e in self._graph.edges(labels=False)])
+        if (Set([Set(e) for e in self._graph.edges(labels=False, sort=False)])
             != self._blue_edges.union(self._red_edges).union(self._golden_edges)):
             raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
     

@@ -104,7 +104,7 @@ class GraphMotion(SageObject):
     
         for comp in delta._partially_invariant_components['red']+delta._partially_invariant_components['blue']:
             if len(comp)>Integer(1) :
-                M.fix_edge(Graph(G).subgraph(comp).edges(labels=False)[Integer(0) ])
+                M.fix_edge(Graph(G).subgraph(comp).edges(labels=False, sort=True)[0])
                 break
         return M
 
@@ -397,7 +397,7 @@ class GraphMotion(SageObject):
                 edge_partition.blue_edges()
                 ]    
         elif type(edge_partition)!=list or len(edge_partition)==0:
-                edge_partition = [self._graph.edges(labels=False)]
+                edge_partition = [self._graph.edges(labels=False,sort=True)]
                 if len(colors) == len(default_colors):
                     colors = ['LightGray']
                     
@@ -478,7 +478,7 @@ class GraphMotion(SageObject):
             return Set(e)
         for v in vertex_edge_collisions:
             vertex_edge_collisions[v] = Set([e2s(e) for e in vertex_edge_collisions[v]])
-        collision_graph = Graph([[e2s(e) for e in self._graph.edges(labels=False)],[]],format='vertices_and_edges')
+        collision_graph = Graph([[e2s(e) for e in self._graph.edges(labels=False, sort=False)],[]],format='vertices_and_edges')
         for u in self._graph.vertices():
             collision_graph.add_edges([[e2s([u,v]),e2s([u,w]),''] for v,w in Subsets(self._graph.neighbors(u),2)])
         for e in collision_graph.vertices():
@@ -525,7 +525,7 @@ class GraphMotion(SageObject):
                         min_s = s
                         res.append((col, s, A))
                         i += 1
-                        if s==2*len(self._graph.edges())-len(self._graph.vertices()):
+                        if s==2*self._graph.num_edges()-self._graph.num_verts():
                             optimal = True
                             break
             if optimal:
@@ -696,7 +696,7 @@ class ParametricGraphMotion(GraphMotion):
 
     def _edges_with_same_length(self):
         tmp = {}
-        for u, v in self._graph.edges(labels=False):
+        for u, v in self._graph.edges(labels=False, sort=False):
             s = self._parametrization[u] - self._parametrization[v]
             l = s.inner_product(s)
             if self._par_type == 'rational' and not l in self._field.constant_field():
@@ -716,7 +716,7 @@ class ParametricGraphMotion(GraphMotion):
         Return the dictionary of edge lengths.
         """
         res = {}
-        for u, v in self._graph.edges(labels=False):
+        for u, v in self._graph.edges(labels=False, sort=False):
             s = self._parametrization[u] - self._parametrization[v]
             l = s.inner_product(s)
             if self._par_type == 'rational':
@@ -949,7 +949,7 @@ class ParametricGraphMotion(GraphMotion):
                     + ');')
                 ]))
             f.write('\n// parametrization: ' +str(self.parametrization()))
-            for e in self._graph.edges(labels=False):
+            for e in self._graph.edges(labels=False, sort=True):
                 f.write('\n// ' + str(e))
                 f.write('\ncylinder{')
                 for i in [0,1]:
@@ -1086,7 +1086,7 @@ class ParametricGraphMotion(GraphMotion):
         res = {}
         for u in self._graph:
             res[u] = []
-            for v,w in self._graph.edges(labels=False):
+            for v,w in self._graph.edges(labels=False, sort=False):
                 if u in [v, w]:
                     continue
                 z = self._parametrization[u] - self._parametrization[v]
@@ -1106,7 +1106,7 @@ class ParametricGraphMotion(GraphMotion):
                 except RuntimeError:
                     pass
         for u in self._graph:
-            for v,w in self._graph.edges(labels=False):
+            for v,w in self._graph.edges(labels=False, sort=False):
                 if u in [v, w]:
                     continue
                 x = self._parametrization[w] - self._parametrization[u]

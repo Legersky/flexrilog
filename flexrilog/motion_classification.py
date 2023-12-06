@@ -75,10 +75,10 @@ class MotionClassifier(SageObject):
         lambdas_latex = []
         
         if edges_ordered==[]:
-            edges_ordered = self._graph.edges(labels=False)
+            edges_ordered = self._graph.edges(labels=False, sort=False)
         else:
             if (Set([self._edge2str(e) for e in edges_ordered]) !=
-                Set([self._edge2str(e) for e in self._graph.edges(labels=False)])):
+                Set([self._edge2str(e) for e in self._graph.edges(labels=False, sort=False)])):
                 raise ValueError('The provided ordered edges do not match the edges of the graph.')
 
         for e in edges_ordered:
@@ -302,14 +302,14 @@ class MotionClassifier(SageObject):
             if not delta.is_singleton():
                 raise ValueError('The NAC-coloring must be a singleton.')
         eqs_lengths=[]
-        for e in self._graph.edges():
+        for e in self._graph.edges(sort=False):
             eqs_lengths.append(self._z(e)*self._w(e) - self._lam(e)**_sage_const_2)
 
 
         eqs_w=[]
         eqs_z=[]
         for T in self._graph.spanning_trees():
-            for e in self._graph.edges():
+            for e in self._graph.edges(sort=False):
                 eqw = 0
                 eqw_all = 0
                 eqz = 0
@@ -337,7 +337,7 @@ class MotionClassifier(SageObject):
                      + [self._ringLC(eq) for eq in extra_eqs])
         return [self._ring_lambdas(eq)
                 for eq in ideal(equations).elimination_ideal(flatten(
-                    [[self._w(e), self._z(e)] for e in self._graph.edges()])).basis
+                    [[self._w(e), self._z(e)] for e in self._graph.edges(sort=False)])).basis
                 ]
 
     @staticmethod
@@ -392,7 +392,7 @@ class MotionClassifier(SageObject):
         r"""
         Return the dictionary of same edge lengths enforced by given motion types.
         """
-        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
+        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False, sort=False)}
         self._set_same_lengths(H, motion_types)
         return H
 
@@ -567,7 +567,7 @@ class MotionClassifier(SageObject):
 #         if cycles==[]:
         cycles = self.four_cycles_ordered()
 
-        k23s = [Graph(self._graph).subgraph(k23_ver).edges(labels=False) for k23_ver in self._graph.induced_K23s()]
+        k23s = [Graph(self._graph).subgraph(k23_ver).edges(labels=False, sort=False) for k23_ver in self._graph.induced_K23s()]
 
         aa_pp = [('a', 'a'), ('p', 'p')]
         ao = [('a','o'), ('o','a')]
@@ -575,7 +575,7 @@ class MotionClassifier(SageObject):
         oe = [('o', 'e'), ('e', 'o')]
         oo_ee = [('e','e'), ('o','o')]
 
-        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
+        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False, sort=False)}
         types_prev=[[{}, []]]
         
         self._num_tested_combinations = 0
@@ -752,7 +752,7 @@ class MotionClassifier(SageObject):
 
         self._orthogonality_graph = orthogonalityGraph
         check_again = False
-        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
+        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False, sort=False)}
         self._set_same_lengths(H, motion_types)
 
         for c in motion_types:
@@ -779,7 +779,7 @@ class MotionClassifier(SageObject):
                     return False
 
         if check_again:
-            for K23_edges in [Graph(self._graph).subgraph(k23_ver).edges(labels=False) for k23_ver in self._graph.induced_K23s()]:
+            for K23_edges in [Graph(self._graph).subgraph(k23_ver).edges(labels=False, sort=False) for k23_ver in self._graph.induced_K23s()]:
                 if MotionClassifier._same_edge_lengths(H, K23_edges):
                     return False
 
@@ -925,7 +925,7 @@ class MotionClassifier(SageObject):
         The edge labels of the output graph are same for if the edge lengths
         are same due to `motion_types`. 
         """
-        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
+        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False, sort=False)}
         self._set_same_lengths(H, motion_types)
         G_labeled = Graph([[u,v,H[(u,v)]] for u,v in H])
         G_labeled._pos = self._graph._pos
@@ -961,7 +961,7 @@ class MotionClassifier(SageObject):
         Return the ideal of equations for coordinates of vertices and given edge constraints.
         """
         equations = []
-        for u,v in self._graph.edges(labels=False):
+        for u,v in self._graph.edges(labels=False, sort=False):
             equations.append((self.x(u)-self.x(v))**_sage_const_2 + (self.y(u)-self.y(v))**_sage_const_2 - self.l(u,v)**_sage_const_2)
         equations += [
             self.x(fixed_edge[0]),
@@ -1045,7 +1045,7 @@ class MotionClassifier(SageObject):
         r"""
         Return TikZ code for the graph with edges colored according to the lengths enforced by motion types.
         """
-        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False)}
+        H = {self._edge_ordered(u,v):None for u,v in self._graph.edges(labels=False, sort=False)}
         self._set_same_lengths(H, motion_types)
         edge_partition = [[e for e in H if H[e]==el] for el in Set(H.values()) if el!=None]
         if none_gray:

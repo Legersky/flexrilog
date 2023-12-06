@@ -170,7 +170,7 @@ class FlexRiGraph(Graph):
         elif type(data)==list:
             edges = data
         elif isinstance(data, Graph):
-            edges = data.edges()
+            edges = data.edges(sort=False)
             pos = data.get_pos()
             if data.name():
                 name = data.name()
@@ -282,7 +282,7 @@ class FlexRiGraph(Graph):
                 r+=-1
             j-=1
             adjacencyMatrix[r,c]=L[j]
-        return Graph(adjacencyMatrix+adjacencyMatrix.transpose()).edges(labels=False)
+        return Graph(adjacencyMatrix+adjacencyMatrix.transpose()).edges(labels=False,sort=False)
 
     def add_vertex(self, name=None):
         super(FlexRiGraph, self).add_vertex(name)
@@ -360,7 +360,7 @@ class FlexRiGraph(Graph):
             30
         """
         if canonical:
-            M= Graph(self.edges(labels=False)).canonical_label().adjacency_matrix()
+            M= Graph(self.edges(labels=False, sort=False)).canonical_label().adjacency_matrix()
         else:
             M= self.adjacency_matrix()
         return Integer(int(''.join([str(b) for i,row in enumerate(M) for b in row[i+1:]]),2))
@@ -663,10 +663,10 @@ class FlexRiGraph(Graph):
                 quotient_vertices_dict[v] = i
         if labeled:
             edges = [[vertices[quotient_vertices_dict[u]], vertices[quotient_vertices_dict[v]], [u,v]]
-                     for u,v in self.edges(labels=False)]
+                     for u,v in self.edges(labels=False, sort=False)]
         else:
             edges = [[vertices[quotient_vertices_dict[u]], vertices[quotient_vertices_dict[v]]]
-                     for u,v in self.edges(labels=False)]
+                     for u,v in self.edges(labels=False, sort=False)]
             
         return Graph([vertices, edges], format='vertices_and_edges', loops=True)
 
@@ -703,7 +703,7 @@ class FlexRiGraph(Graph):
 
         Change so that the edge labels are not used (without creating extra copy).
         """
-        G = Graph(self.edges(labels=False))
+        G = Graph(self.edges(labels=False, sort=False))
 
         def addToTrComp(u0,u1,n_tr):
             if G.edge_label(u0,u1)==-2:
@@ -719,11 +719,11 @@ class FlexRiGraph(Graph):
                     G.set_edge_label(u0,u1,-1)
                     return 'connectingEdge'
 
-        for e in G.edges():
+        for e in G.edges(sort=False):
             G.set_edge_label(e[0],e[1],-2)
 
         n_tr = 0
-        e = G.edges()[0]
+        e = G.random_edge()
         while e[2]==-2:
             res = addToTrComp(e[0],e[1],n_tr)
             e = G.edges(key=lambda x: x[2])[0]
@@ -731,7 +731,7 @@ class FlexRiGraph(Graph):
                 n_tr += 1
 
         triangleComponents = [[] for _ in range(0,n_tr)]
-        for u,v,l in G.edges():
+        for u,v,l in G.edges(sort=False):
             if l == -1:
                 triangleComponents.append([[u,v]])
             else:
@@ -813,7 +813,7 @@ class FlexRiGraph(Graph):
         """
         res = []
         distance = self.shortest_path_all_pairs()[0]
-        for e,f in Subsets(self.edges(labels=False),2):
+        for e,f in Subsets(self.edges(labels=False, sort=False),2):
             u,v = e
             x,y = f
             if distance[x][u] + distance[y][v] != distance[x][v] + distance[y][u]:
@@ -1236,7 +1236,7 @@ class FlexRiGraph(Graph):
             True
         """
         res=[]
-        for u,v in self.edges(labels=False):
+        for u,v in self.edges(labels=False, sort=False):
             for w in Set(self.neighbors(u)).intersection(Set(self.neighbors(v))):
                 res.append(Set([u,v,w]))
         return [list(triangle) for triangle in Set(res)]
@@ -1624,7 +1624,7 @@ class FlexRiGraph(Graph):
             z[u] = var('z'+str(u))
 
         equations = []
-        for u,v in self.edges(labels=False):
+        for u,v in self.edges(labels=False, sort=False):
             if delta_1.is_red(u, v) and delta_2.is_blue(u, v): #rb (0,0,1)
                 equations.append(x[u]-x[v])
                 equations.append(y[u]-y[v])
@@ -1876,7 +1876,7 @@ class FlexRiGraph(Graph):
             break
 
         eqs_edges = [s[u_]  + s[v_] -Integer(2) *x[u_] * x[v_] -Integer(2) *y[u_] * y[v_] - edge_length(u_,v_)**Integer(2)
-                    for u_,v_ in self.edges(labels=False)
+                    for u_,v_ in self.edges(labels=False, sort=False)
                     ]
         eqs_spheres = [s[v_] - (x[v_]**Integer(2)  + y[v_]**Integer(2) ) for v_ in Set(self.vertices())]
 
@@ -1938,7 +1938,7 @@ class FlexRiGraph(Graph):
             return solver.mixed_volume(eqs_str)*multiple
         else:
             MVs = []
-            for fixed_edge in self.edges(labels=False):
+            for fixed_edge in self.edges(labels=False, sort=False):
                 eqs, tr_fix = self.system_of_equations(L, fixed_edge)
                 eqs_str = [str(eq)+';' for eq in eqs]
                 if not solver.is_square(eqs_str):
@@ -2025,7 +2025,7 @@ class FlexRiGraph(Graph):
         .. PLOT::
 
             from flexrilog import GraphGenerator, FlexRiGraph
-            G = FlexRiGraph(list(GraphGenerator.ThreePrismGraph().edges(labels=False)))
+            G = FlexRiGraph(list(GraphGenerator.ThreePrismGraph().edges(labels=False,sort=True)))
             L = {(1, 2): 3, (1, 5): 4, (0, 5): 5, (0, 4): 3, (2, 3): 5, (0, 3): 2, (3, 4): 4, (2, 5): 2, (1, 4): 5}
             res_RR, res_CC = G.realizations(L,[4,3])
             sphinx_plot(graphics_array([G.plot(pos=rho) for rho in res_RR[2:6]],2,2))
@@ -2136,7 +2136,7 @@ class FlexRiGraph(Graph):
 
         """
         res = {}
-        for u,v in self.edges(labels=False):
+        for u,v in self.edges(labels=False, sort=False):
             res[(u,v)] = norm(vector(realization[u]) - vector(realization[v]))
         return res
 
@@ -2192,7 +2192,7 @@ class FlexRiGraphWithCartesianNACs(FlexRiGraph):
     
     def ribbons(self):
         if self._ribbons==None:
-            V = [Set(e) for e in self.edges(labels=False)]
+            V = [Set(e) for e in self.edges(labels=False, sort=False)]
             E = []
             for a,b,c,d in self.four_cycles():
                 E += [[Set([a,b]), Set([c,d])], [Set([a,d]), Set([b,c])]]
@@ -2201,14 +2201,14 @@ class FlexRiGraphWithCartesianNACs(FlexRiGraph):
     
     def is_ribbon_cutting(self,certificate=False):
         for ribbon in self.ribbons():
-            G = Graph(self.edges(labels=False))
+            G = Graph(self.edges(labels=False, sort=False))
             G.delete_edges(ribbon)
             if G.is_connected():
                 return False if not certificate else (False, ribbon)
         return True if not certificate else (True, None)
 
     def _edges_with_same_color(self):
-        V = [Set(v) for v in self.edges(labels=False)]
+        V = [Set(v) for v in self.edges(labels=False, sort=False)]
         E = []
         for same in super(FlexRiGraphWithCartesianNACs, self)._edges_with_same_color():
             E += [[Set(e), Set(f)] for e, f in zip(same, same[1:])]

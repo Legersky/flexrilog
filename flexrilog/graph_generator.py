@@ -266,7 +266,7 @@ class GraphGenerator():
         if not labeled_from_one:
             return G
         else:
-            return FlexRiGraph([(u+1,v+1) for u, v in G.edges(labels=False)],
+            return FlexRiGraph([(u+1,v+1) for u, v in G.edges(labels=False, sort=False)],
                                       pos={v+1:G._pos[v] for v in G._pos},
                                       name=G.name())
             
@@ -691,7 +691,7 @@ class GraphGenerator():
 
     @staticmethod
     def CompleteGraphWithTrianglesAround(n, instance_CnSymmetricFlexRiGraph=False):
-        edges = graphs.CompleteGraph(n).edges(labels=False)
+        edges = graphs.CompleteGraph(n).edges(labels=False, sort=False)
         k = n
         for i in range(n):
             edges += [[i, k], [i, k+1], [k, k+1], [k+1, k+2]]

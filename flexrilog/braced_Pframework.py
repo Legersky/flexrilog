@@ -97,7 +97,7 @@ class Pframework(FlexRiGraphWithCartesianNACs,Framework):
             self._tikz_vertices += "    \\node[" + self._latex_vertex_style + "] ({}) at {} {{}};\n".format(
                 v, self.placement(v))
         self._tikz_edges = '    \\draw[edge] ' + ' '.join(
-            ["({})--({})".format(u,v) for u,v in self.edges(labels=False)]) + "\n"
+            ["({})--({})".format(u,v) for u,v in self.edges(labels=False,sort=True)]) + "\n"
         
         self._report('The constructor of Pframework finished')
         
@@ -246,7 +246,7 @@ class BracedPframework(Pframework):
     
         self._braces = [Set(e) for e in braces]
         
-        super().__init__(unbraced_framework.edges(labels=False)+braces, 
+        super().__init__(unbraced_framework.edges(labels=False, sort=False)+braces, 
                          placement, check=False, tolerance=tolerance,  **kwargs)
         self._check = check
         
@@ -276,7 +276,7 @@ class BracedPframework(Pframework):
         
     def unbraced_framework(self):
         if self._unbraced_framework==None:
-            self._unbraced_framework = Pframework([e for e in self.edges(labels=False)
+            self._unbraced_framework = Pframework([e for e in self.edges(labels=False, sort=False)
                                                    if not Set(e) in self._braces],
                                                   self.placement())
         return self._unbraced_framework
