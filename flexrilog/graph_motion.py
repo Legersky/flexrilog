@@ -1046,7 +1046,7 @@ class ParametricGraphMotion(GraphMotion):
 
             sage: from flexrilog import GraphMotion
             sage: GraphMotion.Deltoid().collisions()
-            {0: [(1, 2), (2, 3)], 1: [(0, 3), (2, 3)], 3: [(0, 1), (1, 2)]}
+            {0: [(2, 3), (1, 2)], 1: [(2, 3), (0, 3)], 3: [(0, 1), (1, 2)]}
 
         ::
 
@@ -1058,7 +1058,7 @@ class ParametricGraphMotion(GraphMotion):
             ....:     4: vector([0,cos(t)]), 5: vector([0,sqrt(1+cos(t)*cos(t))]), 6: vector([0,-sqrt(2+cos(t)^2)])},
             ....:     'symbolic')
             sage: M.collisions()
-            {1: [(3, 4), (2, 4)], 4: [(1, 5), (1, 6)]}
+            {1: [(2, 4), (3, 4)], 4: [(1, 6), (1, 5)]}
 
 
         WARNING:

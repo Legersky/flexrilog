@@ -495,7 +495,7 @@ class FlexRiGraph(Graph):
             if not g.has_edge(u3,u2):
                 g_smaller.add_edge(u3,u2)
                 self._inverse_Henneberg_step(g_smaller, seq+[('II',v, (u3,u2))], onlyOne)
-        if g.num_edges()==1 and g.num_vertices()==2:
+        if g.num_edges()==1 and g.num_verts()==2:
             if onlyOne:
                 self._Henneberg_sequences.append(seq)
                 return seq
@@ -690,7 +690,12 @@ class FlexRiGraph(Graph):
             ....: (0, 5), (1, 2), (1, 4), (1, 5), (2, 3), (2, 5), (3, 4)]); G
             FlexRiGraph with 7 vertices and 12 edges
             sage: G.triangle_connected_components()
-            [[[0, 3], [0, 4], [3, 4]], [[1, 2], [1, 5], [1, 6], [2, 5], [2, 6]], [[0, 5]], [[0, 6]], [[1, 4]], [[2, 3]]]
+            [[[0, 3], [0, 4], [3, 4]],
+             [[1, 2], [1, 5], [1, 6], [2, 5], [2, 6]],
+             [[0, 5]],
+             [[0, 6]],
+             [[1, 4]],
+             [[2, 3]]]
 
         ::
 
@@ -723,7 +728,7 @@ class FlexRiGraph(Graph):
             G.set_edge_label(e[0],e[1],-2)
 
         n_tr = 0
-        e = G.random_edge()
+        e = G.edges(sort=True)[0]
         while e[2]==-2:
             res = addToTrComp(e[0],e[1],n_tr)
             e = G.edges(key=lambda x: x[2])[0]
@@ -762,18 +767,18 @@ class FlexRiGraph(Graph):
             sage: T.theta()
             [[(0, 3), (0, 4)],
              [(1, 2), (0, 3)],
-             [(1, 5), (0, 3)],
+             [(0, 3), (1, 5)],
              [(0, 3), (2, 5)],
              [(0, 3), (3, 4)],
              [(1, 2), (0, 4)],
              [(2, 5), (0, 4)],
-             [(3, 4), (0, 4)],
-             [(0, 5), (2, 3)],
+             [(0, 4), (3, 4)],
+             [(2, 3), (0, 5)],
              [(1, 2), (1, 5)],
              [(1, 2), (2, 5)],
-             [(1, 5), (2, 5)],
-             [(1, 5), (3, 4)],
-             [(2, 5), (3, 4)]]                
+             [(2, 5), (1, 5)],
+             [(3, 4), (1, 5)],
+             [(2, 5), (3, 4)]]
 
         ::
         
@@ -781,21 +786,21 @@ class FlexRiGraph(Graph):
             sage: T.theta()
             [[(0, 3), (0, 4)],
              [(1, 2), (0, 3)],
-             [(1, 5), (0, 3)],
+             [(0, 3), (1, 5)],
              [(0, 3), (2, 5)],
              [(0, 3), (3, 4)],
              [(1, 2), (0, 4)],
-             [(1, 5), (0, 4)],
+             [(0, 4), (1, 5)],
              [(2, 5), (0, 4)],
-             [(3, 4), (0, 4)],
-             [(0, 5), (1, 4)],
-             [(0, 5), (2, 3)],
+             [(0, 4), (3, 4)],
+             [(1, 4), (0, 5)],
+             [(2, 3), (0, 5)],
              [(1, 2), (1, 5)],
              [(1, 2), (2, 5)],
              [(1, 2), (3, 4)],
              [(2, 3), (1, 4)],
-             [(1, 5), (2, 5)],
-             [(1, 5), (3, 4)],
+             [(2, 5), (1, 5)],
+             [(3, 4), (1, 5)],
              [(2, 5), (3, 4)]]
 
         ::
@@ -809,7 +814,7 @@ class FlexRiGraph(Graph):
              [(2, 3), (0, 4)],
              [(1, 2), (3, 4)]]
             sage: FlexRiGraph(graphs.CycleGraph(6)).theta()
-            [[(0, 1), (3, 4)], [(0, 5), (2, 3)], [(1, 2), (4, 5)]]
+            [[(0, 1), (3, 4)], [(2, 3), (0, 5)], [(4, 5), (1, 2)]]
         """
         res = []
         distance = self.shortest_path_all_pairs()[0]
@@ -1041,8 +1046,8 @@ class FlexRiGraph(Graph):
 
         ::
 
-            sage: G.triangle_connected_components()
-            [[[0, 3], [0, 4], [3, 4]], [[1, 2], [1, 5], [2, 5]], [[0, 5]], [[1, 4]], [[2, 3]]]
+            sage: sorted(G.triangle_connected_components())
+            [[[0, 3], [0, 4], [3, 4]], [[0, 5]], [[1, 2], [1, 5], [2, 5]], [[1, 4]], [[2, 3]]]
             sage: print(G.plot(show_triangle_components=True))
             Graphics object consisting of 16 graphics primitives
 

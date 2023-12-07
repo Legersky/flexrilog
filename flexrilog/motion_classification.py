@@ -47,7 +47,7 @@ _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(
 #from sage.rings.rational import Rational
 from .flexible_rigid_graph import FlexRiGraph
 from collections import Counter
-from IPython.core.display import display
+from IPython import display
 
 class MotionClassifier(SageObject):
     r"""

@@ -174,9 +174,9 @@ class CnSymmetricNACcoloring(NACcoloring):
             ....:         for cls in Gsym.NAC_colorings_isomorphism_classes()]
                 [[Cn-symmetric NAC-coloring with 12 red edges and 6 blue edges , [3, 7]],
                  [Cn-symmetric NAC-coloring with 9 red edges and 9 blue edges ,
-                  [3, 8, 9, 10, 7]],
-                 [Cn-symmetric NAC-coloring with 9 red edges and 9 blue edges , [3, 7]]]
-        
+                  [7, 8, 9, 10, 3]],
+                 [Cn-symmetric NAC-coloring with 9 red edges and 9 blue edges , [7, 3]]]
+
         The $\\mathcal{C}_3$-symetric NAC-colorings in the example above are the following:
         
         .. PLOT::
