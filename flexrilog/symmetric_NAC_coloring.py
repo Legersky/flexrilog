@@ -215,12 +215,15 @@ class CnSymmetricNACcoloring(NACcoloring):
         else:
             return False
 
-class CsSymmetricNACcoloring(NACcoloring):
+class PseudoRScoloring(NACcoloring):
     r"""
-    The class for a $\\mathcal{C}_s$-symmetric NAC-coloring of a $\\mathcal{C}_s$-symmetric graph.
+    The class for a pseudo-RS-coloring of a $\\mathcal{C}_s$-symmetric graph.
 
-    We define a NAC-coloring $\\delta$ to be a $\\mathcal{C}_s$-symmetric if
+    We define a coloring $\\delta$ by red, blue and gold to be a pseudo-RS-coloring if
     
+    - both red and blue are used,
+    - changing gold to red results in a NAC-coloring
+    - changing gold to blue results in a NAC-coloring
     - $\\delta(\\sigma e)$ is red iff  $\\delta(e)$ is blue for all $e \\in E_G$,
       where $\\sigma$ generates $\\mathcal{C}_s$, and 
     - If $\\delta(e)$ is golden then $\\delta(\\sigma e)$ is golden.
@@ -243,8 +246,8 @@ class CsSymmetricNACcoloring(NACcoloring):
             self._red_edges = Set([Set(e) for e in coloring if coloring[e] == 'red'])
             self._blue_edges = Set([Set(e) for e in coloring if coloring[e] == 'blue'])
             self._golden_edges = Set([Set(e) for e in coloring if coloring[e] == 'golden'])
-        elif (type(coloring)==CsSymmetricNACcoloring 
-              or isinstance(coloring, CsSymmetricNACcoloring)):
+        elif (type(coloring)==PseudoRScoloring 
+              or isinstance(coloring, PseudoRScoloring)):
             self._red_edges = copy(coloring._red_edges)
             self._blue_edges = copy(coloring._blue_edges)
             self._golden_edges = copy(coloring._golden_edges)
@@ -254,16 +257,14 @@ class CsSymmetricNACcoloring(NACcoloring):
         self.sigma = self._graph.sigma
         if check:
             self._check_edges()
-            if not self.is_Cs_symmetric():
-                raise ValueError('The coloring is not a Cs-symmetric NAC-coloring.')
+            if not self.is_pseudoRScoloring():
+                raise ValueError('The coloring is not a pseudo-RS-coloring.')
           
-    def is_Cs_symmetric(self):
+    def is_pseudoRScoloring(self):
         if not self.is_equal(self.isomorphic_NAC_coloring().conjugated(), moduloConjugation=False):
             return False
-        if (not NACcoloring(self._graph, [self.red_edges(), self.blue_edges()+self.golden_edges()],
-                            check=False).is_NAC_coloring()
-            or not NACcoloring(self._graph, [self.red_edges()+self.golden_edges(), self.blue_edges()],
-                               check=False).is_NAC_coloring()):
+        if not NACcoloring(self._graph, [self.red_edges(), self.blue_edges()+self.golden_edges()],
+                            check=False).is_NAC_coloring():
             return False
         return True
 
@@ -273,7 +274,7 @@ class CsSymmetricNACcoloring(NACcoloring):
         Return a string representation of `self`.
         """
         res = (self._name + ': ') if self._name != None else ''
-        res += 'Cs-symmetric NAC-coloring with '
+        res += 'Pseudo-RS-coloring with '
         if self._graph.num_edges()< 10:
             res += 'red edges ' + str(sorted([sorted(list(e)) for e in self._red_edges]))
             res += ', blue edges ' + str(sorted([sorted(list(e)) for e in self._blue_edges]))
@@ -303,13 +304,31 @@ class CsSymmetricNACcoloring(NACcoloring):
 
     def _check_edges(self):
         r"""
-        Raise a ``RuntimeError`` if the edges of the NAC-coloring do not match the edges of the graph.
+        Raise a ``RuntimeError`` if the edges of the pseudo-RS-coloring do not match the edges of the graph.
         """
         if len(self._blue_edges) + len(self._red_edges) + len(self._golden_edges) != self._graph.num_edges():
-            raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
+            raise RuntimeError('The edges of the pseudo-RS-coloring do not match the edges of the graph.')
         if (Set([Set(e) for e in self._graph.edges(labels=False, sort=False)])
             != self._blue_edges.union(self._red_edges).union(self._golden_edges)):
-            raise RuntimeError('The edges of the NAC-coloring do not match the edges of the graph.')
+            raise RuntimeError('The edges of the pseudo-RS-coloring do not match the edges of the graph.')
+    
+    def is_equal(self, other_coloring, moduloConjugation=True):
+        r"""
+        Return if the pseudo-RS-coloring is equal to ``other_coloring``.
+
+        INPUT:
+
+        - ``moduloConjugation`` -- If ``True`` (default),
+          then the NAC-colorings are compared modulo swapping read and blue.
+        """
+        if moduloConjugation:
+            return (Set([self._red_edges, self._blue_edges]) == Set([other_coloring._red_edges, other_coloring._blue_edges])
+                    and self._golden_edges == other_coloring._golden_edges)
+        else:
+            return (self._red_edges == other_coloring._red_edges
+                    and self._blue_edges == other_coloring._blue_edges
+                    and self._golden_edges == other_coloring._golden_edges)
+    
     
     def golden_edges(self):
         r"""
@@ -388,9 +407,9 @@ class CsSymmetricNACcoloring(NACcoloring):
                      format='vertices_and_edges').connected_components()
                      
     
-    def plot(self, grid_pos=False, zigzag=False, **args_kwd):
+    def plot(self, **args_kwd):
         r"""
-        Return a plot of the NAC-coloring.
+        Return a plot of the pseudo-RS-coloring.
         """
         if self.name():
             args_kwd['title'] = '$'+latex_variable_name(self.name())+'$'
@@ -414,7 +433,7 @@ class CsSymmetricNACcoloring(NACcoloring):
         r"""
         Return the conjugated NAC-coloring.
         """
-        return CsSymmetricNACcoloring(self._graph, [self.blue_edges(), self.red_edges(), self.golden_edges()], check=False)
+        return PseudoRScoloring(self._graph, [self.blue_edges(), self.red_edges(), self.golden_edges()], check=False)
 
 
     def print_tikz(self, **kwargs):
@@ -427,13 +446,15 @@ class CsSymmetricNACcoloring(NACcoloring):
     def isomorphic_NAC_coloring(self, onlySets=False):
         r"""
         Return the Cs-NAC-coloring under the morphism ``sigma``.
+        
+        TODO: the name is misleading!
         """
         if onlySets:
             return [Set([Set([self.sigma(e[0]),self.sigma(e[1])]) for e in self._red_edges]),
                     Set([Set([self.sigma(e[0]),self.sigma(e[1])]) for e in self._blue_edges]),
                     Set([Set([self.sigma(e[0]),self.sigma(e[1])]) for e in self._golden_edges])]
         else:
-            return CsSymmetricNACcoloring(self._graph, 
+            return PseudoRScoloring(self._graph, 
                                  [[[self.sigma(e[0]),self.sigma(e[1])] for e in edges] 
                                   for edges in [self._red_edges, self._blue_edges, self._golden_edges]], check=False)
 
@@ -458,7 +479,7 @@ __doc__ = __doc__.replace(
 
 
 __doc__ = __doc__.replace(
-    "{INDEX_OF_METHODS_CS}", (gen_rest_table_index(CsSymmetricNACcoloring)))
+    "{INDEX_OF_METHODS_CS}", (gen_rest_table_index(PseudoRScoloring)))
 
 
 

@@ -627,7 +627,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
         """   
 
         self._report('Searching NAC-colorings') 
-        from .symmetric_NAC_coloring import CsSymmetricNACcoloring
+        from .symmetric_NAC_coloring import PseudoRScoloring
         self._NAC_colorings = []
         inv_triangle_comps = []
         pairs = []
@@ -664,10 +664,10 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                         blue += pairs[i][0]
                 gold += inv_triangle_comps
                 if names:
-                    delta = CsSymmetricNACcoloring(self, [red, blue, gold], check=False, name='delta_' + str(counter))
+                    delta = PseudoRScoloring(self, [red, blue, gold], check=False, name='delta_' + str(counter))
                 else:
-                    delta = CsSymmetricNACcoloring(self, [red, blue, gold], check=False)
-                if delta.is_Cs_symmetric():
+                    delta = PseudoRScoloring(self, [red, blue, gold], check=False)
+                if delta.is_pseudoRScoloring():
                     self._NAC_colorings.append(delta)
                     counter += 1
                     if onlyOne:
@@ -703,7 +703,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                                     upairs.append([[w,u],path_u])
             return upairs
         
-        from .symmetric_NAC_coloring import CsSymmetricNACcoloring
+        from .symmetric_NAC_coloring import PseudoRScoloring
         upairs = monochromatic_pairs(active_colorings)
         while upairs:
             res.add_edges([e for e,_ in upairs])
@@ -724,10 +724,10 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                         blue.append(e)
                         red.append(sigma_e)
                 if col._name:
-                    col_new = CsSymmetricNACcoloring(res, [red, blue, golden], check=False, name=col._name)
+                    col_new = PseudoRScoloring(res, [red, blue, golden], check=False, name=col._name)
                 else:
-                    col_new = CsSymmetricNACcoloring(res, [red, blue, golden], check=False)
-                if col_new.is_Cs_symmetric():
+                    col_new = PseudoRScoloring(res, [red, blue, golden], check=False)
+                if col_new.is_pseudoRScoloring():
                     active_res.append(col_new)
             active_colorings = active_res
             upairs = monochromatic_pairs(active_colorings)
