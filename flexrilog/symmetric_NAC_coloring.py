@@ -95,7 +95,7 @@ class CnSymmetricNACcoloring(NACcoloring):
             self._noninvariant_components[col] = [list(comp) for orbit in noninv_comps for comp in orbit]
     
     def is_Cn_symmetric(self):
-        if not self.is_equal(self.isomorphic_NAC_coloring(self.omega), moduloConjugation=False):
+        if not self.is_equal(self.automorphism_image(self.omega), moduloConjugation=False):
             return False
         if self.blue_subgraph(
             ).subgraph(flatten(self._partially_invariant_components['red'], max_level=1)).num_edges()>0:
@@ -261,7 +261,7 @@ class PseudoRScoloring(NACcoloring):
                 raise ValueError('The coloring is not a pseudo-RS-coloring.')
           
     def is_pseudoRScoloring(self):
-        if not self.is_equal(self.isomorphic_NAC_coloring().conjugated(), moduloConjugation=False):
+        if not self.is_equal(self.automorphism_image().conjugated(), moduloConjugation=False):
             return False
         if not NACcoloring(self._graph, [self.red_edges(), self.blue_edges()+self.golden_edges()],
                             check=False).is_NAC_coloring():
@@ -443,11 +443,9 @@ class PseudoRScoloring(NACcoloring):
         self._graph.print_tikz([self.blue_edges(), self.red_edges(), self.golden_edges()], ['redge', 'bedge', 'gedge'], **kwargs)
         
 
-    def isomorphic_NAC_coloring(self, onlySets=False):
+    def automorphism_image(self, onlySets=False):
         r"""
-        Return the Cs-NAC-coloring under the morphism ``sigma``.
-        
-        TODO: the name is misleading!
+        Return the pseudo-RS-coloring under the morphism ``sigma``.
         """
         if onlySets:
             return [Set([Set([self.sigma(e[0]),self.sigma(e[1])]) for e in self._red_edges]),

@@ -489,7 +489,7 @@ class NACcoloring(SageObject):
             True
             sage: _, sigma = col1.is_isomorphic(col2, certificate=True); sigma
             (0,2,1)
-            sage: col1.isomorphic_NAC_coloring(sigma).is_equal(col2)
+            sage: col1.automorphism_image(sigma).is_equal(col2)
             True
             sage: col1.is_isomorphic(col3)
             False
@@ -523,7 +523,7 @@ class NACcoloring(SageObject):
                 return (False, None)
 
         for sigma in aut_group:
-            if Set([self._red_edges, self._blue_edges]) == Set(other_coloring.isomorphic_NAC_coloring(sigma,onlySets=True)):
+            if Set([self._red_edges, self._blue_edges]) == Set(other_coloring.automorphism_image(sigma,onlySets=True)):
                 if not certificate:
                     return True
                 else:
@@ -533,9 +533,13 @@ class NACcoloring(SageObject):
         else:
             return (False, None)
 
-    def isomorphic_NAC_coloring(self, sigma, onlySets=False):
+    def automorphism_image(self, sigma, onlySets=False):
         r"""
         Return the NAC-coloring under a morphism ``sigma``.
+        
+        WARNING:
+        
+        It is not checked that ``sigma`` is an automorphism.
         """
         if onlySets:
             return [Set([Set([sigma(e[0]),sigma(e[1])]) for e in self._red_edges]),
