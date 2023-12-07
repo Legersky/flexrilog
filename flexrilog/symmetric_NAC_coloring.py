@@ -8,7 +8,7 @@ $\\mathcal{C}_n$-symmetric NAC-coloring
 {INDEX_OF_METHODS_CN}
 
 
-$\\mathcal{C}_s$-symmetric NAC-coloring
+Pseudo-RS-coloring
 ---------------------------------------
 
 {INDEX_OF_METHODS_CS}
@@ -252,7 +252,7 @@ class PseudoRScoloring(NACcoloring):
             self._blue_edges = copy(coloring._blue_edges)
             self._golden_edges = copy(coloring._golden_edges)
         else:
-            raise TypeError('The coloring must be a dict, list consisting of three lists or an instance of Cs-NACcoloring.')
+            raise TypeError('The coloring must be a dict, list consisting of three lists or an instance of PseudoRScoloring.')
         self._name = name
         self.sigma = self._graph.sigma
         if check:
@@ -319,7 +319,7 @@ class PseudoRScoloring(NACcoloring):
         INPUT:
 
         - ``moduloConjugation`` -- If ``True`` (default),
-          then the NAC-colorings are compared modulo swapping read and blue.
+          then the pseudo-RS-colorings are compared modulo swapping read and blue.
         """
         if moduloConjugation:
             return (Set([self._red_edges, self._blue_edges]) == Set([other_coloring._red_edges, other_coloring._blue_edges])
@@ -332,7 +332,7 @@ class PseudoRScoloring(NACcoloring):
     
     def golden_edges(self):
         r"""
-        Return the list of golden edges of the NAC-coloring.
+        Return the list of golden edges of the pseudo-RS-coloring.
         """
         return list(self._golden_edges)
     
@@ -431,14 +431,14 @@ class PseudoRScoloring(NACcoloring):
     
     def conjugated(self):
         r"""
-        Return the conjugated NAC-coloring.
+        Return the conjugated pseudo-RS-coloring.
         """
         return PseudoRScoloring(self._graph, [self.blue_edges(), self.red_edges(), self.golden_edges()], check=False)
 
 
     def print_tikz(self, **kwargs):
         r"""
-        Print TikZ code for the graph colored with the NAC-coloring.
+        Print TikZ code for the graph colored with the pseudo-RS-coloring.
         """
         self._graph.print_tikz([self.blue_edges(), self.red_edges(), self.golden_edges()], ['redge', 'bedge', 'gedge'], **kwargs)
         
