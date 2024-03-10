@@ -732,7 +732,7 @@ class FlexRiGraph(Graph):
         e = G.edges(sort=True)[0]
         while e[2]==-2:
             res = addToTrComp(e[0],e[1],n_tr)
-            e = G.edges(key=lambda x: x[2])[0]
+            e = G.edges(sort=True,key=lambda x: x[2])[0]
             if res=='trcomp':
                 n_tr += 1
 
