@@ -171,7 +171,8 @@ class FlexRiGraph(Graph):
             edges = data
         elif isinstance(data, Graph):
             edges = data.edges(sort=False)
-            pos = data.get_pos()
+            if pos==None:
+                pos = data.get_pos()
             if data.name():
                 name = data.name()
         else:

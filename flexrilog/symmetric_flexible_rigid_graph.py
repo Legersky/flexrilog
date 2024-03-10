@@ -511,7 +511,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
     
         - examples
     """
-    def __init__(self, data, symmetry, pos=None, pos_sym=True, name=None, check=True, verbosity=0):
+    def __init__(self, data, symmetry, pos=None, pos_sym=False, name=None, check=True, verbosity=0):
         super(CsSymmetricFlexRiGraph, self).__init__(data, symmetry, pos, name, check, verbosity)
         is_cyclic, gen, order = SymmetricFlexRiGraph.is_cyclic_subgroup(self._sym_group)
         if check:
@@ -533,7 +533,7 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
             pos = {
                 orbit[0]:self._pos[orbit[0]] for orbit in self.vertex_orbits()
                 }
-            for i, v in enumerate(self._invariant_vertices):
+            for v in self._invariant_vertices:
                 pos[v] = self._pos[v]
         if not pos_sym:
             self.set_symmetric_positions(pos)
@@ -674,6 +674,12 @@ class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):
                         self._NACs_computed = 'onlyOne'
                         return
         self._NACs_computed = 'yes'
+        
+    def pseudoRScolorings(self, **kwargs):
+        return self.NAC_colorings(**kwargs)
+        
+    def show_all_pseudoRScolorings(self, **kwargs):
+        self.show_all_NAC_colorings(**kwargs)
 
     def Cs_closure(self, active_colorings=None, save_colorings=False):
         r"""

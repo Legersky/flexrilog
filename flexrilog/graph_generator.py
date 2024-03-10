@@ -968,7 +968,8 @@ class GraphGenerator():
         
         if radius:
             P.delete_vertices([v for v in P.vertices(sort=False) if norm(P._pos[v])>= radius])
-                    
+            P.delete_vertices([v for v in P.vertices(sort=False) if P.degree(v)<=1])
+        
         return FlexRiGraph(P)
         
     
