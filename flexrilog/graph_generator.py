@@ -44,6 +44,12 @@ from sage.all import flatten, Set,  Graph, PermutationGroup
 from sage.all import graphs, infinity
 from sage.all import RR, vector, sqrt, I, pi, exp, norm
 
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.backend_bases import MouseButton
+from matplotlib.collections import LineCollection
+
 class GraphGenerator():
 
     @staticmethod
@@ -971,8 +977,182 @@ class GraphGenerator():
             P.delete_vertices([v for v in P.vertices(sort=False) if P.degree(v)<=1])
         
         return FlexRiGraph(P)
-        
     
+    
+    
+    
+class GraphDrawer:
+    epsilon = 15  # max pixel distance to count as a vertex hit
+    def __init__(self):
+
+        _, self.ax = plt.subplots()
+        plt.gcf().set_size_inches(9,6)
+        self.coll = LineCollection([])
+        self.ax.add_collection(self.coll)
+        
+        self.coll.set_animated(True)
+        self.ax.set_xlim(-3, 4)
+        self.ax.set_ylim(-3, 4)
+
+        self.ax.set_title('keys: d - DRAWING, m - moving vertices\n  e - delete last edge, v - delete last vertex')
+        canvas = self.ax.figure.canvas
+        
+        self.edges = []
+        self.verts = np.array([[0,0]])
+        self.labels = [self.ax.text(0,0,0,bbox={'facecolor': 'blue', 'alpha': 0.5, 'pad': 1})]
+        
+        self.first = None
+        self._ind = None  # the active vertex
+        self.mode = 'draw'
+
+        canvas.mpl_connect('draw_event', self.on_draw)
+        canvas.mpl_connect('button_press_event', self.on_button_press)
+        canvas.mpl_connect('key_press_event', self.on_key_press)
+        canvas.mpl_connect('button_release_event', self.on_button_release)
+        canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
+        self.canvas = canvas
+        self.background = self.canvas.copy_from_bbox(self.ax.bbox)
+        self.update_segments()
+
+    def _print(self,s):
+        import os
+        os.write(1,str(s).encode())
+        os.write(1,'\n'.encode())
+        
+    def report(self):
+        self._print('Vertices:')
+        self._print(self.verts)
+        self._print('Edges:')
+        self._print(self.edges)
+        self._print('Selected:')
+        self._print(self._ind)
+        self._print('First')
+        self._print(self.first)
+        
+    def add_vertex(self,x,y):
+        self.verts = np.append(self.verts,
+                               np.array([[x,y]]), axis=0)
+        self.labels.append(self.ax.text(x,y,str(len(self.verts)-1),
+                                  bbox={'facecolor': 'blue', 'alpha': 0.5, 'pad': 1}))
+        return len(self.verts)-1
+    
+    def remove_last_vertex(self):
+        if len(self.verts)>0:
+            self.verts = self.verts[:-1]
+            self.labels[-1].remove()
+            self.labels = self.labels[:-1]
+            w = len(self.verts)
+            self.edges = [e for e in self.edges if not w in e]
+            
+    
+    def remove_last_edge(self):
+        self.edges = self.edges[:-1]
+    
+    def add_edge(self,u,v):
+        self.edges.append([u,v])
+        
+    def update_segments(self):
+        segments = [[self.verts[u],self.verts[v]] for u,v in self.edges]
+        self.coll.set_segments(segments)
+        for i,z in enumerate(self.verts):
+            self.labels[i].set_position(z)
+            self.labels[i].set_bbox({'facecolor': 'blue' if i!=self.first else 'red', 'alpha': 0.5, 'pad': 1})
+        
+        self.canvas.restore_region(self.background)
+        self.ax.draw_artist(self.coll)
+        self.canvas.blit(self.ax.bbox)
+        
+    def get_ind_under_point(self, event):
+        """
+        Return the index of the point closest to the event position or *None*
+        if no point is within ``self.epsilon`` to the event position.
+        """
+        xyt = self.ax.transData.transform(self.verts)
+        d = np.sqrt((xyt[:,0] - event.x)**2 + (xyt[:,1] - event.y)**2)
+        if len(d)==0:
+            return None
+        ind = d.argmin()
+        return ind if d[ind] < self.epsilon else None
+
+    def on_draw(self, event):
+        """Callback for draws."""
+        self.background = self.canvas.copy_from_bbox(self.ax.bbox)
+        self.ax.draw_artist(self.coll)
+        self.canvas.blit(self.ax.bbox)
+
+    def on_button_press(self, event):
+        """Callback for mouse button presses."""
+        if (event.inaxes is None
+            or event.button != MouseButton.LEFT
+            or not self.ax.get_navigate_mode() is None
+           ):
+            return
+        self._ind = self.get_ind_under_point(event)
+        if self.mode == 'draw':
+            if self.first == None:
+                if self._ind == None:
+                    self.first = self.add_vertex(event.xdata, event.ydata)
+                    self.update_segments()
+                else:
+                    self.first = self._ind
+                    self.update_segments()
+                    self._ind = None
+
+    def on_button_release(self, event):
+        """Callback for mouse button releases."""
+        if (event.button != MouseButton.LEFT
+            or not self.ax.get_navigate_mode() is None):
+            return
+        if self.mode == 'draw':
+            self._ind = self.get_ind_under_point(event)
+            if self._ind == None:
+                w = self.add_vertex(event.xdata, event.ydata)
+            else:
+                w = self._ind
+            if self.first != w:
+                self.add_edge(self.first,w)
+            self.first = None
+            self._ind = None
+            self.update_segments()
+
+    
+    def on_key_press(self, event):
+        """Callback for key presses."""
+        if not event.inaxes:
+            return
+        if event.key == 'd' or event.key == 'D':
+            self.mode = 'draw'
+            self.ax.set_title('keys: d - DRAWING, m - moving vertices\n  e - delete last edge, v - delete last vertex')
+        if event.key == 'm' or event.key == 'M':
+            self.mode = 'move'
+            self.ax.set_title('keys: d - drawing, m - MOVING vertices\n  e - delete last edge, v - delete last vertex')
+        
+        if event.key == 'e' or event.key == 'E':
+            self.remove_last_edge()
+            self.update_segments()
+        if event.key == 'v' or event.key == 'V':
+            self.remove_last_vertex()
+            self.update_segments()
+        self.canvas.draw()
+
+    def on_mouse_move(self, event):
+        """Callback for mouse movements."""
+        if (self._ind is None
+                or event.inaxes is None
+                or event.button != MouseButton.LEFT
+                or self.mode!='move'
+                or not self.ax.get_navigate_mode() is None):
+            return
+        
+        self.verts[self._ind] = np.array([event.xdata, event.ydata])
+        self.update_segments()
+
+    def get_graph(self):
+        return FlexRiGraph(self.edges,
+                           pos={i:p for i,p in enumerate(self.verts)}
+                          )    
+    
+
 
 __doc__ = __doc__.replace(
     "{INDEX_OF_METHODS}", (gen_rest_table_index(GraphGenerator))).replace(

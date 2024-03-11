@@ -20,7 +20,7 @@ from .flexible_rigid_graph import FlexRiGraph, FlexRiGraphWithCartesianNACs
 from .framework import Framework
 from .braced_Pframework import Pframework, BracedPframework
 from .symmetric_flexible_rigid_graph import SymmetricFlexRiGraph, CnSymmetricFlexRiGraph, CnSymmetricFlexRiGraphCartesianNACs, CsSymmetricFlexRiGraph
-from .graph_generator import GraphGenerator
+from .graph_generator import GraphGenerator, GraphDrawer
 from .NAC_coloring import NACcoloring
 from .symmetric_NAC_coloring import CnSymmetricNACcoloring, PseudoRScoloring
 from .motion_classification import MotionClassifier
