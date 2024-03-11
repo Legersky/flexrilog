@@ -219,7 +219,7 @@ class NACcoloring(SageObject):
                                             [self.blue_edges(), self.red_edges()]):
             v2c = {}
             cnt = 0
-            for component in one_color_subgraph.connected_components():
+            for component in one_color_subgraph.connected_components(sort=False):
                 for v in component:
                     v2c[v] = cnt
                 cnt +=1
@@ -347,7 +347,7 @@ class NACcoloring(SageObject):
 
     
     def blue_components(self):
-        return self.blue_subgraph().connected_components()
+        return self.blue_subgraph().connected_components(sort=False)
 
 
     def red_subgraph(self):
@@ -355,7 +355,7 @@ class NACcoloring(SageObject):
 
 
     def red_components(self):
-        return self.red_subgraph().connected_components()
+        return self.red_subgraph().connected_components(sort=False)
     
 
     def plot(self, grid_pos=False, zigzag=False, **args_kwd):

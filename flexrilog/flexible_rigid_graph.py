@@ -839,16 +839,16 @@ class FlexRiGraph(Graph):
             sage: from flexrilog import FlexRiGraph, GraphGenerator
             sage: T = GraphGenerator.ThreePrismGraph()
             sage: T.Djokovic_Winkler_equiv_classes()
-            [[(0, 3), (0, 4), (1, 2), (1, 5), (2, 5), (3, 4)], [(0, 5), (1, 4), (2, 3)]]
+            [[(0, 3), (3, 4), (2, 5), (1, 5), (1, 2), (0, 4)], [(1, 4), (2, 3), (0, 5)]]
             sage: FlexRiGraph(graphs.CycleGraph(4)).Djokovic_Winkler_equiv_classes()
-            [[(0, 1), (2, 3)], [(0, 3), (1, 2)]]
+            [[(0, 1), (2, 3)], [(1, 2), (0, 3)]]
             sage: FlexRiGraph(graphs.CycleGraph(5)).Djokovic_Winkler_equiv_classes()
-            [[(0, 1), (0, 4), (1, 2), (2, 3), (3, 4)]]
+            [[(0, 1), (3, 4), (1, 2), (0, 4), (2, 3)]]
             sage: FlexRiGraph(graphs.CycleGraph(6)).Djokovic_Winkler_equiv_classes()
-            [[(0, 1), (3, 4)], [(0, 5), (2, 3)], [(1, 2), (4, 5)]]        
+            [[(0, 1), (3, 4)], [(2, 3), (0, 5)], [(4, 5), (1, 2)]]        
         """
         H = Graph(self.theta(), format='list_of_edges')
-        return H.connected_components()
+        return H.connected_components(sort=False)
 
 
     @doc_index("NAC-colorings")
@@ -2202,7 +2202,7 @@ class FlexRiGraphWithCartesianNACs(FlexRiGraph):
             E = []
             for a,b,c,d in self.four_cycles():
                 E += [[Set([a,b]), Set([c,d])], [Set([a,d]), Set([b,c])]]
-            self._ribbons = Graph([V,E], format='vertices_and_edges').connected_components()
+            self._ribbons = Graph([V,E], format='vertices_and_edges').connected_components(sort=False)
         return self._ribbons
     
     def is_ribbon_cutting(self,certificate=False):
@@ -2223,7 +2223,7 @@ class FlexRiGraphWithCartesianNACs(FlexRiGraph):
             E += [[Set([a,b]), Set([c,d])], [Set([a,d]), Set([b,c])]]
 
         sameColorGraph = Graph([V,E], format='vertices_and_edges')
-        return sameColorGraph.connected_components()
+        return sameColorGraph.connected_components(sort=False)
     
     def NAC_colorings(self):
         if self._NACs_computed != 'yes-cartesian':

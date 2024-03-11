@@ -466,7 +466,7 @@ class CnSymmetricFlexRiGraph(SymmetricFlexRiGraph):
             E += [[tuple(sorted(e)), tuple(sorted(f))] for e, f in zip(tr_comp[:-1], tr_comp[1:])]
         for orbit in self.edge_orbits():
             E += [[tuple(sorted(e)), tuple(sorted(f))] for e, f in zip(orbit[:-1], orbit[1:])]
-        return [[[u,v] for u, v in comp] for comp in Graph([V, E], format='vertices_and_edges').connected_components()]
+        return [[[u,v] for u, v in comp] for comp in Graph([V, E], format='vertices_and_edges').connected_components(sort=False)]
 
 
 class CnSymmetricFlexRiGraphCartesianNACs(CnSymmetricFlexRiGraph, FlexRiGraphWithCartesianNACs):
@@ -491,7 +491,7 @@ class CnSymmetricFlexRiGraphCartesianNACs(CnSymmetricFlexRiGraph, FlexRiGraphWit
         for a,b,c,d in self.four_cycles():
             E += [[tuple(sorted([a,b])), tuple(sorted([c,d]))], [tuple(sorted([a,d])), tuple(sorted([b,c]))]]
             
-        return [[[u,v] for u, v in comp] for comp in Graph([V, E], format='vertices_and_edges').connected_components()]
+        return [[[u,v] for u, v in comp] for comp in Graph([V, E], format='vertices_and_edges').connected_components(sort=False)]
 
 
 class CsSymmetricFlexRiGraph(SymmetricFlexRiGraph):

@@ -742,8 +742,8 @@ class MotionClassifier(SageObject):
                 if isBipartite:
                     graph_0 = Graph([v.list() for v in partition if partition[v]==0])
                     graph_1 = Graph([v.list() for v in partition if partition[v]==1])
-                    for comp_0 in graph_0.connected_components():
-                        for comp_1 in graph_1.connected_components():
+                    for comp_0 in graph_0.connected_components(sort=False):
+                        for comp_1 in graph_1.connected_components(sort=False):
                             for e0 in Subsets(comp_0,2):
                                 for e1 in Subsets(comp_1,2):
                                     orthogonalityGraph.add_edge([Set(e0), Set(e1)])

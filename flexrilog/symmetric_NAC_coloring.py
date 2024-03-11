@@ -80,7 +80,7 @@ class CnSymmetricNACcoloring(NACcoloring):
                                          [blue_subgraph, 'blue']]:
             invariant_comps = []
             noninv_comps = []
-            comps_as_sets = [Set(component) for component in one_color_subgraph.connected_components()]
+            comps_as_sets = [Set(component) for component in one_color_subgraph.connected_components(sort=False)]
             comps_perm = PermutationGroup([[Set([self.omega(v) for v in component]) for component in comps_as_sets]],
                                          domain=comps_as_sets)
             for orbit in comps_perm.orbits():
@@ -391,20 +391,20 @@ class PseudoRScoloring(NACcoloring):
 
 
     def golden_components(self):
-        return self.golden_subgraph().connected_components()
+        return self.golden_subgraph().connected_components(sort=False)
     
    
     def red_blue_components(self):
         return Graph([self._graph.vertices(sort=False),[list(e) for e in self._red_edges + self._blue_edges]], 
-                     format='vertices_and_edges').connected_components()    
+                     format='vertices_and_edges').connected_components(sort=False)    
    
     def red_golden_components(self):
         return Graph([self._graph.vertices(sort=False),[list(e) for e in self._red_edges + self._golden_edges]], 
-                     format='vertices_and_edges').connected_components()    
+                     format='vertices_and_edges').connected_components(sort=False)    
    
     def blue_golden_components(self):
         return Graph([self._graph.vertices(sort=False),[list(e) for e in self._golden_edges + self._blue_edges]], 
-                     format='vertices_and_edges').connected_components()
+                     format='vertices_and_edges').connected_components(sort=False)
                      
     
     def plot(self, **args_kwd):
@@ -462,7 +462,7 @@ class PseudoRScoloring(NACcoloring):
         v2c = {}
         cnt = 0
         red_blue_subgraph = self.red_subgraph().union(self.blue_subgraph())
-        for component in red_blue_subgraph.connected_components():
+        for component in red_blue_subgraph.connected_components(sort=False):
             for v in component:
                 v2c[v] = cnt
             cnt +=1

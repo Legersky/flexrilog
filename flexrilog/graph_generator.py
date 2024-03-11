@@ -309,7 +309,7 @@ class GraphGenerator():
                 for delta in cls:
                     for edges in [delta.red_edges(), delta.blue_edges()]:
                         if len(cls)==4 and len(edges)==7:
-                            u,v = [comp for comp in Graph([list(e) for e in edges]).connected_components()
+                            u,v = [comp for comp in Graph([list(e) for e in edges]).connected_components(sort=False)
                                               if len(comp)==2][0]
                             delta.set_name('epsilon' + (str(u)+str(v) if u<v else str(v)+str(u)))
                             break
@@ -319,7 +319,7 @@ class GraphGenerator():
                             delta.set_name(name + str(vertex))
                             break
                         if len(edges)==5:
-                            u,v = [comp for comp in Graph([list(e) for e in edges]).connected_components()
+                            u,v = [comp for comp in Graph([list(e) for e in edges]).connected_components(sort=False)
                                    if len(comp)==2][0]
                             delta.set_name('gamma' + str(min(u,v)))
                             break
