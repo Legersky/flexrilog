@@ -2169,8 +2169,8 @@ class FlexRiGraph(Graph):
                 end = ' '
             else:
                 end = '\n' 
-            print( '\t\\node[' + vertex_style + '] ('+str(k)+') at '+
-                    str((lowPrecField(self._pos[k][0]),lowPrecField(self._pos[k][1])))+' {'+label+'};',end=end)
+            print( '\t\\node[' + vertex_style + ',label={[labelsty]above:$'+ label +'$}] ('+str(k)+') at '+
+                    str((lowPrecField(self._pos[k][0]),lowPrecField(self._pos[k][1])))+' {};',end=end)
         if dense:
             print()
         if len(colored_edges) == len(color_names):
